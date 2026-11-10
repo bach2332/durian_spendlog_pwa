@@ -142,6 +142,16 @@ Technical notes and caveats:
 - The token and Chat ID are stored only in this browser (`localStorage`), per device.
 - **Not verified against the real Zalo service.** Undocumented points: CORS behaviour, rate limits, time limits or prerequisites for a bot to message a user, and whether a bot can post to group chats. Treat the feature as experimental.
 
+## QR quick setup
+
+Settings → **Thiết lập nhanh bằng QR**.
+
+- **Hiện mã QR** (on a device that is already set up) shows a QR code with the GitHub user, token, Gist ID and, if enabled, the Zalo bot token and chat ID. **Lưu ảnh QR** saves it as a PNG.
+- **Quét mã QR** (on a new device) opens the camera, or reads a QR image picked from the gallery, shows a summary, and on **Áp dụng** fills the settings and loads the data.
+- Payload: `{"app":"dr27","u":"…","t":"…","g":"…","zt":"…","zc":"…"}` (keys optional except `app`).
+- Scanning uses the browser's `BarcodeDetector` when available, otherwise `lib/jsQR.min.js`. The QR is drawn with `lib/qrcode.min.js`. Both are bundled locally (MIT) and loaded only when needed.
+- The QR contains the token: anyone who has it can read and write the ledger. Share it privately; if it leaks, revoke the token on GitHub and make a new QR.
+
 ## Updating and versioning
 
 - The footer shows `🌳 Sầu riêng 2027 · vYYYYMMDD`. Change that date in `index.html` when you release so you can tell whether a device has the new build.

@@ -152,6 +152,14 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .mock .mf.hl div{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri2)}
 .mock .mb{display:inline-block;background:var(--pri);color:#fff;border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px;margin-top:4px}
 @media(prefers-color-scheme:dark){.mock .mb{color:#1a2e05}}
+/* QR thiết lập nhanh */
+#qr{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:25;padding:16px}
+#qr.on{display:flex}
+#qr .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:16px;border:1px solid var(--line);max-height:92vh;overflow:auto}
+#qr-cam{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:12px;overflow:hidden}
+#qr-cam video{width:100%;height:100%;object-fit:cover;display:block}
+#qr-cam i{position:absolute;inset:16%;border:3px solid #fff;border-radius:14px;box-shadow:0 0 0 999px #0006}
+#qr-img{display:block;width:100%;max-width:300px;margin:8px auto;image-rendering:pixelated;background:#fff;border-radius:10px}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 </style>
 </head>
@@ -249,6 +257,12 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <!-- CÀI ĐẶT -->
   <section class="page" id="p-set">
     <div class="card">
+      <h2>Thiết lập nhanh bằng QR</h2>
+      <div class="mut">Máy đã cài xong bấm <b>Hiện mã QR</b>. Máy mới bấm <b>Quét mã QR</b> để tự điền kết nối GitHub và Zalo.</div>
+      <div class="row" style="margin-top:12px"><button id="qr-scan">📷 Quét mã QR</button><button class="sec" id="qr-show">Hiện mã QR</button></div>
+      <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập bằng QR</a></div>
+    </div>
+    <div class="card">
       <h2>Kết nối GitHub (GitHub Connection)</h2>
       <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
       <label>User ID (Git ID)</label>
@@ -306,7 +320,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111b</footer>
 </main>
 
 <nav class="tabs">
@@ -359,6 +373,21 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <div id="sc-list" style="margin-top:6px"></div>
 </div></div>
 <div id="cf"><div class="sheet"><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
+<div id="qr"><div class="sheet">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="qr-title" style="margin:0"></h2><button class="sec sm" id="qr-x" aria-label="Đóng">✕</button></div>
+  <div id="qr-scanbox">
+    <div class="mut" style="margin:6px 0 10px">Đưa mã QR vào giữa khung.</div>
+    <div id="qr-cam"><video id="qr-video" playsinline muted></video><i></i></div>
+    <div id="qr-msg" class="mut" style="margin-top:8px;min-height:18px"></div>
+    <label class="menu" style="margin:10px 0 0;justify-content:center;cursor:pointer">🖼️ Chọn ảnh có mã QR<input type="file" id="qr-file" accept="image/*" hidden></label>
+  </div>
+  <div id="qr-showbox">
+    <div class="warn" style="background:#fef3c7;color:#78350f;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px">Mã này chứa <b>token</b>. Ai có mã đều đọc và ghi được sổ này. Chỉ đưa cho người trong nhóm, không đăng công khai.</div>
+    <img id="qr-img" alt="Mã QR cấu hình">
+    <div id="qr-info" class="mut" style="text-align:center"></div>
+    <div class="row" style="margin-top:12px"><a id="qr-dl" class="menu" style="margin:0;justify-content:center" download="sau-rieng-2027-qr.png">Lưu ảnh QR</a></div>
+  </div>
+</div></div>
 <div id="toast"></div>
 
 <script>
@@ -1058,7 +1087,16 @@ const HELP=[
 <li>Zalo nhắn lại cho bạn <b>Bot token</b>.</li>
 <li>Vào Cài đặt → Thông báo Zalo, dán token, bấm liên kết <b>mở getUpdates</b> (trang chờ khoảng 30 giây). Trong lúc chờ, nhắn một tin cho bot trên Zalo, rồi tìm <code>chat</code> → <code>id</code> làm Chat ID.</li>
 <li>Bấm <b>Lưu</b>, sau đó bấm <b>Gửi thử</b> và kiểm tra Zalo.</li>
-</ol>`}
+</ol>`},
+{id:'qr-setup',group:'D. Hướng dẫn kết nối dịch vụ',title:'3. Thiết lập nhanh bằng QR',html:`
+<p>Dùng khi cài app cho máy thứ hai hoặc cho người khác trong nhóm, không phải gõ lại token.</p>
+<div class="flow"><div>📱 Máy đã cài<br><small>Hiện mã QR</small></div><span>→</span><div>📷 Máy mới<br><small>Quét mã QR</small></div><span>→</span><div>✅ Tự điền<br><small>GitHub + Zalo</small></div></div>
+<ol>
+<li><b>Máy đã cài:</b> Cài đặt → Thiết lập nhanh bằng QR → <b>Hiện mã QR</b>. Có thể bấm <b>Lưu ảnh QR</b> để gửi riêng cho người trong nhóm.</li>
+<li><b>Máy mới:</b> mở app → Cài đặt → <b>Quét mã QR</b>, cho phép dùng camera, đưa mã vào khung. Nếu đã nhận ảnh QR qua Zalo thì bấm <b>Chọn ảnh có mã QR</b>.</li>
+<li>App hiện tóm tắt cấu hình, bấm <b>Áp dụng</b> là xong, app tự tải dữ liệu.</li>
+</ol>
+<div class="warn">Mã QR chứa token GitHub (và Zalo nếu có). Ai có mã đều đọc và ghi được sổ thu chi. Nếu lỡ lộ, vào GitHub xóa token cũ, tạo token mới rồi tạo lại mã QR.</div>`}
 ];
 function renderHelp(){
   let toc='',body='',lastG=null;
@@ -1081,6 +1119,105 @@ const closeHelp=()=>$('#hp').classList.remove('on');
 document.addEventListener('click',e=>{const a=e.target.closest('[data-hs]');if(!a)return;e.preventDefault();openHelp(a.dataset.hs)});
 $('#hp-x').onclick=closeHelp;
 $('#hp').onclick=e=>{if(e.target.id==='hp')closeHelp()};
+
+/* ---------- Thiết lập nhanh bằng QR ----------
+   Nội dung mã: {"app":"dr27","u":user,"t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat} */
+const QR_APP='dr27';
+function loadLib(src,name){
+  if(window[name])return Promise.resolve();
+  return new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=src;sc.onload=()=>window[name]?res():rej(new Error('Thư viện lỗi'));sc.onerror=()=>rej(new Error('Không tải được thư viện QR, kiểm tra mạng'));document.head.appendChild(sc)});
+}
+let qrStream=null,qrTimer=null,qrDet=null,qrBusy=false;
+const qrCv=document.createElement('canvas'),qrCx=qrCv.getContext('2d',{willReadFrequently:true});
+function qrOpen(mode){
+  $('#qr-title').textContent=mode==='scan'?'Quét mã QR':'Mã QR cấu hình';
+  $('#qr-scanbox').style.display=mode==='scan'?'':'none';$('#qr-showbox').style.display=mode==='show'?'':'none';
+  $('#qr').classList.add('on');
+}
+function qrStop(){
+  clearInterval(qrTimer);qrTimer=null;
+  if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null}
+  $('#qr-video').srcObject=null;
+}
+function qrClose(){qrStop();$('#qr').classList.remove('on')}
+async function qrDecode(src,w,h){
+  if(qrDet){try{const r=await qrDet.detect(src);return r.length?r[0].rawValue:null}catch(e){}}
+  await loadLib('lib/jsQR.min.js','jsQR');
+  const k=Math.min(1,800/Math.max(w,h));qrCv.width=Math.round(w*k);qrCv.height=Math.round(h*k);
+  qrCx.drawImage(src,0,0,qrCv.width,qrCv.height);
+  const d=qrCx.getImageData(0,0,qrCv.width,qrCv.height);
+  const r=jsQR(d.data,d.width,d.height,{inversionAttempts:'attemptBoth'});
+  return r?r.data:null;
+}
+function qrParse(txt){
+  try{const o=JSON.parse(txt);if(o&&o.app===QR_APP&&(o.t||o.zt))return o}catch(e){}
+  return null;
+}
+async function qrGot(txt){
+  const o=qrParse(txt);
+  if(!o){$('#qr-msg').textContent='Mã này không phải mã cấu hình Sầu riêng 2027.';return false}
+  qrClose();
+  const lines=[];
+  if(o.t)lines.push('GitHub: '+(o.u||'(không có User ID)')+(o.g?'\nGist: …'+o.g.slice(-6):'\nGist: tạo mới'));
+  if(o.zt&&o.zc)lines.push('Zalo: bật thông báo (Chat ID '+o.zc+')');
+  if(tok()&&o.t&&o.g&&o.g!==gid())lines.push('\nMáy này đang nối với Gist khác. Áp dụng sẽ chuyển sang Gist trong mã.');
+  if(!await askConfirm('Áp dụng cấu hình từ mã QR?\n\n'+lines.join('\n'),'Áp dụng'))return true;
+  try{
+    if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
+    if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
+  }catch(e){toast('Không lưu được trên trình duyệt này');return true}
+  renderSet();zlLink();zlState();
+  if(o.t){if(o.g){const ok=await load();toast(ok?'Đã thiết lập xong':'Đã điền, nhưng chưa tải được dữ liệu')}else{await save();renderSet();toast('Đã tạo Gist mới')}}
+  else toast('Đã bật thông báo Zalo');
+  return true;
+}
+$('#qr-scan').onclick=async()=>{
+  qrOpen('scan');$('#qr-msg').textContent='Đang mở camera...';
+  try{if(!qrDet&&'BarcodeDetector' in window&&(await BarcodeDetector.getSupportedFormats()).includes('qr_code'))qrDet=new BarcodeDetector({formats:['qr_code']})}catch(e){}
+  if(!qrDet)loadLib('lib/jsQR.min.js','jsQR').catch(e=>{$('#qr-msg').textContent=e.message});
+  try{
+    qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
+    const v=$('#qr-video');v.srcObject=qrStream;await v.play();
+    $('#qr-msg').textContent='Đang tìm mã QR...';
+    qrTimer=setInterval(async()=>{
+      if(qrBusy||!v.videoWidth)return;qrBusy=true;
+      try{const t=await qrDecode(v,v.videoWidth,v.videoHeight);if(t)await qrGot(t)}catch(e){$('#qr-msg').textContent=e.message}
+      qrBusy=false;
+    },300);
+  }catch(e){
+    $('#qr-msg').textContent='Không mở được camera ('+(e.name==='NotAllowedError'?'chưa cho phép quyền camera':e.message||e.name)+'). Bấm "Chọn ảnh có mã QR" bên dưới.';
+  }
+};
+$('#qr-file').onchange=async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f)return;
+  $('#qr-msg').textContent='Đang đọc ảnh...';
+  try{
+    const img=await createImageBitmap(f);
+    const t=await qrDecode(img,img.width,img.height);
+    if(!t){$('#qr-msg').textContent='Không tìm thấy mã QR trong ảnh. Chụp rõ hơn rồi thử lại.';return}
+    await qrGot(t);
+  }catch(err){$('#qr-msg').textContent='Không đọc được ảnh: '+err.message}
+};
+$('#qr-show').onclick=async()=>{
+  const t=tok(),z=zlCfg();
+  if(!t&&!z){toast('Máy này chưa kết nối GitHub hay Zalo');return}
+  if(t&&!gid()){toast('Chưa có Gist ID — bấm Kết nối & tải trước');return}
+  try{await loadLib('lib/qrcode.min.js','qrcode')}catch(e){toast(e.message);return}
+  const o={app:QR_APP};
+  if(t){o.u=localStorage.getItem(K.uid)||'';o.t=t;o.g=gid()}
+  if(z){o.zt=z.t;o.zc=z.c}
+  const q=qrcode(0,'M');q.addData(JSON.stringify(o),'Byte');q.make();
+  const n=q.getModuleCount(),m=4,sz=8,c=document.createElement('canvas');
+  c.width=c.height=(n+m*2)*sz;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';
+  for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+m)*sz,(r+m)*sz,sz,sz);
+  const url=c.toDataURL('image/png');
+  $('#qr-img').src=url;$('#qr-dl').href=url;
+  $('#qr-info').textContent=[t?'GitHub'+(o.u?' ('+o.u+')':''):'',z?'Zalo':''].filter(Boolean).join(' + ');
+  qrOpen('show');
+};
+$('#qr-x').onclick=qrClose;
+$('#qr').onclick=e=>{if(e.target.id==='qr')qrClose()};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#qr').classList.contains('on'))qrClose()});
 
 /* ---------- init ---------- */
 $('#a-date').value=today();dLabel();
