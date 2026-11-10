@@ -146,11 +146,11 @@ Technical notes and caveats:
 
 Settings → **Thiết lập nhanh bằng QR**.
 
-- **Hiện mã QR** (on a device that is already set up) shows a QR code with the GitHub user, token, Gist ID and, if enabled, the Zalo bot token and chat ID. **Lưu ảnh QR** saves it as a PNG.
-- **Quét mã QR** (on a new device) opens the camera, or reads a QR image picked from the gallery, shows a summary, and on **Áp dụng** fills the settings and loads the data.
-- Payload: `{"app":"dr27","u":"…","t":"…","g":"…","zt":"…","zc":"…"}` (keys optional except `app`).
-- Scanning uses the browser's `BarcodeDetector` when available, otherwise `lib/jsQR.min.js`. The QR is drawn with `lib/qrcode.min.js`. Both are bundled locally (MIT) and loaded only when needed.
-- The QR contains the token: anyone who has it can read and write the ledger. Share it privately; if it leaks, revoke the token on GitHub and make a new QR.
+- **Hiện mã QR** (on a device that is already set up) asks for a password (min. 8 characters), encrypts the config (GitHub user, token, Gist ID and, if enabled, Zalo bot token and chat ID) and shows it as a QR code. **Lưu ảnh QR** saves it as a PNG.
+- **Quét mã QR** (on a new device) opens the camera, or reads a QR image from the gallery, asks for the password, shows a summary, and on **Áp dụng** fills the settings and loads the data. A wrong password is rejected and can be retried.
+- Encryption: AES-256-GCM with a key derived by PBKDF2-SHA256 (310,000 iterations, random 16-byte salt, random 12-byte IV), all via the browser's Web Crypto API (needs HTTPS). QR text: `DR27E1.` + base64url(`salt | iv | ciphertext+tag`). Plain JSON inside: `{"app":"dr27","u":"…","t":"…","g":"…","zt":"…","zc":"…"}`.
+- The password is never stored or hard-coded (this repo is public). Share it separately from the QR image. Forgot it: make a new QR. If both QR and password leak: revoke the token on GitHub and make a new QR.
+- Scanning uses `BarcodeDetector` when available, otherwise `lib/jsQR.min.js`; the QR is drawn with `lib/qrcode.min.js`. Both are bundled locally (MIT) and loaded only when needed.
 
 ## Updating and versioning
 
