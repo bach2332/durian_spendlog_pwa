@@ -3,19 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#3f7d20">
-<meta name="description" content="Sổ thu chi vườn sầu riêng 2027, lưu trên GitHub Gist">
+<meta name="theme-color" content="#0f766e">
+<meta name="description" content="Ghi nhanh chi tiêu hàng ngày, lưu trên GitHub Gist">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Sầu riêng 2027">
+<meta name="apple-mobile-web-app-title" content="Spendlog">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Sầu riêng 2027</title>
+<title>Spendlog</title>
 <style>
-:root{--bg:#f4f6f5;--card:#fff;--text:#16211f;--mut:#6b7a77;--line:#e3e9e7;--pri:#3f7d20;--pri2:#dcfce7;--warn:#d97706;--bad:#dc2626;--ok:#16a34a}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--card:#17201f;--text:#e8f0ee;--mut:#8da29e;--line:#26332f;--pri:#a3e635;--pri2:#2a3b12}}
+:root{--bg:#f4f6f5;--card:#fff;--text:#16211f;--mut:#6b7a77;--line:#e3e9e7;--pri:#0f766e;--pri2:#ccfbf1;--warn:#d97706;--bad:#dc2626;--ok:#16a34a}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--card:#17201f;--text:#e8f0ee;--mut:#8da29e;--line:#26332f;--pri:#2dd4bf;--pri2:#134e4a}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
 main{max-width:560px;margin:0 auto;padding:14px}
@@ -30,7 +30,7 @@ input,select{width:100%;font:inherit;color:var(--text);background:var(--bg);bord
 input:disabled{opacity:.6;cursor:not-allowed}
 input:focus,select:focus{outline:2px solid var(--pri);border-color:transparent}
 button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 16px;min-height:46px;background:var(--pri);color:#fff;font-weight:600}
-@media(prefers-color-scheme:dark){button{color:#1a2e05}}
+@media(prefers-color-scheme:dark){button{color:#042f2e}}
 button.sec{background:var(--bg);color:var(--text);border:1px solid var(--line)}
 button.bad{background:var(--bad);color:#fff}
 button.sm{min-height:34px;padding:6px 10px;font-size:14px}
@@ -67,7 +67,7 @@ svg text{fill:var(--mut);font-size:10px}
 a{color:var(--pri)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
-@media(prefers-color-scheme:dark){.chips button.on{color:#1a2e05}}
+@media(prefers-color-scheme:dark){.chips button.on{color:#042f2e}}
 .frow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;margin:0;color:var(--text);font-size:16px}
 .frow:last-child{border-bottom:0}
 .frow input{width:22px;height:22px;min-height:0;flex:0 0 auto;padding:0;accent-color:var(--pri)}
@@ -99,7 +99,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .cats::-webkit-scrollbar{display:none}
 .cats .cc{flex:0 0 auto;min-height:38px;padding:6px 14px;border-radius:99px;background:var(--bg);color:var(--text);border:1px solid var(--line);font-weight:500}
 .cats .cc.on{background:var(--pri);color:#fff;border-color:var(--pri)}
-@media(prefers-color-scheme:dark){.cats .cc.on{color:#1a2e05}}
+@media(prefers-color-scheme:dark){.cats .cc.on{color:#042f2e}}
 .arow{display:flex;gap:8px;align-items:stretch}
 .arow button{flex:1}
 .dchip{position:relative;display:flex;align-items:center;justify-content:center;margin:0;flex:0 0 auto;min-width:104px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:15px;font-weight:600;overflow:hidden}
@@ -148,12 +148,8 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .mock .mf div{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card);word-break:break-all}
 .mock .mf.hl div{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri2)}
 .mock .mb{display:inline-block;background:var(--pri);color:#fff;border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px;margin-top:4px}
-@media(prefers-color-scheme:dark){.mock .mb{color:#1a2e05}}
+@media(prefers-color-scheme:dark){.mock .mb{color:#042f2e}}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
-.pl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;text-align:center;margin-top:8px}
-.pl .big{font-size:14.5px;white-space:nowrap}.pl .k{font-size:12px;color:var(--mut)}
-.pos{color:var(--ok)}.neg{color:var(--bad)}
-.kind{margin-bottom:10px}.kind button.on.in{background:var(--ok);color:#fff}.kind button.on.out{background:var(--warn);color:#fff}
 </style>
 </head>
 <body>
@@ -163,7 +159,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <!-- NHẬP -->
   <section class="page on" id="p-add">
     <div class="card">
-      <div class="seg kind" id="a-kind"><button type="button" data-k="out" class="on out">Chi</button><button type="button" data-k="in">Thu (bán hàng)</button></div>
       <div class="qrow">
         <div class="abig"><input type="text" id="a-amt" inputmode="numeric" pattern="[0-9]*" placeholder="35" autocomplete="off" enterkeyhint="next" aria-label="Số tiền (nghìn đồng)"></div>
         <input type="text" id="a-note" list="a-sug" placeholder="Nội dung" autocomplete="off" enterkeyhint="done" aria-label="Nội dung">
@@ -192,7 +187,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       </div>
       <div class="nav"><button class="sec" data-nav="-1">‹</button><b data-label></b><button class="sec" data-nav="1">›</button></div>
       <div class="mut" style="text-align:center"><a href="#" data-today>Về hôm nay</a></div>
-      <div id="h-total"></div>
+      <div style="text-align:center;margin-top:6px"><div class="mut">Tổng chi</div><div class="big" id="h-total"></div></div>
     </div>
     <div class="card">
       <label style="margin-top:0">Lọc theo danh mục</label>
@@ -208,11 +203,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
         <button data-m="day">Ngày</button><button data-m="week">Tuần</button><button data-m="month">Tháng</button>
       </div>
       <div class="nav"><button class="sec" data-nav="-1">‹</button><b data-label></b><button class="sec" data-nav="1">›</button></div>
-      <div id="s-total"></div>
+      <div style="text-align:center"><div class="mut">Tổng chi</div><div class="big" id="s-total"></div></div>
     </div>
-    <div class="card" id="s-bars-card"><h2>Thu &amp; chi theo ngày</h2><div class="mut"><span class="pos">■</span> Thu · <span style="color:var(--warn)">■</span> Chi</div><div id="s-bars"></div></div>
-    <div class="card"><h2>Chi theo danh mục</h2><div id="s-cats"></div></div>
-    <div class="card"><h2>Thu theo nhóm</h2><div id="s-icats"></div></div>
+    <div class="card" id="s-bars-card"><h2>Chi theo ngày</h2><div id="s-bars"></div></div>
+    <div class="card"><h2>Theo danh mục</h2><div id="s-cats"></div></div>
     <div class="card" id="s-budget"></div>
   </section>
 
@@ -227,8 +221,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
         <div><label>Từ ngày</label><input type="date" id="f-from"></div>
         <div><label>Đến ngày</label><input type="date" id="f-to"></div>
       </div>
-      <label>Loại</label>
-      <select id="f-kind"><option value="all">Thu &amp; chi</option><option value="out">Chỉ chi</option><option value="in">Chỉ thu</option></select>
       <label>Danh mục (không chọn = tất cả)</label>
       <div class="chips" id="f-cats"></div>
       <label>Nội dung chứa từ khóa</label>
@@ -255,7 +247,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <section class="page" id="p-set">
     <div class="card">
       <h2>Kết nối GitHub (GitHub Connection)</h2>
-      <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
+      <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=chi-tieu" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
       <label>User ID (Git ID)</label>
       <input type="text" id="s-uid" placeholder="Tên đăng nhập GitHub" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label>Mật khẩu (GitHub Token)</label>
@@ -267,32 +259,39 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
         <button id="s-connect">Kết nối &amp; tải</button>
         <button class="sec" id="s-logout">Đăng xuất</button>
       </div>
-      <div class="mut" style="margin-top:8px">User ID, token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu thu chi lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
+      <div class="mut" style="margin-top:8px">User ID, token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu lưu trong file <code>expenses.json</code> của Gist (secret).</div>
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
     </div>
     <div class="card">
-      <h2>Ngân sách chi theo tháng</h2>
+      <h2>Ngân sách tháng</h2>
       <label style="margin-top:0">Hạn mức mỗi tháng (nghìn đồng, 0 = tắt)</label>
       <input type="text" id="s-budget-in" inputmode="numeric" placeholder="0">
       <div style="margin-top:12px"><button id="s-budget-save" style="width:100%">Lưu ngân sách</button></div>
     </div>
     <div class="card">
-      <h2>Danh mục chi</h2>
-      <div id="s-catlist"></div>
-      <div class="row" style="margin-top:10px"><input type="text" id="s-newcat" placeholder="Tên danh mục chi mới"><button id="s-addcat" style="flex:0 0 auto">Thêm</button></div>
+      <h2>Thông báo Zalo <span class="chip" style="background:var(--warn);color:#fff;vertical-align:middle">Thử nghiệm</span></h2>
+      <div class="mut" style="margin-bottom:4px"><b>Tính năng đang thử nghiệm</b>: chưa kiểm chứng đầy đủ với Zalo Bot thật, tin nhắn có thể không đến hoặc không báo lỗi.</div>
+      <div class="mut">Tùy chọn. Điền đủ <b>Bot token</b> và <b>Chat ID</b> thì mới bật. Để trống thì app chạy bình thường, không gửi gì. Mỗi khoản chi <b>thêm mới</b> hoặc <b>sửa</b> gửi đúng 1 tin.</div>
+      <label>Bot token</label>
+      <input type="password" id="z-token" placeholder="123456:ABC..." autocomplete="off">
+      <label>Chat ID</label>
+      <input type="text" id="z-chat" placeholder="VD: abc.xyz" autocomplete="off">
+      <div class="mut" style="margin-top:6px">Chưa có Chat ID? Bấm <a id="z-link" href="#" target="_blank" rel="noopener">mở getUpdates</a> (trang chờ khoảng 30 giây), trong lúc chờ hãy nhắn 1 tin cho bot trên Zalo, rồi tìm <code>chat</code> → <code>id</code>.</div>
+      <div class="row" style="margin-top:12px"><button id="z-save">Lưu</button><button class="sec" id="z-test">Gửi thử</button><button class="sec" id="z-off">Tắt</button></div>
+      <div id="z-state" class="mut" style="margin-top:8px"></div>
+      <div class="mut" style="margin-top:8px"><a href="#help/zalo-connection" data-hs="zalo-connection">Hướng dẫn kết nối Zalo (How to connect Zalo?)</a></div>
     </div>
     <div class="card">
-      <h2>Nhóm thu (doanh thu)</h2>
-      <div id="s-icatlist"></div>
-      <div class="row" style="margin-top:10px"><input type="text" id="s-newicat" placeholder="Tên nhóm thu mới"><button id="s-addicat" style="flex:0 0 auto">Thêm</button></div>
+      <h2>Danh mục</h2>
+      <div id="s-catlist"></div>
+      <div class="row" style="margin-top:10px"><input type="text" id="s-newcat" placeholder="Tên danh mục mới"><button id="s-addcat" style="flex:0 0 auto">Thêm</button></div>
     </div>
     <div class="card">
       <h2>Import từ CSV</h2>
-      <div class="mut">File CSV (UTF-8) có dòng tiêu đề <code>date,type,note,category,amount</code>:<br>
-      • <b>type</b>: <code>chi</code> hoặc <code>thu</code> (tùy chọn, để trống = chi)<br>
+      <div class="mut">File CSV (UTF-8) có dòng tiêu đề <code>date,note,category,amount</code>:<br>
       • <b>date</b>: <code>2026-11-01</code> hoặc <code>01/11/2026</code> (bắt buộc)<br>
       • <b>note</b>: nội dung (tùy chọn)<br>
-      • <b>category</b>: danh mục (chi) hoặc nhóm (thu), chưa có sẽ tự tạo; để trống = "Khác"<br>
+      • <b>category</b>: danh mục, chưa có sẽ tự tạo; để trống = "Khác"<br>
       • <b>amount</b>: số tiền VNĐ &gt; 0, vd <code>35000</code> hoặc <code>35.000</code> (bắt buộc)<br>
       Dấu phân cách <code>,</code> <code>;</code> hoặc Tab đều được. Tiêu đề tiếng Việt (ngay, noi dung, danh muc, so tien) cũng nhận.</div>
       <div style="margin-top:10px"><button class="sec" id="imp-tpl" style="width:100%">Tải file mẫu</button></div>
@@ -304,7 +303,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">Sầu riêng 2027 · v20261111</footer>
+  <footer class="ft">Spendlog · v20261108</footer>
 </main>
 
 <nav class="tabs">
@@ -316,7 +315,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 </nav>
 
 <div id="modal"><div class="sheet">
-  <h2>Chi tiết khoản thu chi</h2>
+  <h2>Chi tiết khoản chi</h2>
   <div class="mut">Chỉ sửa được nội dung và danh mục, hoặc xóa. Muốn đổi số tiền hay ngày: xóa rồi nhập lại.</div>
   <label>Ngày</label><input type="date" id="e-date" disabled>
   <label>Số tiền</label><input type="text" id="e-amt" disabled>
@@ -329,12 +328,12 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   </div>
 </div></div>
 <div id="rv"><div class="sheet">
-  <h2>Review thu chi</h2>
+  <h2>Review chi tiêu</h2>
   <div class="mut" id="rv-sub"></div>
   <table class="rt">
-    <thead><tr><th>Ngày</th><th>Nội dung</th><th class="r" style="text-align:right">Thu/Chi</th></tr></thead>
+    <thead><tr><th>Ngày</th><th>Nội dung</th><th class="r" style="text-align:right">Số tiền</th></tr></thead>
     <tbody id="rv-body"></tbody>
-    <tfoot><tr><td colspan="2">Lãi/lỗ (thu − chi)</td><td class="r" id="rv-total"></td></tr></tfoot>
+    <tfoot><tr><td colspan="2">Tổng cộng</td><td class="r" id="rv-total"></td></tr></tfoot>
   </table>
   <div class="row" style="margin-top:12px"><button class="sec" id="rv-copy">Sao chép (Excel)</button><button id="rv-close">Đóng</button></div>
 </div></div>
@@ -361,10 +360,9 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 
 <script>
 (()=>{
-const FILE='durian2027.json';
-const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid'};
-const DEF_CATS=['Phân bón','Thuốc BVTV','Nhân công','Điện nước tưới','Xăng dầu & vận chuyển','Vật tư & dụng cụ','Xử lý ra hoa','Cải tạo đất','Chi phí khác'];
-const DEF_ICATS=['Sầu riêng loại 1','Sầu riêng loại 2','Sầu riêng loại 3 / xô','Thu khác'];
+const FILE='expenses.json';
+const K={token:'ct_token',gist:'ct_gist',cache:'ct_cache',dirty:'ct_dirty',uid:'ct_uid'};
+const DEF_CATS=['Ăn uống','Đi lại','Nhà cửa','Mua sắm','Con cái','Giải trí','Sức khỏe','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -377,18 +375,12 @@ const dmy=s=>{const[a,b,c]=s.split('-');return c+'/'+b+'/'+a};
 const dow=['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ sáu','Thứ bảy'];
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
-let data=blank();
+let data={categories:[...DEF_CATS],budget:0,items:[]};
 let view={mode:'month',anchor:today(),cat:'all'};
 let editId=null, saving=false, queued=false;
 
 try{const c=JSON.parse(localStorage.getItem(K.cache)||'null');if(c&&c.items)data=norm(c)}catch(e){}
-function blank(){return{categories:[...DEF_CATS],incomeCats:[...DEF_ICATS],budget:0,items:[]}}
-function norm(d){return{categories:Array.isArray(d.categories)&&d.categories.length?d.categories:[...DEF_CATS],incomeCats:Array.isArray(d.incomeCats)&&d.incomeCats.length?d.incomeCats:[...DEF_ICATS],budget:+d.budget||0,items:Array.isArray(d.items)?d.items:[]}}
-let addKind='out';
-const isIn=i=>i.dir==='in';
-const allCats=()=>[...data.categories,...data.incomeCats.filter(c=>!data.categories.includes(c))];
-const catsFor=k=>k==='in'?data.incomeCats:data.categories;
-const smoney=n=>(n>0?'+':n<0?'−':'')+money(Math.abs(n));
+function norm(d){return{categories:Array.isArray(d.categories)&&d.categories.length?d.categories:[...DEF_CATS],budget:+d.budget||0,items:Array.isArray(d.items)?d.items:[]}}
 
 /* ---------- toast / status ---------- */
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
@@ -427,7 +419,7 @@ async function save(){
   try{
     const content=JSON.stringify(data,null,1);
     if(!gid()){
-      const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Sầu riêng 2027 - thu chi',public:false,files:{[FILE]:{content}}})});
+      const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Chi tiêu hàng ngày',public:false,files:{[FILE]:{content}}})});
       localStorage.setItem(K.gist,g.id);$('#s-gist').value=g.id;gistLink();
       toast('Đã tạo Gist mới');
     }else{
@@ -460,16 +452,12 @@ function shift(n){
   view.anchor=ds(a);renderAll();
 }
 const inRange=(i,s,e)=>i.date>=s&&i.date<=e;
-const sum=a=>a.reduce((t,i)=>t+(isIn(i)?0:i.amount),0);          /* tổng chi */
-const sumIn=a=>a.reduce((t,i)=>t+(isIn(i)?i.amount:0),0);        /* tổng thu */
-const net=a=>sumIn(a)-sum(a);                                    /* lãi/lỗ */
-const tot=a=>a.reduce((t,i)=>t+i.amount,0);
-const plHTML=a=>{const r=sumIn(a),c=sum(a),n=r-c;return`<div class="pl"><div><div class="k">Thu</div><div class="big pos">${money(r)}</div></div><div><div class="k">Chi</div><div class="big" style="color:var(--warn)">${money(c)}</div></div><div><div class="k">${n<0?'Lỗ':'Lãi'}</div><div class="big ${n<0?'neg':'pos'}">${money(Math.abs(n))}</div></div></div>`};
-const catColor=c=>{const i=allCats().indexOf(c);return PAL[(i<0?PAL.length-1:i)%PAL.length]};
+const sum=a=>a.reduce((t,i)=>t+i.amount,0);
+const catColor=c=>{const i=data.categories.indexOf(c);return PAL[(i<0?PAL.length-1:i)%PAL.length]};
 
 /* ---------- renderers ---------- */
-function fillCats(sel,withAll,val,list){
-  const cats=[...(list||allCats())];
+function fillCats(sel,withAll,val){
+  const cats=[...data.categories];
   $$(sel).forEach(s=>{
     const cur=val??s.value;
     s.innerHTML=(withAll?'<option value="all">Tất cả danh mục</option>':'')+cats.map(c=>`<option>${esc(c)}</option>`).join('');
@@ -479,10 +467,9 @@ function fillCats(sel,withAll,val,list){
 function rowHTML(i){
   const rev=i.type==='void',gone=!!i.voidedBy;
   const st=gone?'text-decoration:line-through;opacity:.55':'';
-  const tag=(rev?'<span class="chip" style="background:var(--bad);color:#fff">Xóa</span> ':'')+(isIn(i)?'<span class="chip" style="background:var(--ok);color:#fff">Thu</span> ':'');
+  const tag=rev?'<span class="chip" style="background:var(--bad);color:#fff">Xóa</span> ':'';
   const ref=gone?' <span class="mut">· đã bị xóa</span>':'';
-  const col=rev?'var(--bad)':isIn(i)?'var(--ok)':'';
-  return`<div class="item" data-id="${i.id}"><div><div class="n" style="${st}">${esc(i.note||'(không ghi chú)')}</div>${tag}<span class="chip" style="border-left:4px solid ${catColor(i.category)}">${esc(i.category)}</span>${ref}</div><div class="amt" style="${st}${col?';color:'+col:''}">${isIn(i)&&!rev?'+':''}${money(i.amount)}</div></div>`;
+  return`<div class="item" data-id="${i.id}"><div><div class="n" style="${st}">${esc(i.note||'(không ghi chú)')}</div>${tag}<span class="chip" style="border-left:4px solid ${catColor(i.category)}">${esc(i.category)}</span>${ref}</div><div class="amt" style="${st}${rev?';color:var(--bad)':''}">${money(i.amount)}</div></div>`;
 }
 
 function budgetHTML(){
@@ -490,7 +477,7 @@ function budgetHTML(){
   const s=ds(new Date(a.getFullYear(),a.getMonth(),1)),e=ds(new Date(a.getFullYear(),a.getMonth()+1,0));
   const spent=sum(data.items.filter(i=>inRange(i,s,e)));
   const title='Tháng '+(a.getMonth()+1)+'/'+a.getFullYear();
-  if(!data.budget)return`<h2>${title}</h2><div class="mut">Đã chi</div><div class="big">${money(spent)}</div><div class="mut" style="margin-top:6px">Chưa đặt ngân sách chi — vào Cài đặt để đặt hạn mức.</div>`;
+  if(!data.budget)return`<h2>${title}</h2><div class="mut">Đã chi</div><div class="big">${money(spent)}</div><div class="mut" style="margin-top:6px">Chưa đặt ngân sách — vào Cài đặt để đặt hạn mức.</div>`;
   const p=spent/data.budget*100,col=p>=100?'var(--bad)':p>=80?'var(--warn)':'var(--pri)';
   const left=data.budget-spent;
   return`<h2>Ngân sách ${title}</h2><div style="display:flex;justify-content:space-between"><span class="big">${money(spent)}</span><span class="mut" style="align-self:end">/ ${money(data.budget)}</span></div>
@@ -500,24 +487,22 @@ function budgetHTML(){
 
 function renderAdd(){
   const t=today();
-  $('#a-budget').innerHTML=`<div class="mut">Hôm nay</div>`+plHTML(data.items.filter(i=>i.date===t))+`<div style="height:12px"></div>`+budgetHTML();
-  const yr=data.items.filter(i=>i.date.slice(0,4)==='2027');
-  if(yr.length)$('#a-budget').innerHTML+=`<div class="mut" style="margin-top:12px">Cả vụ 2027 (từ 01/01/2027)</div>`+plHTML(yr);
+  $('#a-budget').innerHTML=`<div class="mut">Hôm nay đã chi</div><div class="big" style="margin-bottom:12px">${money(sum(data.items.filter(i=>i.date===t)))}</div>`+budgetHTML();
   const rec=[...data.items].sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id)).slice(0,6);
-  $('#a-recent').innerHTML=rec.length?rec.map(i=>`<div class="mut" style="margin-top:6px">${dmy(i.date).slice(0,5)}</div>`+rowHTML(i)).join(''):'<div class="mut">Chưa có khoản nào.</div>';
+  $('#a-recent').innerHTML=rec.length?rec.map(i=>`<div class="mut" style="margin-top:6px">${dmy(i.date).slice(0,5)}</div>`+rowHTML(i)).join(''):'<div class="mut">Chưa có khoản chi nào.</div>';
 }
 
 function renderHist(){
   const[s,e]=range();
   let items=data.items.filter(i=>inRange(i,s,e));
-  $('#h-total').innerHTML=plHTML(items);
+  $('#h-total').textContent=money(sum(items));
   if(view.cat!=='all')items=items.filter(i=>i.category===view.cat);
   items.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-  if(!items.length){$('#h-list').innerHTML='<div class="mut" style="padding:12px 0">Không có khoản nào.</div>';return}
+  if(!items.length){$('#h-list').innerHTML='<div class="mut" style="padding:12px 0">Không có khoản chi nào.</div>';return}
   let html='',last='';
-  const byDay={};items.forEach(i=>byDay[i.date]=(byDay[i.date]||0)+(isIn(i)?i.amount:-i.amount));
+  const byDay={};items.forEach(i=>byDay[i.date]=(byDay[i.date]||0)+i.amount);
   items.forEach(i=>{
-    if(i.date!==last){last=i.date;const d=pd(i.date);html+=`<div class="dh"><span>${dow[d.getDay()]}, ${dmy(i.date).slice(0,5)}</span><span class="${byDay[i.date]<0?'neg':'pos'}">${smoney(byDay[i.date])}</span></div>`}
+    if(i.date!==last){last=i.date;const d=pd(i.date);html+=`<div class="dh"><span>${dow[d.getDay()]}, ${dmy(i.date).slice(0,5)}</span><span>${money(byDay[i.date])}</span></div>`}
     html+=rowHTML(i);
   });
   $('#h-list').innerHTML=html;
@@ -526,43 +511,38 @@ function renderHist(){
 function renderStat(){
   const[s,e]=range();
   const items=data.items.filter(i=>inRange(i,s,e));
-  const total=sum(items),totalIn=sumIn(items);
-  $('#s-total').innerHTML=plHTML(items);
+  const total=sum(items);
+  $('#s-total').textContent=money(total);
   // bars by day
   const card=$('#s-bars-card');
   if(view.mode==='day'){card.style.display='none'}
   else{
     card.style.display='';
     const days=[];for(let d=pd(s);ds(d)<=e;d.setDate(d.getDate()+1))days.push(ds(d));
-    const vals=days.map(x=>sum(items.filter(i=>i.date===x))),ivals=days.map(x=>sumIn(items.filter(i=>i.date===x)));
-    const mx=Math.max(1,...vals,...ivals),W=320,H=140,pl=4,pb=18,bw=(W-pl*2)/days.length;
+    const vals=days.map(x=>sum(items.filter(i=>i.date===x)));
+    const mx=Math.max(1,...vals),W=320,H=140,pl=4,pb=18,bw=(W-pl*2)/days.length;
     let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Chi theo ngày">`;
     days.forEach((x,k)=>{
-      const h=(H-pb-14)*vals[k]/mx,hi=(H-pb-14)*ivals[k]/mx,xx=pl+k*bw;
-      svg+=`<rect x="${xx+bw*0.1}" y="${H-pb-h}" width="${bw*0.38}" height="${Math.max(h,vals[k]?1:0)}" rx="1.5" fill="var(--warn)"/><rect x="${xx+bw*0.52}" y="${H-pb-hi}" width="${bw*0.38}" height="${Math.max(hi,ivals[k]?1:0)}" rx="1.5" fill="var(--ok)"/>`;
+      const h=(H-pb-14)*vals[k]/mx,xx=pl+k*bw,isT=x===today();
+      svg+=`<rect x="${xx+bw*0.15}" y="${H-pb-h}" width="${bw*0.7}" height="${Math.max(h,vals[k]?1:0)}" rx="2" fill="${isT?'var(--warn)':'var(--pri)'}"/>`;
       if(days.length<=7||k%5===0||k===days.length-1)svg+=`<text x="${xx+bw/2}" y="${H-5}" text-anchor="middle">${+x.slice(8)}</text>`;
+      if(days.length<=7&&vals[k])svg+=`<text x="${xx+bw/2}" y="${H-pb-h-3}" text-anchor="middle">${Math.round(vals[k]/1000)}k</text>`;
     });
     svg+='</svg>';
     const avg=total/days.length;
-    $('#s-bars').innerHTML=svg+`<div class="mut">Chi trung bình ${money(avg)}/ngày · Ngày chi nhiều nhất: ${money(Math.max(...vals))}</div>`;
+    $('#s-bars').innerHTML=svg+`<div class="mut">Trung bình ${money(avg)}/ngày · Ngày chi nhiều nhất: ${money(Math.max(...vals))}</div>`;
   }
   // by category
-  const catRows=(list,T)=>{
-    const by={};list.forEach(i=>by[i.category]=(by[i.category]||0)+i.amount);
-    const arr=Object.entries(by).filter(x=>x[1]!==0).sort((a,b)=>b[1]-a[1]);
-    return arr.length?arr.map(([c,v])=>`<div class="cr" data-sc="${esc(c)}" role="button" tabindex="0" style="cursor:pointer"><div class="t"><span>${esc(c)} <span class="mut">›</span></span><span><b>${money(v)}</b> <span class="mut">${T?Math.round(v/T*100):0}%</span></span></div><div class="bar"><i style="width:${T?Math.max(0,Math.min(100,v/T*100)):0}%;background:${catColor(c)}"></i></div></div>`).join(''):'<div class="mut">Chưa có dữ liệu.</div>';
-  };
-  $('#s-cats').innerHTML=catRows(items.filter(i=>!isIn(i)),total);
-  $('#s-icats').innerHTML=catRows(items.filter(isIn),totalIn);
+  const by={};items.forEach(i=>by[i.category]=(by[i.category]||0)+i.amount);
+  const arr=Object.entries(by).filter(x=>x[1]!==0).sort((a,b)=>b[1]-a[1]);
+  $('#s-cats').innerHTML=arr.length?arr.map(([c,v])=>`<div class="cr" data-sc="${esc(c)}" role="button" tabindex="0" style="cursor:pointer"><div class="t"><span>${esc(c)} <span class="mut">›</span></span><span><b>${money(v)}</b> <span class="mut">${Math.round(v/total*100)}%</span></span></div><div class="bar"><i style="width:${v/total*100}%;background:${catColor(c)}"></i></div></div>`).join(''):'<div class="mut">Chưa có dữ liệu.</div>';
   $('#s-budget').innerHTML=budgetHTML();
 }
 
 function renderSet(){
-  $('#s-token').value=tok();$('#s-gist').value=gid();if(document.activeElement!==$('#s-uid'))$('#s-uid').value=localStorage.getItem(K.uid)||'';gistLink();
+  $('#s-token').value=tok();$('#s-gist').value=gid();if(document.activeElement!==$('#s-uid'))$('#s-uid').value=localStorage.getItem(K.uid)||'';gistLink();zlFill();
   kSet($('#s-budget-in'),data.budget);
-  const crow=(c,i,at)=>`<div class="catrow"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${catColor(c)};margin-right:8px"></i>${esc(c)}</span><button class="sec sm" ${at}="${i}">Xóa</button></div>`;
-  $('#s-catlist').innerHTML=data.categories.map((c,i)=>crow(c,i,'data-delcat')).join('');
-  $('#s-icatlist').innerHTML=data.incomeCats.map((c,i)=>crow(c,i,'data-delicat')).join('');
+  $('#s-catlist').innerHTML=data.categories.map((c,i)=>`<div class="catrow"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${catColor(c)};margin-right:8px"></i>${esc(c)}</span><button class="sec sm" data-delcat="${i}">Xóa</button></div>`).join('');
 }
 
 function renderNav(){
@@ -570,7 +550,7 @@ function renderNav(){
   $$('[data-label]').forEach(b=>b.textContent=label());
 }
 function renderAll(){
-  fillCats('#a-cat',false,undefined,catsFor(addKind));renderAddCats();renderSug();fillCats('#h-cat',true,view.cat);fillCats('#e-cat',false);renderKind();
+  fillCats('#a-cat',false);renderAddCats();renderSug();fillCats('#h-cat',true,view.cat);fillCats('#e-cat',false);
   renderNav();renderAdd();renderHist();renderStat();renderSet();renderFlt(false);
 }
 
@@ -615,13 +595,13 @@ $('#h-cat').onchange=e=>{view.cat=e.target.value;renderHist()};
 let sugCat={};
 function renderAddCats(){
   const v=$('#a-cat').value;
-  $('#a-cats').innerHTML=catsFor(addKind).map(c=>`<button type="button" class="cc ${c===v?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+  $('#a-cats').innerHTML=data.categories.map(c=>`<button type="button" class="cc ${c===v?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
 }
 function setAddCat(c){const sel=$('#a-cat');if([...sel.options].some(o=>o.value===c)){sel.value=c;renderAddCats()}}
 function renderSug(){
   sugCat={};const seen=[];
   for(let k=data.items.length-1;k>=0&&seen.length<40;k--){
-    const i=data.items[k];if(i.type==='void'||i.voidedBy||!i.note||isIn(i)!==(addKind==='in'))continue;
+    const i=data.items[k];if(i.type==='void'||i.voidedBy||!i.note)continue;
     const key=i.note.toLowerCase();if(sugCat[key])continue;sugCat[key]=i.category;seen.push(i.note);
   }
   $('#a-sug').innerHTML=seen.map(n=>`<option value="${esc(n)}">`).join('');
@@ -630,13 +610,6 @@ function dLabel(){
   const v=$('#a-date').value||today();
   $('#a-dlabel').textContent=v===today()?'Hôm nay':dmy(v).slice(0,v.slice(0,4)===today().slice(0,4)?5:10);
 }
-function renderKind(){
-  $$('#a-kind button').forEach(b=>{const on=b.dataset.k===addKind;b.classList.toggle('on',on);b.classList.toggle('in',on&&addKind==='in');b.classList.toggle('out',on&&addKind==='out')});
-  $('#a-save').textContent=addKind==='in'?'Lưu khoản thu':'Lưu khoản chi';
-  $('#a-save').style.background=addKind==='in'?'var(--ok)':'';
-  $('#a-note').placeholder=addKind==='in'?'VD: bán lô 1':'Nội dung';
-}
-$('#a-kind').onclick=e=>{const b=e.target.closest('[data-k]');if(!b||b.dataset.k===addKind)return;addKind=b.dataset.k;$('#a-note').value='';renderAll();$('#a-amt').focus()};
 $('#a-cats').onclick=e=>{const b=e.target.closest('[data-c]');if(b)setAddCat(b.dataset.c)};
 $('#a-date').addEventListener('change',dLabel);
 $('#a-note').addEventListener('input',e=>{const c=sugCat[e.target.value.trim().toLowerCase()];if(c)setAddCat(c)});
@@ -644,9 +617,9 @@ $('#a-note').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault
 $('#a-save').onclick=()=>{
   const date=$('#a-date').value||today(),note=$('#a-note').value.trim(),category=$('#a-cat').value,amount=kval($('#a-amt'));
   if(!amount){toast('Nhập số tiền');$('#a-amt').focus();return}
-  const it={id:uid(),date,note,category,amount};if(addKind==='in')it.dir='in';data.items.push(it);
+  const it={id:uid(),date,note,category,amount};data.items.push(it);zlNew(it);
   $('#a-note').value='';$('#a-amt').value='';kRefresh($('#a-amt'));
-  toast((addKind==='in'?'Đã lưu thu ':'Đã lưu chi ')+money(amount));
+  toast('Đã lưu '+money(amount));
   renderAll();save();$('#a-amt').focus();
 };
 $('#a-amt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#a-note').focus()}});
@@ -664,27 +637,20 @@ function openEdit(id){
   const i=data.items.find(x=>x.id===id);if(!i)return;
   if(i.type==='void'||i.voidedBy){toast('Khoản này đã bị xóa — không thể sửa');return}
   editId=i.id;$('#e-date').value=i.date;$('#e-note').value=i.note;
-  fillCats('#e-cat',false,i.category,catsFor(isIn(i)?'in':'out'));
+  fillCats('#e-cat',false,i.category);
   if(![...$('#e-cat').options].some(o=>o.value===i.category)){$('#e-cat').add(new Option(i.category));}
   $('#e-cat').value=i.category;
-  $('#e-amt').value=(isIn(i)?'Thu ':'Chi ')+money(i.amount);
+  $('#e-amt').value=money(i.amount);
   $('#modal').classList.add('on');
 }
 document.addEventListener('click',async e=>{
   const it=e.target.closest('.item,[data-edit]');
   if(it)openEdit(it.dataset.edit||it.dataset.id);
-  const di=e.target.closest('[data-delicat]');
-  if(di){
-    const c=data.incomeCats[+di.dataset.delicat];
-    if(data.incomeCats.length<=1){toast('Cần ít nhất 1 nhóm thu');return}
-    if(!await askConfirm('Xóa nhóm thu "'+c+'"?\nCác khoản cũ vẫn giữ nguyên tên nhóm.','Xóa'))return;
-    data.incomeCats.splice(+di.dataset.delicat,1);renderAll();save();
-  }
   const dc=e.target.closest('[data-delcat]');
   if(dc){
     const c=data.categories[+dc.dataset.delcat];
     if(data.categories.length<=1){toast('Cần ít nhất 1 danh mục');return}
-    if(!await askConfirm('Xóa danh mục "'+c+'"?\nCác khoản cũ vẫn giữ nguyên tên danh mục.','Xóa'))return;
+    if(!await askConfirm('Xóa danh mục "'+c+'"?\nCác khoản chi cũ vẫn giữ nguyên tên danh mục.','Xóa'))return;
     data.categories.splice(+dc.dataset.delcat,1);renderAll();save();
   }
 });
@@ -693,13 +659,14 @@ $('#e-cancel').onclick=closeM;
 $('#modal').onclick=e=>{if(e.target.id==='modal')closeM()};
 $('#e-save').onclick=()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
-  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;
+  const oldN=i.note,oldC=i.category;
+  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;zlEdit(i,oldN,oldC);
   closeM();renderAll();save();toast('Đã cập nhật');
 };
 $('#e-del').onclick=async()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
-  if(!await askConfirm('Xóa khoản này?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.','Xóa'))return;
-  const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};if(i.dir)r.dir=i.dir;
+  if(!await askConfirm('Xóa khoản chi này?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.','Xóa'))return;
+  const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};
   i.voidedBy=r.id;data.items.push(r);
   closeM();renderAll();save();toast('Đã xóa (ghi dòng âm)');
 };
@@ -714,18 +681,13 @@ $('#s-connect').onclick=async()=>{
 $('#s-logout').onclick=async()=>{
   if(!await askConfirm('Xóa token và dữ liệu cache khỏi thiết bị này?\n(Dữ liệu trên Gist vẫn còn)','Đăng xuất'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));
-  data=blank();status('Đã đăng xuất');renderAll();
+  data={categories:[...DEF_CATS],budget:0,items:[]};status('Đã đăng xuất');renderAll();
 };
 $('#s-budget-save').onclick=()=>{data.budget=kval($('#s-budget-in'));renderAll();save();toast('Đã lưu ngân sách')};
 $('#s-addcat').onclick=()=>{
   const v=$('#s-newcat').value.trim();if(!v)return;
   if(data.categories.includes(v)){toast('Danh mục đã tồn tại');return}
   data.categories.push(v);$('#s-newcat').value='';renderAll();save();
-};
-$('#s-addicat').onclick=()=>{
-  const v=$('#s-newicat').value.trim();if(!v)return;
-  if(data.incomeCats.includes(v)){toast('Nhóm thu đã tồn tại');return}
-  data.incomeCats.push(v);$('#s-newicat').value='';renderAll();save();
 };
 
 document.addEventListener('visibilitychange',()=>{
@@ -736,7 +698,7 @@ document.addEventListener('visibilitychange',()=>{
 });
 
 /* ---------- lọc & review ---------- */
-let flt={from:'',to:'',kind:'all',cats:new Set(),q:'',min:null,max:null,showVoid:false,sel:new Set(),touched:false};
+let flt={from:'',to:'',cats:new Set(),q:'',min:null,max:null,showVoid:false,sel:new Set(),touched:false};
 let rvText='';
 function fltPreset(p){
   const t=new Date(),y=t.getFullYear(),m=t.getMonth();let a,b;
@@ -754,31 +716,29 @@ function fltItems(){
     if(!flt.showVoid&&(i.type==='void'||i.voidedBy))return false;
     if(flt.from&&i.date<flt.from)return false;
     if(flt.to&&i.date>flt.to)return false;
-    if(flt.kind==='in'&&!isIn(i))return false;
-    if(flt.kind==='out'&&isIn(i))return false;
     if(flt.cats.size&&!flt.cats.has(i.category))return false;
     if(q&&!(i.note||'').toLowerCase().includes(q))return false;
-    if(flt.min!=null&&Math.abs(i.amount)<flt.min)return false;
-    if(flt.max!=null&&Math.abs(i.amount)>flt.max)return false;
+    if(flt.min!=null&&i.amount<flt.min)return false;
+    if(flt.max!=null&&i.amount>flt.max)return false;
     return true;
   }).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
 }
 function renderFlt(reset){
-  $('#f-cats').innerHTML=(flt.kind==='in'?data.incomeCats:flt.kind==='out'?data.categories:allCats()).map(c=>`<button class="sec sm ${flt.cats.has(c)?'on':''}" data-fcat="${esc(c)}">${esc(c)}</button>`).join('');
+  $('#f-cats').innerHTML=data.categories.map(c=>`<button class="sec sm ${flt.cats.has(c)?'on':''}" data-fcat="${esc(c)}">${esc(c)}</button>`).join('');
   const items=fltItems();
   if(reset)flt.touched=false;
   if(!flt.touched)flt.sel=new Set(items.map(i=>i.id));
   else flt.sel=new Set(items.filter(i=>flt.sel.has(i.id)).map(i=>i.id));
   $('#f-list').innerHTML=items.length?items.map(i=>{
     const dead=i.type==='void'||i.voidedBy;
-    return `<label class="frow"><input type="checkbox" data-sel="${i.id}" ${flt.sel.has(i.id)?'checked':''}><div class="fm"><div class="n">${esc(i.note||'(không ghi chú)')}</div><span class="mut">${dmy(i.date)}</span> <span class="chip" style="border-left:4px solid ${catColor(i.category)}">${esc(i.category)}</span></div><div class="amt" style="${isIn(i)&&!dead?'color:var(--ok)':''}">${isIn(i)&&i.amount>0?'+':''}${money(i.amount)}</div>${dead?'':`<button type="button" class="sec sm" data-edit="${i.id}" aria-label="Sửa khoản chi">Sửa</button>`}</label>`}).join(''):'<div class="mut" style="padding:12px 0">Không có khoản nào khớp bộ lọc.</div>';
+    return `<label class="frow"><input type="checkbox" data-sel="${i.id}" ${flt.sel.has(i.id)?'checked':''}><div class="fm"><div class="n">${esc(i.note||'(không ghi chú)')}</div><span class="mut">${dmy(i.date)}</span> <span class="chip" style="border-left:4px solid ${catColor(i.category)}">${esc(i.category)}</span></div><div class="amt">${money(i.amount)}</div>${dead?'':`<button type="button" class="sec sm" data-edit="${i.id}" aria-label="Sửa khoản chi">Sửa</button>`}</label>`}).join(''):'<div class="mut" style="padding:12px 0">Không có khoản nào khớp bộ lọc.</div>';
   fltSummary(items);
 }
 function fltSummary(items){
   items=items||fltItems();
   const sel=items.filter(i=>flt.sel.has(i.id));
   $('#f-count').textContent=items.length+' khoản';
-  $('#f-sum').textContent='Đã chọn '+sel.length+'/'+items.length+' · Thu '+money(sumIn(sel))+' · Chi '+money(sum(sel))+' · '+(net(sel)<0?'Lỗ ':'Lãi ')+money(Math.abs(net(sel)));
+  $('#f-sum').textContent='Đã chọn '+sel.length+'/'+items.length+' · '+money(sum(sel));
   $('#f-all').checked=items.length>0&&sel.length===items.length;
   $('#f-review').disabled=!sel.length;
   $('#f-review').style.opacity=sel.length?1:.5;
@@ -790,7 +750,6 @@ $('#f-to').onchange=e=>{flt.to=e.target.value;renderFlt(true)};
 $('#f-q').oninput=e=>{flt.q=e.target.value;renderFlt(true)};
 $('#f-min').addEventListener('input',e=>{flt.min=e.target.value?kval(e.target):null;renderFlt(true)});
 $('#f-max').addEventListener('input',e=>{flt.max=e.target.value?kval(e.target):null;renderFlt(true)});
-$('#f-kind').onchange=e=>{flt.kind=e.target.value;flt.cats.clear();renderFlt(true)};
 $('#f-void').onchange=e=>{flt.showVoid=e.target.checked;renderFlt(true)};
 $('#f-cats').onclick=e=>{
   const b=e.target.closest('[data-fcat]');if(!b)return;
@@ -806,19 +765,18 @@ $('#f-all').onchange=e=>{
   flt.sel=e.target.checked?new Set(fltItems().map(i=>i.id)):new Set();renderFlt(false);
 };
 $('#f-reset').onclick=()=>{
-  flt.cats.clear();flt.kind='all';$('#f-kind').value='all';flt.q='';flt.min=flt.max=null;flt.showVoid=false;
+  flt.cats.clear();flt.q='';flt.min=flt.max=null;flt.showVoid=false;
   $('#f-q').value='';$('#f-min').value='';$('#f-max').value='';$('#f-void').checked=false;
   fltPreset('month');
 };
 $('#f-review').onclick=()=>{
   const rows=fltItems().filter(i=>flt.sel.has(i.id)).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   if(!rows.length)return;
-  const total=net(rows),sg=i=>isIn(i)?i.amount:-i.amount;
-  $('#rv-body').innerHTML=rows.map(i=>`<tr><td>${dmy(i.date)}</td><td>${esc(i.note||'')}</td><td class="r" style="color:${sg(i)<0?'var(--warn)':'var(--ok)'}">${smoney(sg(i))}</td></tr>`).join('');
-  $('#rv-total').textContent=smoney(total);
-  const sg2=sg;
+  const total=sum(rows);
+  $('#rv-body').innerHTML=rows.map(i=>`<tr><td>${dmy(i.date)}</td><td>${esc(i.note||'')}</td><td class="r">${money(i.amount)}</td></tr>`).join('');
+  $('#rv-total').textContent=money(total);
   $('#rv-sub').textContent=(flt.from?dmy(flt.from):'…')+' – '+(flt.to?dmy(flt.to):'…')+' · '+rows.length+' khoản';
-  rvText=['Ngày\tLoại\tNội dung\tDanh mục\tSố tiền (thu +, chi -)',...rows.map(i=>[dmy(i.date),isIn(i)?'Thu':'Chi',(i.note||'').replace(/\s+/g,' '),i.category,sg2(i)].join('\t')),'Lãi/lỗ\t\t\t\t'+total].join('\n');
+  rvText=['Ngày\tNội dung\tSố tiền',...rows.map(i=>[dmy(i.date),(i.note||'').replace(/\s+/g,' '),i.amount].join('\t')),'Tổng\t\t'+total].join('\n');
   $('#rv').classList.add('on');
 };
 $('#rv-close').onclick=()=>$('#rv').classList.remove('on');
@@ -831,7 +789,7 @@ $('#rv-copy').onclick=async()=>{
 /* ---------- import CSV ---------- */
 let imp=null;
 const nz=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]/g,'');
-const HDR={type:['type','kind','thuchi','kieu','chithu'],date:['date','ngay','ngaychi'],note:['note','noidung','ghichu','mota','description'],category:['category','danhmuc','loai','nhom'],amount:['amount','sotien','tien','giatri']};
+const HDR={date:['date','ngay','ngaychi'],note:['note','noidung','ghichu','mota','description'],category:['category','danhmuc','loai','nhom'],amount:['amount','sotien','tien','giatri']};
 function parseCSV(text){
   text=text.replace(/^﻿/,'');
   const first=text.split(/\r?\n/)[0]||'';
@@ -864,8 +822,7 @@ function csvAmount(s){
   if(/^\d+$/.test(s)||/^\d{1,3}([.,]\d{3})+$/.test(s))return +s.replace(/[.,]/g,'')||null;
   return null;
 }
-const impKey=(date,note,cat,amt,dir)=>[date,note,cat,amt,dir||'out'].join('|');
-const isThu=v=>/^(thu|in|income|revenue|doanhthu|\+)$/.test(nz(v)||String(v).trim());
+const impKey=(date,note,cat,amt)=>[date,note,cat,amt].join('|');
 function impMsg(html){$('#imp-sum').innerHTML=html;$('#imp-go').style.display='none'}
 async function impPick(file){
   imp=null;impMsg('');
@@ -878,21 +835,20 @@ async function impPick(file){
   for(const k in HDR)col[k]=head.findIndex(h=>HDR[k].includes(h));
   if(col.date<0||col.amount<0){impMsg('<span style="color:var(--bad)">Dòng tiêu đề cần có cột <b>date</b> và <b>amount</b>. Bấm "Tải file mẫu" để xem định dạng.</span>');return}
   const have={};
-  data.items.forEach(i=>{if(i.type==='void'||i.voidedBy)return;const k=impKey(i.date,i.note||'',i.category,i.amount,i.dir);have[k]=(have[k]||0)+1});
+  data.items.forEach(i=>{if(i.type==='void'||i.voidedBy)return;const k=impKey(i.date,i.note||'',i.category,i.amount);have[k]=(have[k]||0)+1});
   const newCats=[],rows=[],errs=[];
   for(const r of recs.slice(1)){
     const g=k=>col[k]>=0?(r.c[col[k]]||'').trim():'';
     const date=csvDate(g('date')),amount=csvAmount(g('amount'));
     if(!date){errs.push('Dòng '+r.n+': ngày không hợp lệ "'+g('date')+'"');continue}
     if(!amount){errs.push('Dòng '+r.n+': số tiền không hợp lệ "'+g('amount')+'" (cần số nguyên dương)');continue}
-    const dir=isThu(g('type'))?'in':'out';
-    let cat=g('category')||(dir==='in'?'Thu khác':'Chi phí khác');
-    const ex=[...catsFor(dir),...newCats.filter(x=>x.dir===dir).map(x=>x.c)].find(c=>c.toLowerCase()===cat.toLowerCase());
-    if(ex)cat=ex;else newCats.push({c:cat,dir});
+    let cat=g('category')||'Khác';
+    const ex=[...data.categories,...newCats].find(c=>c.toLowerCase()===cat.toLowerCase());
+    if(ex)cat=ex;else newCats.push(cat);
     const note=g('note').replace(/\s+/g,' ');
-    const k=impKey(date,note,cat,amount,dir);
+    const k=impKey(date,note,cat,amount);
     const dup=have[k]>0;if(dup)have[k]--;
-    rows.push({date,note,category:cat,amount,dir,dup});
+    rows.push({date,note,category:cat,amount,dup});
   }
   imp={rows,errs,newCats};impRender();
 }
@@ -900,8 +856,8 @@ function impUse(){const skip=$('#imp-skip').checked;return imp.rows.filter(r=>!(
 function impRender(){
   if(!imp)return;
   const use=impUse(),dups=imp.rows.filter(r=>r.dup).length;
-  const nc=[...new Set(use.filter(r=>!catsFor(r.dir).includes(r.category)).map(r=>r.category))];
-  let h=`<div><b>${use.length}</b> khoản sẽ được nhập · thu <b>${money(sumIn(use))}</b> · chi <b>${money(sum(use))}</b></div>`;
+  const nc=[...new Set(use.map(r=>r.category))].filter(c=>!data.categories.includes(c));
+  let h=`<div><b>${use.length}</b> khoản sẽ được nhập · tổng <b>${money(sum(use))}</b></div>`;
   if(dups)h+=`<div class="mut">${dups} dòng trùng dữ liệu đã có${$('#imp-skip').checked?' (sẽ bỏ qua)':''}</div>`;
   if(nc.length)h+=`<div class="mut">Danh mục mới sẽ tạo: ${nc.map(esc).join(', ')}</div>`;
   if(imp.errs.length){
@@ -917,21 +873,77 @@ $('#imp-skip').onchange=impRender;
 $('#imp-go').onclick=()=>{
   if(!imp)return;
   const use=impUse();if(!use.length)return;
-  use.forEach(r=>{const l=catsFor(r.dir);if(!l.includes(r.category))l.push(r.category)});
+  const nc=[...new Set(use.map(r=>r.category))].filter(c=>!data.categories.includes(c));
+  data.categories.push(...nc);
   const base=uid();
-  use.forEach((r,k)=>{const it={id:base+k.toString(36).padStart(3,'0'),date:r.date,note:r.note,category:r.category,amount:r.amount};if(r.dir==='in')it.dir='in';data.items.push(it)});
+  use.forEach((r,k)=>data.items.push({id:base+k.toString(36).padStart(3,'0'),date:r.date,note:r.note,category:r.category,amount:r.amount}));
   const n=use.length;
   imp=null;$('#imp-file').value='';impMsg('');
   renderAll();save();toast('Đã nhập '+n+' khoản');
 };
 $('#imp-tpl').onclick=()=>{
   const t=today();
-  const csv='\ufeffdate,type,note,category,amount\n'+t+',chi,Phân NPK 20 bao,Phân bón,"12.500.000"\n'+dmy(t)+',chi,"Công cắt cỏ, phun thuốc",Nhân công,3000000\n'+t+',thu,Bán lô 1 cho thương lái,Sầu riêng loại 1,85000000\n';
+  const csv='﻿date,note,category,amount\n'+t+',Cà phê sáng,Ăn uống,35000\n'+dmy(t)+',"Grab đi làm, về nhà",Đi lại,"85.000"\n'+t+',Cơm trưa,Ăn uống,50000\n';
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
-  a.download='mau-thu-chi-sau-rieng.csv';document.body.appendChild(a);a.click();a.remove();
+  a.download='mau-chi-tieu.csv';document.body.appendChild(a);a.click();a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),1500);
 };
+
+/* ---------- Zalo Bot (tùy chọn) ---------- */
+const ZK={t:'zl_token',c:'zl_chat'};
+const ZAPI='https://bot-api.zaloplatforms.com/bot';
+function zlCfg(){let t='',c='';try{t=localStorage.getItem(ZK.t)||'';c=localStorage.getItem(ZK.c)||''}catch(e){}return t&&c?{t,c}:null}
+function zlLink(){const t=$('#z-token').value.trim();$('#z-link').href=/^[\w:.\-]+$/.test(t)?ZAPI+t+'/getUpdates':'#'}
+function zlState(){$('#z-state').textContent=zlCfg()?'Đang bật: khoản chi mới hoặc được sửa sẽ gửi tin Zalo.':'Đang tắt: không gửi tin nhắn.'}
+function zlFill(){
+  const z=zlCfg();
+  if(document.activeElement!==$('#z-token'))$('#z-token').value=z?z.t:'';
+  if(document.activeElement!==$('#z-chat'))$('#z-chat').value=z?z.c:'';
+  zlLink();zlState();
+}
+/* Gửi dạng form-urlencoded + no-cors: không cần preflight, tin vẫn đi dù Zalo không bật CORS. Gửi 1 lần, không tự gửi lại (tránh trùng tin). */
+function zlSend(text){
+  const z=zlCfg();if(!z)return;
+  try{fetch(ZAPI+z.t+'/sendMessage',{method:'POST',mode:'no-cors',body:new URLSearchParams({chat_id:z.c,text:String(text).slice(0,2000)})}).catch(()=>toast('Không gửi được tin Zalo (kiểm tra mạng)'))}catch(e){}
+}
+function zlNew(it){
+  const day=sum(data.items.filter(x=>x.date===it.date));
+  zlSend('🆕 Chi tiêu mới\n'+money(it.amount)+(it.note?' · '+it.note:'')+'\nDanh mục: '+it.category+' · '+dmy(it.date)+'\nTổng ngày '+dmy(it.date).slice(0,5)+': '+money(day));
+}
+function zlEdit(i,oldN,oldC){
+  const ch=[];
+  if((oldN||'')!==(i.note||''))ch.push('Nội dung: '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
+  if(oldC!==i.category)ch.push('Danh mục: '+oldC+' → '+i.category);
+  if(!ch.length)return;
+  zlSend('✏️ Đã sửa khoản chi\n'+money(i.amount)+' · '+dmy(i.date)+'\n'+ch.join('\n'));
+}
+$('#z-token').addEventListener('input',zlLink);
+$('#z-save').onclick=()=>{
+  const t=$('#z-token').value.trim(),c=$('#z-chat').value.trim();
+  if(!t&&!c){$('#z-off').click();return}
+  if(!t||!c){toast('Cần điền cả Bot token và Chat ID');return}
+  if(!/^[\w:.\-]+$/.test(t)){toast('Bot token có ký tự không hợp lệ');return}
+  try{localStorage.setItem(ZK.t,t);localStorage.setItem(ZK.c,c)}catch(e){toast('Không lưu được trên trình duyệt này');return}
+  zlState();toast('Đã bật thông báo Zalo');
+};
+$('#z-off').onclick=()=>{
+  try{localStorage.removeItem(ZK.t);localStorage.removeItem(ZK.c)}catch(e){}
+  $('#z-token').value='';$('#z-chat').value='';zlLink();zlState();toast('Đã tắt thông báo Zalo');
+};
+$('#z-test').onclick=async()=>{
+  const z=zlCfg();if(!z){toast('Điền token, Chat ID và bấm Lưu trước');return}
+  $('#z-state').textContent='Đang gửi thử...';
+  try{
+    const r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text:'✅ Spendlog: kết nối Zalo thành công'})});
+    const j=await r.json();
+    $('#z-state').textContent=j.ok?'Gửi thử thành công, hãy kiểm tra Zalo.':'Zalo báo lỗi: '+(j.description||j.error_code||'không rõ');
+  }catch(e){
+    $('#z-state').textContent='Không đọc được phản hồi (trình duyệt có thể chặn đọc kết quả). Hãy mở Zalo xem đã nhận tin thử chưa. Nếu đã nhận thì vẫn dùng bình thường.';
+  }
+};
+
+$('#z-link').onclick=e=>{if($('#z-link').getAttribute('href')==='#'){e.preventDefault();toast('Hãy nhập Bot token trước')}};
 
 /* ---------- Link Gist ---------- */
 function gistLink(){
@@ -943,13 +955,13 @@ function gistLink(){
 function showCatDetail(cat){
   const[s,e]=range();
   const items=data.items.filter(i=>i.category===cat&&inRange(i,s,e)).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-  $('#sc-title').textContent=cat;$('#sc-sub').textContent=label();$('#sc-total').textContent=money(tot(items));
+  $('#sc-title').textContent=cat;$('#sc-sub').textContent=label();$('#sc-total').textContent=money(sum(items));
   $('#sc-list').innerHTML=items.length?items.map(i=>{
     const rev=i.type==='void',gone=!!i.voidedBy;
     const st=gone?'text-decoration:line-through;opacity:.55':'';
     const tag=rev?'<span class="chip" style="background:var(--bad);color:#fff">Xóa</span> ':'';
     return `<div class="srow"><div style="min-width:0"><div class="n" style="word-break:break-word;font-weight:500;${st}">${esc(i.note||'(không ghi chú)')}</div>${tag}<span class="mut">${dmy(i.date)}</span></div><div class="amt" style="${st}${rev?';color:var(--bad)':''}">${money(i.amount)}</div></div>`;
-  }).join(''):'<div class="mut" style="padding:12px 0">Không có khoản nào trong kỳ này.</div>';
+  }).join(''):'<div class="mut" style="padding:12px 0">Không có khoản chi nào trong kỳ này.</div>';
   $('#sc').classList.add('on');
 }
 const closeSc=()=>$('#sc').classList.remove('on');
@@ -964,54 +976,86 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSc();closeHelp
    Mục lục, nội dung và đường dẫn #help/<id> tự cập nhật, không cần sửa màn hình Cài đặt. */
 const HELP=[
 {id:'intro',group:'',title:'A. Giới thiệu ứng dụng',html:`
-<p><b>Sầu riêng 2027</b> là sổ thu chi của vườn sầu riêng trong vụ 2027, tính bằng <b>đồng (VNĐ)</b>. Ghi nhanh từng khoản chi (phân, thuốc, công, điện nước, xăng dầu...) và từng khoản thu (bán sầu riêng), app tự tính <b>lãi hoặc lỗ</b>.</p>
+<p><b>Spendlog</b> là ứng dụng ghi nhanh chi tiêu hàng ngày bằng <b>đồng (VNĐ)</b>. Bạn chỉ cần nhập số tiền, nội dung rồi bấm Lưu.</p>
+<p><b>Giải quyết vấn đề gì?</b> Ghi lại chi tiêu ngay lúc phát sinh, không cần mở bảng tính, và xem lại mình đã tiêu bao nhiêu, vào việc gì.</p>
+<p><b>Các chức năng chính:</b></p>
 <ul>
-<li><b>Nhập:</b> chọn <b>Chi</b> hoặc <b>Thu</b>, gõ số tiền (tính theo nghìn đồng), nội dung, chọn danh mục và ngày.</li>
-<li><b>Lịch sử:</b> xem theo ngày, tuần, tháng. Mỗi kỳ hiện Thu, Chi và Lãi/Lỗ. Bấm vào một khoản để sửa nội dung, danh mục hoặc xóa.</li>
-<li><b>Thống kê:</b> biểu đồ thu chi theo ngày, chi theo danh mục, thu theo nhóm. Bấm vào một dòng để xem các khoản tạo nên số đó.</li>
-<li><b>Lọc:</b> lọc theo thời gian, loại (thu/chi), danh mục, từ khóa, số tiền, rồi bấm Review để xem bảng tổng lãi/lỗ và sao chép sang Excel.</li>
-<li><b>Cài đặt:</b> ngân sách chi theo tháng, danh mục chi, nhóm thu, import CSV, kết nối GitHub.</li>
+<li><b>Nhập:</b> nhập nhanh số tiền (tính theo nghìn đồng), nội dung, danh mục, ngày.</li>
+<li><b>Lịch sử:</b> xem theo ngày, tuần, tháng. Bấm vào một khoản chi để sửa nội dung, danh mục hoặc xóa.</li>
+<li><b>Thống kê:</b> biểu đồ theo ngày và theo danh mục. Bấm vào một danh mục để xem các khoản chi tạo nên số tiền đó.</li>
+<li><b>Lọc:</b> lọc theo thời gian, danh mục, từ khóa, số tiền, rồi bấm Review để xem bảng tổng.</li>
+<li><b>Cài đặt:</b> ngân sách tháng, danh mục, import từ file CSV, kết nối GitHub, Zalo.</li>
+<li><b>Thông báo</b> qua Zalo mỗi khi có khoản chi mới hoặc được sửa (tùy chọn, đang thử nghiệm).</li>
 </ul>
-<p>Dữ liệu lưu trong tài khoản GitHub của bạn, không qua máy chủ nào khác.</p>`},
+<p><b>Dành cho ai?</b> Cá nhân hoặc gia đình muốn tự theo dõi chi tiêu mà không cần kiến thức kỹ thuật. Dữ liệu là của riêng bạn, lưu trong tài khoản GitHub của bạn.</p>`},
 {id:'how',group:'',title:'B. Cách thức hoạt động',html:`
-<div class="flow"><div>✍️ Bạn nhập thu chi</div><span>→</span><div>📱 Sầu riêng 2027<br><small>hiện ngay trên máy</small></div><span>→</span><div>☁️ GitHub Gist<br><small>lưu dữ liệu</small></div></div>
+<div class="flow"><div>✍️ Bạn nhập chi tiêu</div><span>→</span><div>📱 Spendlog<br><small>hiện ngay trên máy</small></div><span>→</span><div>☁️ GitHub Gist<br><small>lưu dữ liệu</small></div></div>
+<div class="flow"><div>📱 Spendlog</div><span>→</span><div>🤖 Zalo Bot</div><span>→</span><div>💬 Nhóm chat<br><small>nhận thông báo</small></div></div>
 <ol>
-<li>Khoản thu chi hiện ngay trên máy, đồng thời được gửi lên một <b>Gist</b> riêng tư trong GitHub của bạn, file <code>durian2027.json</code>. Nhờ vậy xem được trên nhiều thiết bị.</li>
-<li><b>Lãi/lỗ = Thu − Chi</b>, tính từ chính các khoản đã ghi.</li>
-<li><b>Xóa khoản:</b> app không xóa thẳng mà ghi thêm một dòng "Xóa" có số tiền âm, nên lịch sử luôn đầy đủ. Khoản đã lưu chỉ sửa được nội dung và danh mục. Muốn đổi số tiền hoặc ngày: xóa rồi nhập lại.</li>
-<li>Mất mạng vẫn nhập được; app tự lưu lên GitHub ở lần sau.</li>
+<li><b>Bạn nhập và quản lý dữ liệu</b> ở các tab Nhập, Lịch sử.</li>
+<li><b>Ứng dụng lưu thông tin:</b> khoản chi hiện ngay trên máy, đồng thời được gửi lên một <b>Gist</b> (kho lưu file riêng tư) trong tài khoản GitHub của bạn, tên file <code>expenses.json</code>. Nhờ vậy bạn xem được dữ liệu trên nhiều thiết bị.</li>
+<li><b>Thống kê và hiển thị:</b> các số liệu được tính từ chính những khoản chi đã ghi.</li>
+<li><b>Kết nối dịch vụ ngoài:</b> GitHub để lưu dữ liệu; Zalo (tùy chọn) để gửi thông báo.</li>
+<li><b>Xóa khoản chi:</b> ứng dụng không xóa thẳng mà ghi thêm một dòng "Xóa" có số tiền âm, nên lịch sử luôn đầy đủ. Khoản đã lưu chỉ sửa được nội dung và danh mục.</li>
 </ol>`},
 {id:'install',group:'',title:'C. Hướng dẫn cài đặt',html:`
+<p><b>Cần chuẩn bị:</b></p>
+<ul>
+<li>Một trình duyệt hiện đại (Chrome, Safari, Edge) trên điện thoại hoặc máy tính.</li>
+<li>Một tài khoản <b>GitHub</b> (miễn phí).</li>
+<li>(Tùy chọn) tài khoản Zalo nếu muốn nhận thông báo.</li>
+</ul>
+<p><b>Thông tin cần có:</b> <b>User ID (Git ID)</b> và <b>GitHub Token</b>. Cách lấy ở mục Kết nối GitHub bên dưới.</p>
+<p><b>Các bước thiết lập ban đầu:</b></p>
 <ol>
 <li>Mở địa chỉ của ứng dụng trên trình duyệt.</li>
 <li>(Khuyên dùng) Cài lên màn hình chính. Android Chrome: menu ⋮ → "Cài đặt ứng dụng". iPhone Safari: nút Chia sẻ → "Thêm vào Màn hình chính".</li>
-<li>Vào <b>Cài đặt</b> → <b>Kết nối GitHub</b>, làm theo mục D bên dưới.</li>
+<li>Vào <b>Cài đặt</b> → <b>Kết nối GitHub</b>, làm theo hướng dẫn kết nối GitHub bên dưới.</li>
+<li>(Tùy chọn) Cấu hình thông báo Zalo.</li>
 </ol>
-<p><b>Kiểm tra thành công:</b> đầu trang hiện <b>"Đã đồng bộ"</b> hoặc <b>"Đã lưu hh:mm"</b>; nhập thử một khoản rồi mở Gist (liên kết trong Cài đặt) sẽ thấy file <code>durian2027.json</code>.</p>`},
+<p><b>Kiểm tra đã thành công:</b></p>
+<ul>
+<li>Ở đầu trang hiện <b>"Đã đồng bộ"</b> hoặc <b>"Đã lưu hh:mm"</b>.</li>
+<li>Nhập thử một khoản chi, rồi mở Gist trên GitHub (có liên kết trong Cài đặt) sẽ thấy file <code>expenses.json</code>.</li>
+</ul>`},
 {id:'github-connection',group:'D. Hướng dẫn kết nối dịch vụ',title:'1. Kết nối GitHub',html:`
-<p><b>Mục đích:</b> GitHub là nơi lưu dữ liệu thu chi của bạn (trong một Gist riêng tư). Không kết nối thì dữ liệu chỉ nằm trên thiết bị này.</p>
+<p><b>Mục đích:</b> GitHub là nơi lưu dữ liệu chi tiêu của bạn (trong một Gist riêng tư). Không kết nối thì dữ liệu chỉ nằm trên thiết bị này.</p>
 <h4>Bước 1. Lấy User ID (Git ID)</h4>
-<p>Là <b>tên đăng nhập GitHub</b> của bạn (bấm ảnh đại diện trên github.com, dòng "Signed in as ...").</p>
+<p>Đây là <b>tên đăng nhập GitHub</b> của bạn. Cách xem: đăng nhập github.com, bấm ảnh đại diện ở góc trên bên phải, dòng đầu ghi "Signed in as <i>tên-của-bạn</i>".</p>
 <h4>Bước 2. Tạo GitHub Token (ô "Mật khẩu")</h4>
 <div class="warn">Ô này tên là "Mật khẩu" cho dễ hiểu, nhưng thực chất là <b>token</b>, một mã riêng chỉ cho phép lưu file Gist. <b>Đừng nhập mật khẩu đăng nhập GitHub.</b></div>
 <ol>
-<li>Mở <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">trang tạo token</a> (đã chọn sẵn quyền <code>gist</code>).</li>
-<li>Ô <b>Expiration</b> chọn thời hạn đủ hết vụ 2027 (ví dụ 1 năm hoặc No expiration).</li>
-<li>Chỉ tích quyền <b>gist</b>, kéo xuống cuối, bấm <b>Generate token</b>.</li>
+<li>Mở <a href="https://github.com/settings/tokens/new?scopes=gist&description=spendlog" target="_blank" rel="noopener">trang tạo token</a> (đã chọn sẵn quyền <code>gist</code>).</li>
+<li>Ô <b>Note</b> ghi "spendlog". Ô <b>Expiration</b> chọn thời hạn (ví dụ 1 năm hoặc No expiration).</li>
+<li>Chỉ tích quyền <b>gist</b>, kéo xuống cuối và bấm <b>Generate token</b>.</li>
 <li><b>Sao chép ngay</b> chuỗi bắt đầu bằng <code>ghp_</code>. GitHub chỉ hiện một lần.</li>
 </ol>
 <h4>Bước 3. Nhập vào Cài đặt</h4>
+<div class="mock"><div class="mt">Cài đặt › Kết nối GitHub</div>
+<div class="mf"><small>User ID (Git ID)</small><div>ten-dang-nhap-github</div></div>
+<div class="mf hl"><small>Mật khẩu (GitHub Token)</small><div>ghp_••••••••••••••••</div></div>
+<div class="mb">Kết nối &amp; tải</div></div>
 <ol>
-<li>Vào <b>Cài đặt</b> → <b>Kết nối GitHub</b>, dán User ID và token.</li>
-<li>Lần đầu: để trống <b>Gist ID</b> (app tự tạo). Thiết bị khác: nhập Gist ID đã có.</li>
+<li>Vào <b>Cài đặt</b> → <b>Kết nối GitHub</b>.</li>
+<li>Dán tên đăng nhập vào <b>User ID (Git ID)</b>.</li>
+<li>Dán token vào <b>Mật khẩu (GitHub Token)</b>.</li>
+<li>Dùng lần đầu: để trống <b>Gist ID</b> (app tự tạo Gist). Dùng thêm thiết bị khác: nhập Gist ID đã có.</li>
 <li>Bấm <b>Kết nối &amp; tải</b>.</li>
 </ol>
-<h4>Bước 4. Kiểm tra</h4>
+<h4>Bước 4. Kiểm tra kết nối</h4>
 <ul>
-<li>Đầu trang hiện "Đã đồng bộ" hoặc "Đã lưu".</li>
-<li>Lỗi "401": token sai hoặc hết hạn, tạo token mới. Lỗi "404": Gist ID sai.</li>
-<li>Nhiều người cùng ghi: dùng chung một token và Gist ID; bản lưu sau cùng sẽ đè bản trước, nên tránh hai người lưu cùng lúc.</li>
-</ul>`}
+<li>Ở đầu trang hiện "Đã đồng bộ" hoặc "Đã lưu".</li>
+<li>Bấm liên kết <b>Mở Gist trên GitHub</b> trong Cài đặt để xem file <code>expenses.json</code>.</li>
+<li>Lỗi "401": token sai hoặc hết hạn, hãy tạo token mới. Lỗi "404": Gist ID sai.</li>
+</ul>`},
+{id:'zalo-connection',group:'D. Hướng dẫn kết nối dịch vụ',title:'2. Thông báo Zalo (thử nghiệm)',html:`
+<div class="warn"><b>Tính năng đang thử nghiệm.</b> Chưa kiểm chứng đầy đủ với Zalo Bot thật, tin nhắn có thể không đến. Chưa rõ Zalo Bot có gửi vào nhóm được không; tin chủ yếu gửi riêng cho người đã nhắn bot.</div>
+<ol>
+<li>Mở Zalo, tìm tài khoản chính thức <b>Zalo Bot Manager</b>, chọn menu <b>Tạo bot</b> và đặt tên bắt đầu bằng "Bot".</li>
+<li>Zalo nhắn lại cho bạn <b>Bot token</b>.</li>
+<li>Vào Cài đặt → Thông báo Zalo, dán token, bấm liên kết <b>mở getUpdates</b> (trang chờ khoảng 30 giây). Trong lúc chờ, nhắn một tin cho bot trên Zalo, rồi tìm <code>chat</code> → <code>id</code> làm Chat ID.</li>
+<li>Bấm <b>Lưu</b>, sau đó bấm <b>Gửi thử</b> và kiểm tra Zalo.</li>
+</ol>`}
 ];
 function renderHelp(){
   let toc='',body='',lastG=null;
