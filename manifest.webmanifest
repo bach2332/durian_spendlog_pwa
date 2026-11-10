@@ -1,0 +1,17 @@
+{
+  "name": "Sầu riêng 2027",
+  "short_name": "Sầu riêng",
+  "description": "Sổ thu chi vườn sầu riêng 2027, lưu trên GitHub Gist",
+  "lang": "vi",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f6f1",
+  "theme_color": "#3f7d20",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
