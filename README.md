@@ -1,4 +1,6 @@
-# Spendlog
+# Sầu riêng 2027
+
+Expense log for the durian orchard (2027 crop), based on [Spendlog](https://github.com/bach2332/spendlog_pwa) with durian icons, theme and categories. Browser keys use the prefix `dr_` and data is stored in `durian2027.json`, so it never touches Spendlog data on the same `github.io` domain.
 
 A fast daily expense logger that runs entirely in the browser as an installable **PWA**. There is no build step and no backend: the app is a single `index.html`, and your data is stored in **your own GitHub Gist**.
 
@@ -29,7 +31,7 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 3. After a minute or two the app is live at `https://<your-username>.github.io/<repo-name>/`.
 
 ### 2. Create a GitHub token
-1. Open <https://github.com/settings/tokens/new?scopes=gist&description=spendlog>.
+1. Open <https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027>.
 2. Keep only the **`gist`** scope, choose an expiration, and generate the token.
 3. Copy it immediately (it starts with `ghp_` and is shown only once).
 
@@ -70,7 +72,7 @@ Pick a time range (presets: today, this week, this month, last month, this year,
 ### Settings
 - **GitHub connection** and **Log out** (clears the token and local cache from this device; the Gist is untouched).
 - **Monthly budget** (in thousands, `0` disables it).
-- **Categories** (default: Ăn uống, Đi lại, Nhà cửa, Mua sắm, Con cái, Giải trí, Sức khỏe, Khác). Deleting a category does not change existing entries.
+- **Categories** (default: Mua phân, Làm công, Làm cỏ, Phun thuốc, Thu hoạch, Mua cơm, Mua nước, Khác). Deleting a category does not change existing entries.
 - **CSV import**.
 - **Zalo notifications** (experimental).
 - **User Guide** popup, also linked from each connection section.
@@ -81,8 +83,8 @@ Header row, UTF-8 (use "CSV UTF-8" when exporting from Excel):
 
 ```csv
 date,note,category,amount
-2026-11-01,Cà phê sáng,Ăn uống,35000
-01/11/2026,"Grab đi làm, về nhà",Đi lại,"85.000"
+2026-11-01,Phân NPK 20 bao,Mua phân,"12.500.000"
+01/11/2026,"Công làm cỏ, phun thuốc",Làm công,3000000
 ```
 
 | Column | Required | Notes |
@@ -100,15 +102,15 @@ date,note,category,amount
 
 ## Data storage and sync
 
-Data lives in a single file, `expenses.json`, inside a **secret Gist**:
+Data lives in a single file, `durian2027.json`, inside a **secret Gist**:
 
 ```json
 {
-  "categories": ["Ăn uống", "Đi lại", "Khác"],
+  "categories": ["Mua phân", "Làm công", "Khác"],
   "budget": 5000000,
   "items": [
-    { "id": "…", "date": "2026-11-08", "note": "Cà phê", "category": "Ăn uống", "amount": 35000 },
-    { "id": "…", "date": "2026-11-08", "note": "Xóa: Cà phê", "category": "Ăn uống", "amount": -35000,
+    { "id": "…", "date": "2026-11-08", "note": "Phân NPK", "category": "Mua phân", "amount": 35000 },
+    { "id": "…", "date": "2026-11-08", "note": "Xóa: Phân NPK", "category": "Mua phân", "amount": -35000,
       "type": "void", "ref": "<id of the voided entry>", "at": "2026-11-08T05:40:00.000Z" }
   ]
 }
@@ -142,7 +144,7 @@ Technical notes and caveats:
 
 ## Updating and versioning
 
-- The footer shows `Spendlog · vYYYYMMDD`. Change that date in `index.html` when you release so you can tell whether a device has the new build.
+- The footer shows `🌳 Sầu riêng 2027 · vYYYYMMDD`. Change that date in `index.html` when you release so you can tell whether a device has the new build.
 - `sw.js` has a `VERSION` constant. **Bump it only when `sw.js`, `manifest.webmanifest` or the icons change** (they are precached). Editing `index.html` alone does not require it.
 - The service worker loads `index.html` from the network first (bypassing the HTTP cache) and falls back to the cached copy offline. When a new service worker takes over, the page reloads once automatically.
 - Requests to other origins (GitHub API, Zalo) bypass the service worker.

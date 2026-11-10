@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0f766e">
-<meta name="description" content="Ghi nhanh chi tiêu hàng ngày, lưu trên GitHub Gist">
+<meta name="theme-color" content="#3f7d20">
+<meta name="description" content="Sổ chi tiêu vườn sầu riêng, lưu trên GitHub Gist">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Spendlog">
+<meta name="apple-mobile-web-app-title" content="Sầu riêng">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<title>Spendlog</title>
+<title>Sầu riêng 2027</title>
 <style>
-:root{--bg:#f4f6f5;--card:#fff;--text:#16211f;--mut:#6b7a77;--line:#e3e9e7;--pri:#0f766e;--pri2:#ccfbf1;--warn:#d97706;--bad:#dc2626;--ok:#16a34a}
-@media(prefers-color-scheme:dark){:root{--bg:#0e1514;--card:#17201f;--text:#e8f0ee;--mut:#8da29e;--line:#26332f;--pri:#2dd4bf;--pri2:#134e4a}}
+:root{--bg:#f5f6ec;--card:#fff;--text:#1c2412;--mut:#6c7660;--line:#e3e8d6;--pri:#3f7d20;--pri2:#ecf7c8;--warn:#d97706;--bad:#dc2626;--ok:#16a34a}
+@media(prefers-color-scheme:dark){:root{--bg:#11160c;--card:#1a2113;--text:#eef2e4;--mut:#9aa68a;--line:#2b3420;--pri:#a3e635;--pri2:#2f3f16}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+body{margin:0;background:var(--bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%237d9a2a' stroke-width='1.6' stroke-linejoin='round' opacity='.16'%3E%3Cpath d='M30 22 l3 4 4-3 1 5 5-1-1 5 5 1-3 4 4 3-4 3 3 4-5 1 1 5-5-1-1 5-4-3-3 4-3-4-4 3-1-5-5 1 1-5-5-1 3-4-4-3 4-3-3-4 5-1-1-5 5 1 1-5 4 3z'/%3E%3Cpath d='M30 22 q2-7 7-9'/%3E%3Cpath d='M90 80 l3 4 4-3 1 5 5-1-1 5 5 1-3 4 4 3-4 3 3 4-5 1 1 5-5-1-1 5-4-3-3 4-3-4-4 3-1-5-5 1 1-5-5-1 3-4-4-3 4-3-3-4 5-1-1-5 5 1 1-5 4 3z'/%3E%3Cpath d='M90 80 q2-7 7-9'/%3E%3C/g%3E%3C/svg%3E") repeat;background-size:120px 120px;color:var(--text);font:16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding-bottom:calc(72px + env(safe-area-inset-bottom))}
 main{max-width:560px;margin:0 auto;padding:14px}
 h2{font-size:17px;margin:0 0 10px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
@@ -30,7 +30,7 @@ input,select{width:100%;font:inherit;color:var(--text);background:var(--bg);bord
 input:disabled{opacity:.6;cursor:not-allowed}
 input:focus,select:focus{outline:2px solid var(--pri);border-color:transparent}
 button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 16px;min-height:46px;background:var(--pri);color:#fff;font-weight:600}
-@media(prefers-color-scheme:dark){button{color:#042f2e}}
+@media(prefers-color-scheme:dark){button{color:#1a2e05}}
 button.sec{background:var(--bg);color:var(--text);border:1px solid var(--line)}
 button.bad{background:var(--bad);color:#fff}
 button.sm{min-height:34px;padding:6px 10px;font-size:14px}
@@ -62,12 +62,15 @@ button.sm{min-height:34px;padding:6px 10px;font-size:14px}
 #modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:10}
 #modal.on{display:flex}
 #modal .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-#status{font-size:12px;color:var(--mut);text-align:right;margin-bottom:6px;min-height:16px}
+#status{font-size:12px;color:var(--mut);text-align:right;min-height:16px;flex:1}
+.brand{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.brand img{width:32px;height:32px;border-radius:8px}
+.brand b{font-size:17px;color:var(--pri)}
 svg text{fill:var(--mut);font-size:10px}
 a{color:var(--pri)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
-@media(prefers-color-scheme:dark){.chips button.on{color:#042f2e}}
+@media(prefers-color-scheme:dark){.chips button.on{color:#1a2e05}}
 .frow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;margin:0;color:var(--text);font-size:16px}
 .frow:last-child{border-bottom:0}
 .frow input{width:22px;height:22px;min-height:0;flex:0 0 auto;padding:0;accent-color:var(--pri)}
@@ -99,7 +102,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .cats::-webkit-scrollbar{display:none}
 .cats .cc{flex:0 0 auto;min-height:38px;padding:6px 14px;border-radius:99px;background:var(--bg);color:var(--text);border:1px solid var(--line);font-weight:500}
 .cats .cc.on{background:var(--pri);color:#fff;border-color:var(--pri)}
-@media(prefers-color-scheme:dark){.cats .cc.on{color:#042f2e}}
+@media(prefers-color-scheme:dark){.cats .cc.on{color:#1a2e05}}
 .arow{display:flex;gap:8px;align-items:stretch}
 .arow button{flex:1}
 .dchip{position:relative;display:flex;align-items:center;justify-content:center;margin:0;flex:0 0 auto;min-width:104px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:15px;font-weight:600;overflow:hidden}
@@ -148,13 +151,13 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .mock .mf div{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card);word-break:break-all}
 .mock .mf.hl div{border-color:var(--pri);box-shadow:0 0 0 2px var(--pri2)}
 .mock .mb{display:inline-block;background:var(--pri);color:#fff;border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px;margin-top:4px}
-@media(prefers-color-scheme:dark){.mock .mb{color:#042f2e}}
+@media(prefers-color-scheme:dark){.mock .mb{color:#1a2e05}}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 </style>
 </head>
 <body>
 <main>
-  <div id="status"></div>
+  <div class="brand"><img src="icon-192.png" alt=""><b>Sầu riêng 2027</b><div id="status"></div></div>
 
   <!-- NHẬP -->
   <section class="page on" id="p-add">
@@ -224,7 +227,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <label>Danh mục (không chọn = tất cả)</label>
       <div class="chips" id="f-cats"></div>
       <label>Nội dung chứa từ khóa</label>
-      <input type="text" id="f-q" placeholder="VD: cà phê" autocomplete="off">
+      <input type="text" id="f-q" placeholder="VD: phân NPK" autocomplete="off">
       <div class="row">
         <div><label>Số tiền từ (nghìn đ)</label><input type="text" id="f-min" inputmode="numeric" placeholder="0"></div>
         <div><label>Đến (nghìn đ)</label><input type="text" id="f-max" inputmode="numeric" placeholder="tối đa"></div>
@@ -247,7 +250,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <section class="page" id="p-set">
     <div class="card">
       <h2>Kết nối GitHub (GitHub Connection)</h2>
-      <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=chi-tieu" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
+      <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
       <label>User ID (Git ID)</label>
       <input type="text" id="s-uid" placeholder="Tên đăng nhập GitHub" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label>Mật khẩu (GitHub Token)</label>
@@ -259,7 +262,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
         <button id="s-connect">Kết nối &amp; tải</button>
         <button class="sec" id="s-logout">Đăng xuất</button>
       </div>
-      <div class="mut" style="margin-top:8px">User ID, token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu lưu trong file <code>expenses.json</code> của Gist (secret).</div>
+      <div class="mut" style="margin-top:8px">User ID, token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu vườn lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
     </div>
     <div class="card">
@@ -303,7 +306,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">Spendlog · v20261108</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111</footer>
 </main>
 
 <nav class="tabs">
@@ -360,9 +363,9 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 
 <script>
 (()=>{
-const FILE='expenses.json';
-const K={token:'ct_token',gist:'ct_gist',cache:'ct_cache',dirty:'ct_dirty',uid:'ct_uid'};
-const DEF_CATS=['Ăn uống','Đi lại','Nhà cửa','Mua sắm','Con cái','Giải trí','Sức khỏe','Khác'];
+const FILE='durian2027.json';
+const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid'};
+const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -419,7 +422,7 @@ async function save(){
   try{
     const content=JSON.stringify(data,null,1);
     if(!gid()){
-      const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Chi tiêu hàng ngày',public:false,files:{[FILE]:{content}}})});
+      const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Sầu riêng 2027 - chi tiêu',public:false,files:{[FILE]:{content}}})});
       localStorage.setItem(K.gist,g.id);$('#s-gist').value=g.id;gistLink();
       toast('Đã tạo Gist mới');
     }else{
@@ -883,7 +886,7 @@ $('#imp-go').onclick=()=>{
 };
 $('#imp-tpl').onclick=()=>{
   const t=today();
-  const csv='﻿date,note,category,amount\n'+t+',Cà phê sáng,Ăn uống,35000\n'+dmy(t)+',"Grab đi làm, về nhà",Đi lại,"85.000"\n'+t+',Cơm trưa,Ăn uống,50000\n';
+  const csv='﻿date,note,category,amount\n'+t+',Phân NPK 20 bao,Mua phân,"12.500.000"\n'+dmy(t)+',"Công làm cỏ, phun thuốc",Làm công,3000000\n'+t+',Cơm trưa cho thợ,Mua cơm,250000\n';
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='mau-chi-tieu.csv';document.body.appendChild(a);a.click();a.remove();
@@ -891,7 +894,7 @@ $('#imp-tpl').onclick=()=>{
 };
 
 /* ---------- Zalo Bot (tùy chọn) ---------- */
-const ZK={t:'zl_token',c:'zl_chat'};
+const ZK={t:'dr_zl_token',c:'dr_zl_chat'};
 const ZAPI='https://bot-api.zaloplatforms.com/bot';
 function zlCfg(){let t='',c='';try{t=localStorage.getItem(ZK.t)||'';c=localStorage.getItem(ZK.c)||''}catch(e){}return t&&c?{t,c}:null}
 function zlLink(){const t=$('#z-token').value.trim();$('#z-link').href=/^[\w:.\-]+$/.test(t)?ZAPI+t+'/getUpdates':'#'}
@@ -909,7 +912,7 @@ function zlSend(text){
 }
 function zlNew(it){
   const day=sum(data.items.filter(x=>x.date===it.date));
-  zlSend('🆕 Chi tiêu mới\n'+money(it.amount)+(it.note?' · '+it.note:'')+'\nDanh mục: '+it.category+' · '+dmy(it.date)+'\nTổng ngày '+dmy(it.date).slice(0,5)+': '+money(day));
+  zlSend('🌳 Sầu riêng – chi mới\n'+money(it.amount)+(it.note?' · '+it.note:'')+'\nDanh mục: '+it.category+' · '+dmy(it.date)+'\nTổng ngày '+dmy(it.date).slice(0,5)+': '+money(day));
 }
 function zlEdit(i,oldN,oldC){
   const ch=[];
@@ -935,7 +938,7 @@ $('#z-test').onclick=async()=>{
   const z=zlCfg();if(!z){toast('Điền token, Chat ID và bấm Lưu trước');return}
   $('#z-state').textContent='Đang gửi thử...';
   try{
-    const r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text:'✅ Spendlog: kết nối Zalo thành công'})});
+    const r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text:'✅ Sầu riêng 2027: kết nối Zalo thành công'})});
     const j=await r.json();
     $('#z-state').textContent=j.ok?'Gửi thử thành công, hãy kiểm tra Zalo.':'Zalo báo lỗi: '+(j.description||j.error_code||'không rõ');
   }catch(e){
@@ -976,7 +979,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeSc();closeHelp
    Mục lục, nội dung và đường dẫn #help/<id> tự cập nhật, không cần sửa màn hình Cài đặt. */
 const HELP=[
 {id:'intro',group:'',title:'A. Giới thiệu ứng dụng',html:`
-<p><b>Spendlog</b> là ứng dụng ghi nhanh chi tiêu hàng ngày bằng <b>đồng (VNĐ)</b>. Bạn chỉ cần nhập số tiền, nội dung rồi bấm Lưu.</p>
+<p><b>Sầu riêng 2027</b> là ứng dụng ghi nhanh chi tiêu chăm sóc vườn sầu riêng bằng <b>đồng (VNĐ)</b>. Bạn chỉ cần nhập số tiền, nội dung rồi bấm Lưu.</p>
 <p><b>Giải quyết vấn đề gì?</b> Ghi lại chi tiêu ngay lúc phát sinh, không cần mở bảng tính, và xem lại mình đã tiêu bao nhiêu, vào việc gì.</p>
 <p><b>Các chức năng chính:</b></p>
 <ul>
@@ -989,11 +992,11 @@ const HELP=[
 </ul>
 <p><b>Dành cho ai?</b> Cá nhân hoặc gia đình muốn tự theo dõi chi tiêu mà không cần kiến thức kỹ thuật. Dữ liệu là của riêng bạn, lưu trong tài khoản GitHub của bạn.</p>`},
 {id:'how',group:'',title:'B. Cách thức hoạt động',html:`
-<div class="flow"><div>✍️ Bạn nhập chi tiêu</div><span>→</span><div>📱 Spendlog<br><small>hiện ngay trên máy</small></div><span>→</span><div>☁️ GitHub Gist<br><small>lưu dữ liệu</small></div></div>
-<div class="flow"><div>📱 Spendlog</div><span>→</span><div>🤖 Zalo Bot</div><span>→</span><div>💬 Nhóm chat<br><small>nhận thông báo</small></div></div>
+<div class="flow"><div>✍️ Bạn nhập chi tiêu</div><span>→</span><div>📱 Sầu riêng 2027<br><small>hiện ngay trên máy</small></div><span>→</span><div>☁️ GitHub Gist<br><small>lưu dữ liệu</small></div></div>
+<div class="flow"><div>📱 Sầu riêng 2027</div><span>→</span><div>🤖 Zalo Bot</div><span>→</span><div>💬 Nhóm chat<br><small>nhận thông báo</small></div></div>
 <ol>
 <li><b>Bạn nhập và quản lý dữ liệu</b> ở các tab Nhập, Lịch sử.</li>
-<li><b>Ứng dụng lưu thông tin:</b> khoản chi hiện ngay trên máy, đồng thời được gửi lên một <b>Gist</b> (kho lưu file riêng tư) trong tài khoản GitHub của bạn, tên file <code>expenses.json</code>. Nhờ vậy bạn xem được dữ liệu trên nhiều thiết bị.</li>
+<li><b>Ứng dụng lưu thông tin:</b> khoản chi hiện ngay trên máy, đồng thời được gửi lên một <b>Gist</b> (kho lưu file riêng tư) trong tài khoản GitHub của bạn, tên file <code>durian2027.json</code>. Nhờ vậy bạn xem được dữ liệu trên nhiều thiết bị.</li>
 <li><b>Thống kê và hiển thị:</b> các số liệu được tính từ chính những khoản chi đã ghi.</li>
 <li><b>Kết nối dịch vụ ngoài:</b> GitHub để lưu dữ liệu; Zalo (tùy chọn) để gửi thông báo.</li>
 <li><b>Xóa khoản chi:</b> ứng dụng không xóa thẳng mà ghi thêm một dòng "Xóa" có số tiền âm, nên lịch sử luôn đầy đủ. Khoản đã lưu chỉ sửa được nội dung và danh mục.</li>
@@ -1016,7 +1019,7 @@ const HELP=[
 <p><b>Kiểm tra đã thành công:</b></p>
 <ul>
 <li>Ở đầu trang hiện <b>"Đã đồng bộ"</b> hoặc <b>"Đã lưu hh:mm"</b>.</li>
-<li>Nhập thử một khoản chi, rồi mở Gist trên GitHub (có liên kết trong Cài đặt) sẽ thấy file <code>expenses.json</code>.</li>
+<li>Nhập thử một khoản chi, rồi mở Gist trên GitHub (có liên kết trong Cài đặt) sẽ thấy file <code>durian2027.json</code>.</li>
 </ul>`},
 {id:'github-connection',group:'D. Hướng dẫn kết nối dịch vụ',title:'1. Kết nối GitHub',html:`
 <p><b>Mục đích:</b> GitHub là nơi lưu dữ liệu chi tiêu của bạn (trong một Gist riêng tư). Không kết nối thì dữ liệu chỉ nằm trên thiết bị này.</p>
@@ -1025,8 +1028,8 @@ const HELP=[
 <h4>Bước 2. Tạo GitHub Token (ô "Mật khẩu")</h4>
 <div class="warn">Ô này tên là "Mật khẩu" cho dễ hiểu, nhưng thực chất là <b>token</b>, một mã riêng chỉ cho phép lưu file Gist. <b>Đừng nhập mật khẩu đăng nhập GitHub.</b></div>
 <ol>
-<li>Mở <a href="https://github.com/settings/tokens/new?scopes=gist&description=spendlog" target="_blank" rel="noopener">trang tạo token</a> (đã chọn sẵn quyền <code>gist</code>).</li>
-<li>Ô <b>Note</b> ghi "spendlog". Ô <b>Expiration</b> chọn thời hạn (ví dụ 1 năm hoặc No expiration).</li>
+<li>Mở <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">trang tạo token</a> (đã chọn sẵn quyền <code>gist</code>).</li>
+<li>Ô <b>Note</b> ghi "sau-rieng-2027". Ô <b>Expiration</b> chọn thời hạn (ví dụ 1 năm hoặc No expiration).</li>
 <li>Chỉ tích quyền <b>gist</b>, kéo xuống cuối và bấm <b>Generate token</b>.</li>
 <li><b>Sao chép ngay</b> chuỗi bắt đầu bằng <code>ghp_</code>. GitHub chỉ hiện một lần.</li>
 </ol>
@@ -1045,7 +1048,7 @@ const HELP=[
 <h4>Bước 4. Kiểm tra kết nối</h4>
 <ul>
 <li>Ở đầu trang hiện "Đã đồng bộ" hoặc "Đã lưu".</li>
-<li>Bấm liên kết <b>Mở Gist trên GitHub</b> trong Cài đặt để xem file <code>expenses.json</code>.</li>
+<li>Bấm liên kết <b>Mở Gist trên GitHub</b> trong Cài đặt để xem file <code>durian2027.json</code>.</li>
 <li>Lỗi "401": token sai hoặc hết hạn, hãy tạo token mới. Lỗi "404": Gist ID sai.</li>
 </ul>`},
 {id:'zalo-connection',group:'D. Hướng dẫn kết nối dịch vụ',title:'2. Thông báo Zalo (thử nghiệm)',html:`
