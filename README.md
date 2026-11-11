@@ -142,6 +142,12 @@ Technical notes and caveats:
 - The token and Chat ID are stored only in this browser (`localStorage`), per device.
 - **Not verified against the real Zalo service.** Undocumented points: CORS behaviour, rate limits, time limits or prerequisites for a bot to message a user, and whether a bot can post to group chats. Treat the feature as experimental.
 
+## Current user and Settings password
+
+- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It can come from the setup QR (`"n"` field).
+- **Mật khẩu Cài đặt**: once set, opening the Settings tab asks for the password; it locks again when you leave the tab or the app goes to the background. Only a salted PBKDF2-SHA256 hash (310,000 iterations) is stored (`dr_lock`), never the password. Scanning a setup QR sets the QR password as this device's Settings password. "Quên mật khẩu?" wipes the device's config (token, Gist ID, Zalo, name, password; Gist data is untouched) so it can be set up again.
+- This lock protects the screen, not the stored token: `localStorage` is plain text on the device.
+
 ## QR quick setup
 
 Settings → **Thiết lập nhanh bằng QR**.
