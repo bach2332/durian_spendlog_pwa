@@ -266,12 +266,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <!-- CÀI ĐẶT -->
   <section class="page" id="p-set">
     <div class="card">
-      <h2>Thông tin máy này</h2>
-      <div class="mut" style="margin-top:4px">👤 Người đang sử dụng: <b id="u-cur"></b></div>
-      <div class="mut" style="margin-top:4px">📍 Vị trí vườn: <b id="wl-cur"></b></div>
-      <div class="mut" style="margin-top:8px">Hai thông tin này lấy từ đoạn text cấu hình (Thiết lập nhanh bên dưới).</div>
-    </div>
-    <div class="card">
       <h2>Thiết lập nhanh</h2>
       <div class="mut">Dán đoạn text cấu hình vào ô dưới rồi bấm <b>Áp dụng</b>, nhập mật khẩu. Bấm <b>Xuất cấu hình</b> để lấy đoạn text của máy này.</div>
       <textarea id="cfg-in" rows="5" placeholder="Dán đoạn text cấu hình vào đây" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
@@ -339,7 +333,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112c</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112d</footer>
 </main>
 
 <nav class="tabs">
@@ -1226,11 +1220,11 @@ async function wxLoad(force){
 }
 $('#wx').onclick=()=>{if(!jget(K.wxLoc)){showTab('set');return}const o=$('#wx').classList.toggle('open');try{localStorage.setItem('dr_wx_open',o?'1':'')}catch(e){}wxRender();if(o)wxLoad()};
 try{if(localStorage.getItem('dr_wx_open'))$('#wx').classList.add('open')}catch(e){}
-function wlRender(){const l=jget(K.wxLoc);$('#wl-cur').textContent=l?l.name:'Chưa thiết lập'}
+function wlRender(){}
 
 /* ---------- Người đang sử dụng ---------- */
 const who=()=>{try{return localStorage.getItem(K.who)||''}catch(e){return ''}};
-function renderWho(){const n=who();$('#who').textContent='👤 '+(n||'Chưa thiết lập người dùng');$('#u-cur').textContent=n||'Chưa thiết lập'}
+function renderWho(){const n=who();$('#who').textContent='👤 '+(n||'Chưa thiết lập người dùng')}
 $('#who').onclick=()=>showTab('set');
 
 /* ---------- Thiết lập nhanh bằng đoạn text mã hóa ----------

@@ -143,11 +143,11 @@ Technical notes and caveats:
 
 ## Current user
 
-- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It is set only by the quick-setup text (`"n"`); there is no input for it. Settings → **Thông tin máy này** shows it read-only ("Chưa thiết lập" until set).
+- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It is set only by the quick-setup text (`"n"`); there is no input for it. It is not shown in Settings; the header shows it ("Chưa thiết lập người dùng" until set).
 
 ## Weather
 
-A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location is set only by the quick-setup text (`"l"`); Settings → **Thông tin máy này** shows it read-only. Until set, the strip says "Chưa thiết lập vị trí vườn" and tapping it opens Settings. Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
+A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location is set only by the quick-setup text (`"l"`); it is not shown in Settings. Until set, the strip says "Chưa thiết lập vị trí vườn" and tapping it opens Settings. Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
 
 ## Quick setup (encrypted config text)
 
