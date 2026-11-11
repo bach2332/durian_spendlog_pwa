@@ -148,7 +148,7 @@ Technical notes and caveats:
 
 ## Weather
 
-A strip under the title shows current weather (temperature, condition, humidity, wind) and a 3-day outlook with rain chance, from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location: Settings → **Vị trí vườn** (search by place name via Open-Meteo geocoding, or use the phone's current position); before it is set, tapping the strip asks for the current position. Cached 30 minutes in `dr_wx`; tap the strip to refresh.
+A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location: Settings → **Vị trí vườn** (search by place name via Open-Meteo geocoding, or use the phone's current position); before it is set, tapping the strip asks for the current position. Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
 
 ## Quick setup (encrypted config text)
 
@@ -157,7 +157,7 @@ Settings → **Thiết lập nhanh**: paste the config text, tap **Áp dụng**,
 - The text is always encrypted: `DR27E1.` + base64url(`salt(16) | iv(12) | AES-256-GCM ciphertext+tag`), key = PBKDF2-SHA256(password, salt, 310,000 iterations). Plain text is rejected.
 - Inside (JSON): `{"app":"dr27","u":GitHub user,"t":token,"g":Gist ID,"zt":Zalo bot token,"zc":Zalo chat ID,"n":user name,"l":[place,lat,lon],"c":[categories],"b":monthly budget}` — every key except `app` is optional. Categories and budget are saved to the Gist (shared).
 - **One shared password** for the whole app. It is never stored in clear text: the code only holds its salted PBKDF2-SHA256 hash (`PW_HASH`) to check what is typed; nothing password-related is stored on the device. Opening Settings needs no password.
-- The app only decrypts: there is no in-app way to create config text. It is produced outside the app with the same format and password.
+- **Xuất cấu hình**: after the shared password, shows this device's current config (GitHub, Zalo, user name, location, categories, budget) as encrypted text with a copy button; cleared when leaving Settings.
 - Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
 - Override warning: after tapping Áp dụng and entering the password, a ☠️ dialog warns that everything will be overwritten (no config details shown) and the "☠️ Ghi đè" button unlocks after a 3-second countdown.
 - Secrets are never shown in full anywhere in the UI (`mask()`: first 2–4 and last 2 characters): the Settings fields (saved values appear only as a masked placeholder; leave a field empty to keep the saved value), and the Gist / getUpdates links (URLs are built only on click, not put in the page).
