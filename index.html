@@ -330,7 +330,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112e</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112f</footer>
 </main>
 
 <nav class="tabs">
@@ -1157,7 +1157,7 @@ const HELP=[
 <li>Nhập <b>mật khẩu chung</b> của nhóm. App hiện tóm tắt, bấm <b>Áp dụng</b>.</li>
 </ol>
 <p>Lấy đoạn text: trên máy đã cài, bấm <b>Sao chép thiết lập hiện tại</b>, nhập mật khẩu chung, rồi dán gửi riêng cho người cần.</p>
-<p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn, danh mục và ngân sách.</p>
+<p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn. Danh mục và ngân sách đã lưu trên Gist nên app tự tải về.</p>
 <div class="warn">Đoạn text được mã hóa AES-256-GCM bằng <b>mật khẩu chung</b> của nhóm. App không lưu mật khẩu (chỉ giữ bản băm để kiểm tra nhập đúng). Không có mật khẩu thì không đọc được token trong đoạn text.</div>`}
 ];
 function renderHelp(){
@@ -1228,7 +1228,7 @@ function renderWho(){const n=who();$('#who').textContent='👤 '+(n||'Chưa thi�
 $('#who').onclick=()=>showTab('set');
 
 /* ---------- Thiết lập nhanh bằng đoạn text mã hóa ----------
-   Dữ liệu gốc: {"app":"dr27","u":user,"t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat,"n":tên,"l":[vị trí,lat,lon],"c":[danh mục],"b":ngân sách}
+   Dữ liệu gốc: {"app":"dr27","t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat,"n":tên,"l":[vị trí,lat,lon]}
    Đoạn text = "DR27E1." + base64url(salt 16B | iv 12B | AES-256-GCM(dữ liệu gốc))
    Khóa = PBKDF2-SHA256(mật khẩu, salt, 310000 vòng). Mật khẩu không lưu, chỉ có bản băm PW_HASH để kiểm tra. */
 const QR_APP='dr27',QR_PFX='DR27E1.',QR_ITER=310000;
@@ -1279,9 +1279,9 @@ function askPass(msg,yes,check,opt={}){
   });
 }
 $('#pw-see').onchange=e=>{$('#pw-in').type=e.target.checked?'text':'password'};
-/* Áp dụng cấu hình o = {u,t,g,zt,zc,n,l:[tên,lat,lon],c:[danh mục],b:ngân sách} (từ chuỗi mã hóa hoặc file text) */
+/* Áp dụng cấu hình o = {t,g,zt,zc,n,l:[tên,lat,lon]} giải mã từ đoạn text */
 async function cfgApply(o){
-  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Toàn bộ cấu hình hiện tại trên máy này sẽ bị thay thế, kể cả danh mục và ngân sách của cả nhóm.</div>';
+  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Toàn bộ cấu hình hiện tại trên máy này sẽ bị thay thế.</div>';
   if(!await askConfirm('Bạn chắc chắn muốn ghi đè?','☠️ Ghi đè',{danger:head,wait:3}))return true;
   try{
     if(o.t){localStorage.setItem(K.token,o.t);o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
@@ -1293,8 +1293,7 @@ async function cfgApply(o){
   renderSet();zlLink();zlState();
   let ok=true;
   if(o.t){if(o.g){ok=await load();if(!ok)toast('Đã điền, nhưng chưa tải được dữ liệu')}else{await save();renderSet()}}
-  const dataCh=(Array.isArray(o.c)&&o.c.length)||o.b!=null;
-  if(dataCh&&ok){if(Array.isArray(o.c)&&o.c.length)data.categories=o.c;if(o.b!=null)data.budget=o.b;renderAll();renderSet();await save()}
+  /* danh mục, ngân sách nằm trong Gist: không lấy từ đoạn text (bỏ qua "c", "b" trong đoạn text cũ) */
   if(ok)toast('Đã áp dụng cấu hình');
   return true;
 }
@@ -1335,7 +1334,6 @@ $('#cfg-export').onclick=async()=>{
   if(z){o.zt=z.t;o.zc=z.c}
   if(who())o.n=who();
   if(wl)o.l=[wl.name,wl.lat,wl.lon];
-  o.c=data.categories;if(data.budget)o.b=data.budget;
   let enc='';
   const pw=await askPass('🔒 Nhập mật khẩu để sao chép thiết lập hiện tại','Sao chép',async p=>{if(!await pwOk(p))return 'Sai mật khẩu';enc=await qrEnc(o,p);return null});
   if(pw==null)return;
