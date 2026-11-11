@@ -78,7 +78,6 @@ button.sm{min-height:34px;padding:6px 10px;font-size:14px}
 .wx.open .more{display:block}
 .wx .days{display:flex;gap:6px;margin-top:4px}
 .wx .days div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 6px;font-size:12px;text-align:center;line-height:1.35}
-.wxr{display:block;width:100%;text-align:left;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px;font-weight:400;min-height:0}
 .brand .who{font-size:12px;color:var(--mut);display:block;font-weight:400;cursor:pointer}
 .brand img{width:32px;height:32px;border-radius:8px}
 .brand b{font-size:17px;color:var(--pri)}
@@ -267,16 +266,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <!-- CÀI ĐẶT -->
   <section class="page" id="p-set">
     <div class="card">
-      <h2>Người đang sử dụng</h2>
-      <div class="mut">Tên này hiện ở đầu app, được ghi vào mỗi khoản chi và tin nhắn Zalo để biết ai đã nhập.</div>
-      <div class="row" style="margin-top:10px"><input type="text" id="u-name" placeholder="VD: Anh Bách" autocomplete="off" maxlength="40"><button id="u-save" style="flex:0 0 auto">Lưu</button></div>
-    </div>
-    <div class="card">
-      <h2>Vị trí vườn (thời tiết)</h2>
-      <div class="mut" id="wl-cur"></div>
-      <div class="row" style="margin-top:10px"><input type="text" id="wl-q" placeholder="VD: Đắk Mil, Cai Lậy, Krông Pắc" autocomplete="off"><button id="wl-find" style="flex:0 0 auto">Tìm</button></div>
-      <div id="wl-res"></div>
-      <div class="row" style="margin-top:8px"><button class="sec" id="wl-gps">📍 Dùng vị trí hiện tại</button></div>
+      <h2>Thông tin máy này</h2>
+      <div class="mut" style="margin-top:4px">👤 Người đang sử dụng: <b id="u-cur"></b></div>
+      <div class="mut" style="margin-top:4px">📍 Vị trí vườn: <b id="wl-cur"></b></div>
+      <div class="mut" style="margin-top:8px">Hai thông tin này lấy từ đoạn text cấu hình (Thiết lập nhanh bên dưới).</div>
     </div>
     <div class="card">
       <h2>Thiết lập nhanh</h2>
@@ -293,8 +286,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     <div class="card">
       <h2>Kết nối GitHub (GitHub Connection)</h2>
       <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
-      <label>User ID (Git ID)</label>
-      <input type="text" id="s-uid" placeholder="Tên đăng nhập GitHub" autocomplete="off" autocapitalize="off" spellcheck="false">
       <label>Mật khẩu (GitHub Token)</label>
       <input type="password" id="s-token" placeholder="ghp_... hoặc github_pat_..." autocomplete="off">
       <label>Gist ID (để trống để tạo Gist mới)</label>
@@ -304,7 +295,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
         <button id="s-connect">Kết nối &amp; tải</button>
         <button class="sec" id="s-logout">Đăng xuất</button>
       </div>
-      <div class="mut" style="margin-top:8px">User ID, token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu vườn lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
+      <div class="mut" style="margin-top:8px">Token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu vườn lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
     </div>
     <div class="card">
@@ -348,7 +339,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112b</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112c</footer>
 </main>
 
 <nav class="tabs">
@@ -641,7 +632,7 @@ function renderSet(){
   $('#s-token').value='';$('#s-gist').value='';
   $('#s-token').placeholder=tok()?'Đã lưu: '+mask(tok())+' (nhập để thay)':'ghp_... hoặc github_pat_...';
   $('#s-gist').placeholder=gid()?'Đã lưu: '+mask(gid())+' (nhập để thay)':'Để trống để tạo Gist mới';
-  if(document.activeElement!==$('#s-uid'))$('#s-uid').value=localStorage.getItem(K.uid)||'';gistLink();zlFill();
+  gistLink();zlFill();
   kSet($('#s-budget-in'),data.budget);
   $('#s-catlist').innerHTML=data.categories.map((c,i)=>`<div class="catrow"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${catColor(c)};margin-right:8px"></i>${esc(c)}</span><button class="sec sm" data-delcat="${i}">Xóa</button></div>`).join('');
 }
@@ -781,7 +772,7 @@ $('#e-del').onclick=async()=>{
 $('#s-connect').onclick=async()=>{
   const t=$('#s-token').value.trim()||tok(),g=$('#s-gist').value.trim()||gid();
   if(!t){toast('Nhập GitHub token');return}
-  localStorage.setItem(K.token,t);localStorage.setItem(K.uid,$('#s-uid').value.trim());
+  localStorage.setItem(K.token,t);
   if(g){localStorage.setItem(K.gist,g);gistLink();const ok=await load();toast(ok?'Đã kết nối':'Chưa kết nối được, xem dòng trạng thái phía trên')}
   else{localStorage.removeItem(K.gist);await save();renderSet();toast('Đã tạo Gist mới')}
 };
@@ -1057,9 +1048,9 @@ $('#z-link').onclick=e=>{e.preventDefault();const t=zlTok();if(!/^[\w:.\-]+$/.te
 
 /* ---------- Link Gist ---------- */
 function gistLink(){
-  const g=gid(),u=(localStorage.getItem(K.uid)||'').trim();
+  const g=gid();
   $('#s-gistlink').innerHTML=g?`<a href="#" id="s-gistopen">Mở Gist trên GitHub</a>`:'';
-  if(g)$('#s-gistopen').onclick=e=>{e.preventDefault();window.open('https://gist.github.com/'+(u?encodeURIComponent(u)+'/':'')+encodeURIComponent(g),'_blank','noopener')};
+  if(g)$('#s-gistopen').onclick=e=>{e.preventDefault();window.open('https://gist.github.com/'+encodeURIComponent(g),'_blank','noopener')};
 }
 
 /* ---------- Popup chi tiết danh mục (Thống kê) ---------- */
@@ -1117,7 +1108,7 @@ const HELP=[
 <li>Một tài khoản <b>GitHub</b> (miễn phí).</li>
 <li>(Tùy chọn) tài khoản Zalo nếu muốn nhận thông báo.</li>
 </ul>
-<p><b>Thông tin cần có:</b> <b>User ID (Git ID)</b> và <b>GitHub Token</b>. Cách lấy ở mục Kết nối GitHub bên dưới.</p>
+<p><b>Thông tin cần có:</b> <b>GitHub Token</b>. Cách lấy ở mục Kết nối GitHub bên dưới.</p>
 <p><b>Các bước thiết lập ban đầu:</b></p>
 <ol>
 <li>Mở địa chỉ của ứng dụng trên trình duyệt.</li>
@@ -1132,9 +1123,7 @@ const HELP=[
 </ul>`},
 {id:'github-connection',group:'D. Hướng dẫn kết nối dịch vụ',title:'1. Kết nối GitHub',html:`
 <p><b>Mục đích:</b> GitHub là nơi lưu dữ liệu chi tiêu của bạn (trong một Gist riêng tư). Không kết nối thì dữ liệu chỉ nằm trên thiết bị này.</p>
-<h4>Bước 1. Lấy User ID (Git ID)</h4>
-<p>Đây là <b>tên đăng nhập GitHub</b> của bạn. Cách xem: đăng nhập github.com, bấm ảnh đại diện ở góc trên bên phải, dòng đầu ghi "Signed in as <i>tên-của-bạn</i>".</p>
-<h4>Bước 2. Tạo GitHub Token (ô "Mật khẩu")</h4>
+<h4>Bước 1. Tạo GitHub Token (ô "Mật khẩu")</h4>
 <div class="warn">Ô này tên là "Mật khẩu" cho dễ hiểu, nhưng thực chất là <b>token</b>, một mã riêng chỉ cho phép lưu file Gist. <b>Đừng nhập mật khẩu đăng nhập GitHub.</b></div>
 <ol>
 <li>Mở <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">trang tạo token</a> (đã chọn sẵn quyền <code>gist</code>).</li>
@@ -1142,19 +1131,17 @@ const HELP=[
 <li>Chỉ tích quyền <b>gist</b>, kéo xuống cuối và bấm <b>Generate token</b>.</li>
 <li><b>Sao chép ngay</b> chuỗi bắt đầu bằng <code>ghp_</code>. GitHub chỉ hiện một lần.</li>
 </ol>
-<h4>Bước 3. Nhập vào Cài đặt</h4>
+<h4>Bước 2. Nhập vào Cài đặt</h4>
 <div class="mock"><div class="mt">Cài đặt › Kết nối GitHub</div>
-<div class="mf"><small>User ID (Git ID)</small><div>ten-dang-nhap-github</div></div>
 <div class="mf hl"><small>Mật khẩu (GitHub Token)</small><div>ghp_••••••••••••••••</div></div>
 <div class="mb">Kết nối &amp; tải</div></div>
 <ol>
 <li>Vào <b>Cài đặt</b> → <b>Kết nối GitHub</b>.</li>
-<li>Dán tên đăng nhập vào <b>User ID (Git ID)</b>.</li>
 <li>Dán token vào <b>Mật khẩu (GitHub Token)</b>.</li>
 <li>Dùng lần đầu: để trống <b>Gist ID</b> (app tự tạo Gist). Dùng thêm thiết bị khác: nhập Gist ID đã có.</li>
 <li>Bấm <b>Kết nối &amp; tải</b>.</li>
 </ol>
-<h4>Bước 4. Kiểm tra kết nối</h4>
+<h4>Bước 3. Kiểm tra kết nối</h4>
 <ul>
 <li>Ở đầu trang hiện "Đã đồng bộ" hoặc "Đã lưu".</li>
 <li>Bấm liên kết <b>Mở Gist trên GitHub</b> trong Cài đặt để xem file <code>durian2027.json</code>.</li>
@@ -1202,7 +1189,7 @@ $('#hp-x').onclick=closeHelp;
 $('#hp').onclick=e=>{if(e.target.id==='hp')closeHelp()};
 
 /* ---------- Thời tiết (Open-Meteo, miễn phí, không cần key) ----------
-   Vị trí: dr_wx_loc {name,lat,lon}; chưa đặt thì dùng vị trí hiện tại khi người dùng chạm. Cache 30 phút (dr_wx). */
+   Vị trí: dr_wx_loc {name,lat,lon}, chỉ đặt qua Thiết lập nhanh. Cache 30 phút (dr_wx). */
 const WMO={0:['☀️','Trời quang'],1:['🌤️','Ít mây'],2:['⛅','Mây rải rác'],3:['☁️','Nhiều mây'],45:['🌫️','Sương mù'],48:['🌫️','Sương mù'],
   51:['🌦️','Mưa phùn nhẹ'],53:['🌦️','Mưa phùn'],55:['🌦️','Mưa phùn dày'],56:['🌧️','Mưa phùn lạnh'],57:['🌧️','Mưa phùn lạnh'],
   61:['🌧️','Mưa nhỏ'],63:['🌧️','Mưa vừa'],65:['🌧️','Mưa to'],66:['🌧️','Mưa lạnh'],67:['🌧️','Mưa lạnh to'],
@@ -1214,7 +1201,7 @@ const jset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 let wxBusy=false;
 function wxRender(msg){
   const box=$('#wx'),loc=jget(K.wxLoc),c=jget(K.wx);
-  if(!loc){box.innerHTML='<div class="now">📍 <span class="tx">Chạm để xem thời tiết nơi bạn đứng</span></div>';return}
+  if(!loc){box.innerHTML='<div class="now">📍 <span class="tx">Chưa thiết lập vị trí vườn</span></div>';return}
   if(!c||!c.d||c.lat!==loc.lat||c.lon!==loc.lon){box.innerHTML=`<div class="now">⏳ <span class="tx">${msg?esc(msg):'Đang tải thời tiết'} · ${esc(loc.name)}</span></div>`;return}
   const d=c.d,cu=d.current,dy=d.daily,[ic,tx]=wmo(cu.weather_code);
   const age=Math.round((Date.now()-c.t)/60000),ago=age<2?'vừa cập nhật':age<60?age+' phút trước':Math.round(age/60)+' giờ trước';
@@ -1237,38 +1224,14 @@ async function wxLoad(force){
   }catch(e){wxRender(c&&c.lat===loc.lat?'không cập nhật được, đang xem bản cũ':'không tải được thời tiết')}
   wxBusy=false;
 }
-function wxGps(){
-  return new Promise(res=>{
-    if(!navigator.geolocation){toast('Máy không hỗ trợ định vị');return res(false)}
-    navigator.geolocation.getCurrentPosition(p=>{
-      jset(K.wxLoc,{name:'Vị trí hiện tại',lat:+p.coords.latitude.toFixed(3),lon:+p.coords.longitude.toFixed(3)});wlRender();wxLoad(true);res(true);
-    },e=>{toast(e.code===1?'Chưa cho phép lấy vị trí. Hãy đặt vị trí vườn trong Cài đặt':'Không lấy được vị trí');res(false)},{timeout:15000,maximumAge:600000});
-  });
-}
-$('#wx').onclick=()=>{if(!jget(K.wxLoc)){wxGps();return}const o=$('#wx').classList.toggle('open');try{localStorage.setItem('dr_wx_open',o?'1':'')}catch(e){}wxRender();if(o)wxLoad()};
+$('#wx').onclick=()=>{if(!jget(K.wxLoc)){showTab('set');return}const o=$('#wx').classList.toggle('open');try{localStorage.setItem('dr_wx_open',o?'1':'')}catch(e){}wxRender();if(o)wxLoad()};
 try{if(localStorage.getItem('dr_wx_open'))$('#wx').classList.add('open')}catch(e){}
-function wlRender(){const l=jget(K.wxLoc);$('#wl-cur').textContent=l?'Đang dùng: '+l.name+' ('+l.lat+', '+l.lon+')':'Chưa đặt. Tìm tên xã/huyện nơi có vườn, hoặc dùng vị trí hiện tại.'}
-$('#wl-find').onclick=async()=>{
-  const q=$('#wl-q').value.trim();if(!q){toast('Nhập tên địa điểm');return}
-  $('#wl-res').innerHTML='<div class="mut" style="margin-top:8px">Đang tìm...</div>';
-  try{
-    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&language=vi&format=json&name='+encodeURIComponent(q));
-    const j=await r.json(),A=j.results||[],L=A.filter(x=>x.country_code==='VN').concat(A.filter(x=>x.country_code!=='VN')).slice(0,6);
-    if(!L.length){$('#wl-res').innerHTML='<div class="mut" style="margin-top:8px">Không tìm thấy. Thử tên huyện hoặc tỉnh, viết có dấu.</div>';return}
-    $('#wl-res').innerHTML=L.map((x,k)=>`<button class="wxr" data-k="${k}"><b>${esc(x.name)}</b> <span class="mut">${esc([x.admin2,x.admin1,x.country].filter(Boolean).join(', '))}</span></button>`).join('');
-    $$('#wl-res [data-k]').forEach(b=>b.onclick=()=>{const x=L[+b.dataset.k];jset(K.wxLoc,{name:[x.name,x.admin1].filter(Boolean).join(', '),lat:+x.latitude.toFixed(3),lon:+x.longitude.toFixed(3)});$('#wl-res').innerHTML='';$('#wl-q').value='';wlRender();wxLoad(true);toast('Đã đặt vị trí vườn')});
-  }catch(e){$('#wl-res').innerHTML='<div class="mut" style="margin-top:8px">Không tìm được (kiểm tra mạng).</div>'}
-};
-$('#wl-q').onkeydown=e=>{if(e.key==='Enter')$('#wl-find').click()};
-$('#wl-gps').onclick=wxGps;
+function wlRender(){const l=jget(K.wxLoc);$('#wl-cur').textContent=l?l.name:'Chưa thiết lập'}
 
 /* ---------- Người đang sử dụng ---------- */
 const who=()=>{try{return localStorage.getItem(K.who)||''}catch(e){return ''}};
-function setWho(n){try{n?localStorage.setItem(K.who,n):localStorage.removeItem(K.who)}catch(e){}renderWho()}
-function renderWho(){const n=who();$('#who').textContent='👤 '+(n||'Chưa đặt tên người dùng');if(document.activeElement!==$('#u-name'))$('#u-name').value=n}
+function renderWho(){const n=who();$('#who').textContent='👤 '+(n||'Chưa thiết lập người dùng');$('#u-cur').textContent=n||'Chưa thiết lập'}
 $('#who').onclick=()=>showTab('set');
-$('#u-save').onclick=()=>{const n=$('#u-name').value.trim();setWho(n);toast(n?'Đã lưu: '+n:'Đã xóa tên người dùng')};
-$('#u-name').onkeydown=e=>{if(e.key==='Enter')$('#u-save').click()};
 
 /* ---------- Thiết lập nhanh bằng đoạn text mã hóa ----------
    Dữ liệu gốc: {"app":"dr27","u":user,"t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat,"n":tên,"l":[vị trí,lat,lon],"c":[danh mục],"b":ngân sách}
@@ -1327,7 +1290,7 @@ async function cfgApply(o){
   const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Toàn bộ cấu hình hiện tại trên máy này sẽ bị thay thế, kể cả danh mục và ngân sách của cả nhóm.</div>';
   if(!await askConfirm('Bạn chắc chắn muốn ghi đè?','☠️ Ghi đè',{danger:head,wait:3}))return true;
   try{
-    if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
+    if(o.t){localStorage.setItem(K.token,o.t);o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
     if(o.n)localStorage.setItem(K.who,o.n);
     if(Array.isArray(o.l)&&isFinite(o.l[1])&&isFinite(o.l[2])){jset(K.wxLoc,{name:String(o.l[0]||'Vườn'),lat:+o.l[1],lon:+o.l[2]});jset(K.wx,null)}
@@ -1357,7 +1320,7 @@ async function cfgFromText(txt){
 $('#cfg-export').onclick=async()=>{
   if(!window.crypto||!crypto.subtle){toast('Cần mở app bằng link https');return}
   const z=zlCfg(),wl=jget(K.wxLoc),o={app:QR_APP};
-  if(tok()){o.u=localStorage.getItem(K.uid)||'';o.t=tok();if(gid())o.g=gid()}
+  if(tok()){o.t=tok();if(gid())o.g=gid()}
   if(z){o.zt=z.t;o.zc=z.c}
   if(who())o.n=who();
   if(wl)o.l=[wl.name,wl.lat,wl.lon];

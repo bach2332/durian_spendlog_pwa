@@ -39,10 +39,9 @@ This is a **personal access token**, not your GitHub password. Never enter your 
 
 ### 3. Connect the app
 1. Open the app → **Cài đặt** (Settings) → **Kết nối GitHub (GitHub Connection)**.
-2. **User ID (Git ID)**: your GitHub username. Optional; only used to build the "Open Gist on GitHub" link.
-3. **Mật khẩu (GitHub Token)**: paste the token.
-4. **Gist ID**: leave empty the first time and the app creates a new secret Gist. On another device, enter the existing Gist ID.
-5. Tap **Kết nối & tải** (Connect & load). The status line at the top should read **Đã đồng bộ** (synced) or **Đã lưu hh:mm** (saved).
+2. **Mật khẩu (GitHub Token)**: paste the token.
+3. **Gist ID**: leave empty the first time and the app creates a new secret Gist. On another device, enter the existing Gist ID.
+4. Tap **Kết nối & tải** (Connect & load). The status line at the top should read **Đã đồng bộ** (synced) or **Đã lưu hh:mm** (saved).
 
 ### 4. Install on your phone
 - **Android (Chrome):** menu ⋮ → *Install app* / *Add to Home screen*.
@@ -144,18 +143,18 @@ Technical notes and caveats:
 
 ## Current user
 
-- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It can come from the setup QR (`"n"` field).
+- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It is set only by the quick-setup text (`"n"`); there is no input for it. Settings → **Thông tin máy này** shows it read-only ("Chưa thiết lập" until set).
 
 ## Weather
 
-A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location: Settings → **Vị trí vườn** (search by place name via Open-Meteo geocoding, or use the phone's current position); before it is set, tapping the strip asks for the current position. Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
+A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location is set only by the quick-setup text (`"l"`); Settings → **Thông tin máy này** shows it read-only. Until set, the strip says "Chưa thiết lập vị trí vườn" and tapping it opens Settings. Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
 
 ## Quick setup (encrypted config text)
 
 Settings → **Thiết lập nhanh**: paste the config text, tap **Áp dụng**, enter the shared password, confirm the summary. That's all.
 
 - The text is always encrypted: `DR27E1.` + base64url(`salt(16) | iv(12) | AES-256-GCM ciphertext+tag`), key = PBKDF2-SHA256(password, salt, 310,000 iterations). Plain text is rejected.
-- Inside (JSON): `{"app":"dr27","u":GitHub user,"t":token,"g":Gist ID,"zt":Zalo bot token,"zc":Zalo chat ID,"n":user name,"l":[place,lat,lon],"c":[categories],"b":monthly budget}` — every key except `app` is optional. Categories and budget are saved to the Gist (shared).
+- Inside (JSON): `{"app":"dr27","t":token,"g":Gist ID,"zt":Zalo bot token,"zc":Zalo chat ID,"n":user name,"l":[place,lat,lon],"c":[categories],"b":monthly budget}` — every key except `app` is optional. Categories and budget are saved to the Gist (shared).
 - **One shared password** for the whole app. It is never stored in clear text: the code only holds its salted PBKDF2-SHA256 hash (`PW_HASH`) to check what is typed; nothing password-related is stored on the device. Opening Settings needs no password.
 - **Xuất cấu hình**: after the shared password, shows this device's current config (GitHub, Zalo, user name, location, categories, budget) as encrypted text with a copy button; cleared when leaving Settings.
 - Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
