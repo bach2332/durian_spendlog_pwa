@@ -155,13 +155,9 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .mock .mf div{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card);word-break:break-all}
 .mock .mf.hl div{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc2)}
 .mock .mb{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px;margin-top:4px}
-/* Popup mã cấu hình */
 #pw{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
 #pw.on{display:flex}
 #pw .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
-#qr{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:25;padding:16px}
-#qr.on{display:flex}
-#qr .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:16px;border:1px solid var(--line);max-height:92vh;overflow:auto}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 </style>
 </head>
@@ -277,7 +273,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <div class="mut">Dán đoạn text cấu hình vào ô dưới rồi bấm <b>Áp dụng</b>, nhập mật khẩu là xong.</div>
       <textarea id="cfg-in" rows="5" placeholder="Dán đoạn text cấu hình vào đây" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
       <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng</button></div>
-      <div class="row" style="margin-top:8px"><button class="sec" id="qr-show">🔑 Tạo mã cấu hình (gửi cho người khác)</button></div>
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
     </div>
     <div class="card">
@@ -338,7 +333,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111q</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111r</footer>
 </main>
 
 <nav class="tabs">
@@ -392,16 +387,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 </div></div>
 <div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
 <div id="cf"><div class="sheet"><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
-<div id="qr"><div class="sheet">
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="qr-title" style="margin:0"></h2><button class="sec sm" id="qr-x" aria-label="Đóng">✕</button></div>
-  <div id="qr-showbox">
-    <div class="warn" style="background:#fef3c7;color:#78350f;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px">Đoạn text đã được <b>mã hóa</b>. Người nhận dán vào ô <b>Thiết lập nhanh</b> và nhập mật khẩu chung để dùng. Báo mật khẩu riêng, đừng gửi chung với đoạn text.</div>
-    <div class="mut" style="margin-bottom:4px"><b>Đoạn text cấu hình</b> (gửi qua Zalo):</div>
-    <textarea id="cfg-out" rows="4" readonly style="width:100%;font-family:ui-monospace,monospace;font-size:12px;resize:none"></textarea>
-    <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép</button></div>
-    <div id="qr-info" class="mut" style="text-align:center;margin-top:8px"></div>
-  </div>
-</div></div>
 <div id="toast"></div>
 
 <script>
@@ -1163,7 +1148,7 @@ const HELP=[
 <li>Mở app → <b>Cài đặt</b> → ô <b>Thiết lập nhanh</b>, dán đoạn text được gửi cho bạn, bấm <b>Áp dụng</b>.</li>
 <li>Nhập <b>mật khẩu chung</b> của nhóm. App hiện tóm tắt, bấm <b>Áp dụng</b>.</li>
 </ol>
-<p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn, danh mục và ngân sách. Người đã cài bấm <b>Tạo mã cấu hình</b>, nhập tên người dùng máy mới và mật khẩu chung, rồi bấm <b>Sao chép</b> và gửi qua Zalo.</p>
+<p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn, danh mục và ngân sách.</p>
 <div class="warn">Đoạn text được mã hóa AES-256-GCM bằng <b>mật khẩu chung</b> của nhóm. App không lưu mật khẩu (chỉ giữ bản băm để kiểm tra nhập đúng). Không có mật khẩu thì không đọc được token trong đoạn text.</div>`}
 ];
 function renderHelp(){
@@ -1271,13 +1256,7 @@ const b64u=b=>btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'
 const ub64u=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
 async function qrKey(pw,salt){
   const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
-  return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt,iterations:QR_ITER},base,{name:'AES-GCM',length:256},false,['encrypt','decrypt']);
-}
-async function qrEnc(obj,pw){
-  const salt=crypto.getRandomValues(new Uint8Array(16)),iv=crypto.getRandomValues(new Uint8Array(12));
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},await qrKey(pw,salt),new TextEncoder().encode(JSON.stringify(obj))));
-  const out=new Uint8Array(28+ct.length);out.set(salt);out.set(iv,16);out.set(ct,28);
-  return QR_PFX+b64u(out);
+  return crypto.subtle.deriveKey({name:'PBKDF2',hash:'SHA-256',salt,iterations:QR_ITER},base,{name:'AES-GCM',length:256},false,['decrypt']);
 }
 async function qrDec(txt,pw){
   const b=ub64u(txt.slice(QR_PFX.length));
@@ -1307,8 +1286,6 @@ function askPass(msg,yes,check,opt={}){
   });
 }
 $('#pw-see').onchange=e=>{$('#pw-in').type=e.target.checked?'text':'password'};
-function qrOpen(){$('#qr-title').textContent='Mã cấu hình';$('#qr').classList.add('on')}
-function qrClose(){$('#qr').classList.remove('on')}
 /* Áp dụng cấu hình o = {u,t,g,zt,zc,n,l:[tên,lat,lon],c:[danh mục],b:ngân sách} (từ chuỗi mã hóa hoặc file text) */
 async function cfgApply(o){
   const lines=[];
@@ -1348,32 +1325,7 @@ async function cfgFromText(txt){
   if(pw==null||!o)return false;
   return cfgApply(o);
 }
-$('#qr-show').onclick=async()=>{
-  const t=tok(),z=zlCfg();
-  if(t&&!gid()){toast('Chưa có Gist ID — bấm Kết nối & tải trước');return}
-  if(!window.crypto||!crypto.subtle){toast('Trình duyệt không hỗ trợ mã hóa (cần mở bằng https)');return}
-  const o={app:QR_APP};
-  if(t){o.u=localStorage.getItem(K.uid)||'';o.t=t;o.g=gid()}
-  if(z){o.zt=z.t;o.zc=z.c}
-  const wl=jget(K.wxLoc);if(wl)o.l=[wl.name,wl.lat,wl.lon];
-  o.c=data.categories;if(data.budget)o.b=data.budget;
-  const nm=await askPass('Tên người sẽ dùng máy mới (để trống nếu chưa biết)','Tiếp',null,{text:true,empty:true,ph:'VD: Chị Lan'});
-  if(nm==null)return;if(nm)o.n=nm;
-  let enc='';
-  const pw=await askPass('🔒 Nhập mật khẩu để tạo mã cấu hình','Tạo mã',async p=>{
-    if(!await pwOk(p))return 'Sai mật khẩu';
-    enc=await qrEnc(o,p);return null;
-  });
-  if(pw==null)return;
-  $('#cfg-out').value=enc;
-  $('#qr-info').textContent='🔒 '+(o.n?'Cho: '+o.n+' · ':'')+[t?'GitHub'+(o.u?' ('+o.u+')':''):'',z?'Zalo':'',o.l?'Vị trí vườn':''].filter(Boolean).join(' + ');
-  qrOpen();
-};
-$('#qr-x').onclick=qrClose;
 $('#cfg-apply').onclick=async()=>{if(await cfgFromText($('#cfg-in').value)!==false)$('#cfg-in').value=''};
-$('#cfg-copy').onclick=async()=>{const t=$('#cfg-out').value;try{await navigator.clipboard.writeText(t);toast('Đã sao chép chuỗi cấu hình')}catch(e){const a=$('#cfg-out');a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép chuỗi cấu hình')}catch(_){toast('Hãy giữ ngón tay vào ô để sao chép')}}};
-$('#qr').onclick=e=>{if(e.target.id==='qr')qrClose()};
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#qr').classList.contains('on'))qrClose()});
 
 /* ---------- init ---------- */
 $('#a-date').value=today();dLabel();

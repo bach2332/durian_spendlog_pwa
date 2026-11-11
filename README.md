@@ -157,7 +157,7 @@ Settings → **Thiết lập nhanh**: paste the config text, tap **Áp dụng**,
 - The text is always encrypted: `DR27E1.` + base64url(`salt(16) | iv(12) | AES-256-GCM ciphertext+tag`), key = PBKDF2-SHA256(password, salt, 310,000 iterations). Plain text is rejected.
 - Inside (JSON): `{"app":"dr27","u":GitHub user,"t":token,"g":Gist ID,"zt":Zalo bot token,"zc":Zalo chat ID,"n":user name,"l":[place,lat,lon],"c":[categories],"b":monthly budget}` — every key except `app` is optional. Categories and budget are saved to the Gist (shared).
 - **One shared password** for the whole app. It is never stored in clear text: the code only holds its salted PBKDF2-SHA256 hash (`PW_HASH`) to check what is typed; nothing password-related is stored on the device. Opening Settings needs no password.
-- **Tạo mã cấu hình** (on a device that is set up): asks the new user's name and the shared password, then shows the encrypted text with a **Sao chép** button to send via Zalo.
+- The app only decrypts: there is no in-app way to create config text. It is produced outside the app with the same format and password.
 - Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
 
 ## Updating and versioning
