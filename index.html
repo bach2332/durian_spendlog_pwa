@@ -348,7 +348,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112a</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112b</footer>
 </main>
 
 <nav class="tabs">
@@ -1058,7 +1058,7 @@ $('#z-link').onclick=e=>{e.preventDefault();const t=zlTok();if(!/^[\w:.\-]+$/.te
 /* ---------- Link Gist ---------- */
 function gistLink(){
   const g=gid(),u=(localStorage.getItem(K.uid)||'').trim();
-  $('#s-gistlink').innerHTML=g?`<a href="#" id="s-gistopen">Mở Gist trên GitHub</a> <span class="mut">(${esc(mask(g))})</span>`:'';
+  $('#s-gistlink').innerHTML=g?`<a href="#" id="s-gistopen">Mở Gist trên GitHub</a>`:'';
   if(g)$('#s-gistopen').onclick=e=>{e.preventDefault();window.open('https://gist.github.com/'+(u?encodeURIComponent(u)+'/':'')+encodeURIComponent(g),'_blank','noopener')};
 }
 
