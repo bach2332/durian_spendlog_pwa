@@ -340,7 +340,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111s</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111t</footer>
 </main>
 
 <nav class="tabs">
@@ -458,7 +458,7 @@ async function save(){
     const content=JSON.stringify(data,null,1);
     if(!gid()){
       const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Sầu riêng 2027 - chi tiêu',public:false,files:{[FILE]:{content}}})});
-      localStorage.setItem(K.gist,g.id);$('#s-gist').value=g.id;gistLink();
+      localStorage.setItem(K.gist,g.id);renderSet();
       toast('Đã tạo Gist mới');
     }else{
       await gh('/gists/'+gid(),{method:'PATCH',body:JSON.stringify({files:{[FILE]:{content}}})});
@@ -630,7 +630,10 @@ function radarSVG(by){
 }
 
 function renderSet(){
-  $('#s-token').value=tok();$('#s-gist').value=gid();if(document.activeElement!==$('#s-uid'))$('#s-uid').value=localStorage.getItem(K.uid)||'';gistLink();zlFill();
+  $('#s-token').value='';$('#s-gist').value='';
+  $('#s-token').placeholder=tok()?'Đã lưu: '+mask(tok())+' (nhập để thay)':'ghp_... hoặc github_pat_...';
+  $('#s-gist').placeholder=gid()?'Đã lưu: '+mask(gid())+' (nhập để thay)':'Để trống để tạo Gist mới';
+  if(document.activeElement!==$('#s-uid'))$('#s-uid').value=localStorage.getItem(K.uid)||'';gistLink();zlFill();
   kSet($('#s-budget-in'),data.budget);
   $('#s-catlist').innerHTML=data.categories.map((c,i)=>`<div class="catrow"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${catColor(c)};margin-right:8px"></i>${esc(c)}</span><button class="sec sm" data-delcat="${i}">Xóa</button></div>`).join('');
 }
@@ -767,7 +770,7 @@ $('#e-del').onclick=async()=>{
 };
 
 $('#s-connect').onclick=async()=>{
-  const t=$('#s-token').value.trim(),g=$('#s-gist').value.trim();
+  const t=$('#s-token').value.trim()||tok(),g=$('#s-gist').value.trim()||gid();
   if(!t){toast('Nhập GitHub token');return}
   localStorage.setItem(K.token,t);localStorage.setItem(K.uid,$('#s-uid').value.trim());
   if(g){localStorage.setItem(K.gist,g);gistLink();const ok=await load();toast(ok?'Đã kết nối':'Chưa kết nối được, xem dòng trạng thái phía trên')}
@@ -987,14 +990,17 @@ $('#imp-tpl').onclick=()=>{
 
 /* ---------- Zalo Bot (tùy chọn) ---------- */
 const ZK={t:'dr_zl_token',c:'dr_zl_chat'};
+/* Che giá trị nhạy cảm: chỉ hiện vài ký tự đầu/cuối, không bao giờ hiện đủ */
+function mask(v){v=String(v||'');if(!v)return '';if(v.length<=6)return v[0]+'••••';const n=v.length>=20?4:2;return v.slice(0,n)+'••••'+v.slice(-2)}
 const ZAPI='https://bot-api.zaloplatforms.com/bot';
 function zlCfg(){let t='',c='';try{t=localStorage.getItem(ZK.t)||'';c=localStorage.getItem(ZK.c)||''}catch(e){}return t&&c?{t,c}:null}
-function zlLink(){const t=$('#z-token').value.trim();$('#z-link').href=/^[\w:.\-]+$/.test(t)?ZAPI+t+'/getUpdates':'#'}
+const zlTok=()=>{const z=zlCfg();return $('#z-token').value.trim()||(z?z.t:'')};
+function zlLink(){}
 function zlState(){$('#z-state').textContent=zlCfg()?'Đang bật: khoản chi mới hoặc được sửa sẽ gửi tin Zalo.':'Đang tắt: không gửi tin nhắn.'}
 function zlFill(){
   const z=zlCfg();
-  if(document.activeElement!==$('#z-token'))$('#z-token').value=z?z.t:'';
-  if(document.activeElement!==$('#z-chat'))$('#z-chat').value=z?z.c:'';
+  if(document.activeElement!==$('#z-token')){$('#z-token').value='';$('#z-token').placeholder=z?'Đã lưu: '+mask(z.t)+' (nhập để thay)':'123456:ABC...'}
+  if(document.activeElement!==$('#z-chat')){$('#z-chat').value='';$('#z-chat').placeholder=z?'Đã lưu: '+mask(z.c)+' (nhập để thay)':'VD: abc.xyz'}
   zlLink();zlState();
 }
 /* Gửi dạng form-urlencoded + no-cors: không cần preflight, tin vẫn đi dù Zalo không bật CORS. Gửi 1 lần, không tự gửi lại (tránh trùng tin). */
@@ -1015,16 +1021,16 @@ function zlEdit(i,oldN,oldC){
 }
 $('#z-token').addEventListener('input',zlLink);
 $('#z-save').onclick=()=>{
-  const t=$('#z-token').value.trim(),c=$('#z-chat').value.trim();
+  const z0=zlCfg(),t=$('#z-token').value.trim()||(z0?z0.t:''),c=$('#z-chat').value.trim()||(z0?z0.c:'');
   if(!t&&!c){$('#z-off').click();return}
   if(!t||!c){toast('Cần điền cả Bot token và Chat ID');return}
   if(!/^[\w:.\-]+$/.test(t)){toast('Bot token có ký tự không hợp lệ');return}
   try{localStorage.setItem(ZK.t,t);localStorage.setItem(ZK.c,c)}catch(e){toast('Không lưu được trên trình duyệt này');return}
-  zlState();toast('Đã bật thông báo Zalo');
+  zlFill();toast('Đã bật thông báo Zalo');
 };
 $('#z-off').onclick=()=>{
   try{localStorage.removeItem(ZK.t);localStorage.removeItem(ZK.c)}catch(e){}
-  $('#z-token').value='';$('#z-chat').value='';zlLink();zlState();toast('Đã tắt thông báo Zalo');
+  $('#z-token').value='';$('#z-chat').value='';zlFill();toast('Đã tắt thông báo Zalo');
 };
 $('#z-test').onclick=async()=>{
   const z=zlCfg();if(!z){toast('Điền token, Chat ID và bấm Lưu trước');return}
@@ -1038,12 +1044,13 @@ $('#z-test').onclick=async()=>{
   }
 };
 
-$('#z-link').onclick=e=>{if($('#z-link').getAttribute('href')==='#'){e.preventDefault();toast('Hãy nhập Bot token trước')}};
+$('#z-link').onclick=e=>{e.preventDefault();const t=zlTok();if(!/^[\w:.\-]+$/.test(t)){toast('Hãy nhập Bot token trước');return}window.open(ZAPI+t+'/getUpdates','_blank','noopener')};
 
 /* ---------- Link Gist ---------- */
 function gistLink(){
   const g=gid(),u=(localStorage.getItem(K.uid)||'').trim();
-  $('#s-gistlink').innerHTML=g?`<a href="https://gist.github.com/${u?encodeURIComponent(u)+'/':''}${encodeURIComponent(g)}" target="_blank" rel="noopener">Mở Gist trên GitHub</a>`:'';
+  $('#s-gistlink').innerHTML=g?`<a href="#" id="s-gistopen">Mở Gist trên GitHub</a> <span class="mut">(${esc(mask(g))})</span>`:'';
+  if(g)$('#s-gistopen').onclick=e=>{e.preventDefault();window.open('https://gist.github.com/'+(u?encodeURIComponent(u)+'/':'')+encodeURIComponent(g),'_blank','noopener')};
 }
 
 /* ---------- Popup chi tiết danh mục (Thống kê) ---------- */
@@ -1301,9 +1308,9 @@ $('#pw-see').onchange=e=>{$('#pw-in').type=e.target.checked?'text':'password'};
 async function cfgApply(o){
   const lines=[],cur=(v)=>v?v:'(trống)',z0=zlCfg(),wl0=jget(K.wxLoc);
   const row=(lb,a,b)=>lines.push('• '+lb+':\n   '+cur(a)+'  ➜  '+b);
-  if(o.t){row('GitHub',(tok()?(localStorage.getItem(K.uid)||'đã kết nối'):''),(o.u||'(không có User ID)'));
-          row('Gist',gid()?'…'+gid().slice(-6):'',o.g?'…'+o.g.slice(-6):'tạo Gist mới')}
-  if(o.zt&&o.zc)row('Zalo',z0?'Chat ID '+z0.c:'','Chat ID '+o.zc);
+  if(o.t){row('GitHub',(tok()?(localStorage.getItem(K.uid)||'đã kết nối'):''),(o.u||'(không có User ID)')+' · token '+mask(o.t));
+          row('Gist',gid()?mask(gid()):'',o.g?mask(o.g):'tạo Gist mới')}
+  if(o.zt&&o.zc)row('Zalo',z0?'Chat '+mask(z0.c):'','Chat '+mask(o.zc));
   if(o.n)row('Người dùng',who(),o.n);
   if(Array.isArray(o.l))row('Vị trí vườn',wl0&&wl0.name,o.l[0]);
   if(Array.isArray(o.c)&&o.c.length)row('Danh mục (cả nhóm)',data.categories.length+' mục',o.c.length+' mục: '+o.c.join(', '));

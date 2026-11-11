@@ -160,6 +160,7 @@ Settings → **Thiết lập nhanh**: paste the config text, tap **Áp dụng**,
 - The app only decrypts: there is no in-app way to create config text. It is produced outside the app with the same format and password.
 - Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
 - Override warning: a red ☠️ box on the card says applying replaces the current config (and the group's categories/budget on the Gist) with no undo; the confirm dialog shows each item as *current ➜ new* and the "☠️ Ghi đè" button unlocks after a 3-second countdown.
+- Secrets are never shown in full anywhere in the UI (`mask()`: first 2–4 and last 2 characters): the confirm dialog, the Settings fields (saved values appear only as a masked placeholder; leave a field empty to keep the saved value), and the Gist / getUpdates links (URLs are built only on click, not put in the page).
 
 ## Updating and versioning
 
