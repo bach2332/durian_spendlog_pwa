@@ -211,7 +211,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <section class="page" id="p-stat">
     <div class="card">
       <div class="seg" data-seg>
-        <button data-m="day">Ngày</button><button data-m="week">Tuần</button><button data-m="month">Tháng</button>
+        <button data-m="day">Ngày</button><button data-m="week">Tuần</button><button data-m="month">Tháng</button><button data-m="year">Năm</button>
       </div>
       <div class="nav"><button class="sec" data-nav="-1">‹</button><b data-label></b><button class="sec" data-nav="1">›</button></div>
       <div style="text-align:center"><div class="mut">Tổng chi</div><div class="big" id="s-total"></div></div>
@@ -329,7 +329,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111j</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111k</footer>
 </main>
 
 <nav class="tabs">
@@ -478,18 +478,21 @@ function range(){
   const a=pd(view.anchor);
   if(view.mode==='day')return[view.anchor,view.anchor];
   if(view.mode==='week'){const w=(a.getDay()+6)%7;const s=new Date(a);s.setDate(a.getDate()-w);const e=new Date(s);e.setDate(s.getDate()+6);return[ds(s),ds(e)]}
+  if(view.mode==='year')return[a.getFullYear()+'-01-01',a.getFullYear()+'-12-31'];
   const s=new Date(a.getFullYear(),a.getMonth(),1),e=new Date(a.getFullYear(),a.getMonth()+1,0);return[ds(s),ds(e)];
 }
 function label(){
   const[s,e]=range();
   if(view.mode==='day'){const d=pd(s);return dow[d.getDay()]+', '+dmy(s)}
   if(view.mode==='week')return dmy(s).slice(0,5)+' – '+dmy(e);
+  if(view.mode==='year')return 'Năm '+s.slice(0,4);
   const d=pd(s);return 'Tháng '+(d.getMonth()+1)+'/'+d.getFullYear();
 }
 function shift(n){
   const a=pd(view.anchor);
   if(view.mode==='day')a.setDate(a.getDate()+n);
   else if(view.mode==='week')a.setDate(a.getDate()+7*n);
+  else if(view.mode==='year'){a.setDate(1);a.setFullYear(a.getFullYear()+n)}
   else{a.setDate(1);a.setMonth(a.getMonth()+n)}
   view.anchor=ds(a);renderAll();
 }
@@ -558,7 +561,24 @@ function renderStat(){
   // bars by day
   const card=$('#s-bars-card');
   if(view.mode==='day'){card.style.display='none'}
+  else if(view.mode==='year'){
+    card.style.display='';card.querySelector('h2').textContent='Chi theo tháng';
+    const y=s.slice(0,4),cur=today().slice(0,7),vals=Array(12).fill(0);
+    items.forEach(i=>{vals[+i.date.slice(5,7)-1]+=i.amount});
+    const mx=Math.max(1,...vals),W=320,H=150,pl=4,pb=18,bw=(W-pl*2)/12;
+    let svg=`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Chi theo tháng">`;
+    vals.forEach((v,k)=>{
+      const h=(H-pb-16)*Math.max(0,v)/mx,xx=pl+k*bw,isT=y+'-'+String(k+1).padStart(2,'0')===cur;
+      svg+=`<rect x="${xx+bw*0.15}" y="${H-pb-h}" width="${bw*0.7}" height="${Math.max(h,v?1:0)}" rx="2" fill="${isT?'var(--warn)':'var(--acc)'}"/>`;
+      svg+=`<text x="${xx+bw/2}" y="${H-5}" text-anchor="middle">T${k+1}</text>`;
+      if(v>0)svg+=`<text x="${xx+bw/2}" y="${H-pb-h-3}" text-anchor="middle" font-size="8">${shortMoney(v).replace(' ','')}</text>`;
+    });
+    svg+='</svg>';
+    const used=vals.filter(v=>v).length||1,best=vals.indexOf(Math.max(...vals));
+    $('#s-bars').innerHTML=svg+`<div class="mut">Trung bình ${money(total/used)}/tháng (tháng có chi) · Tháng chi nhiều nhất: T${best+1} – ${money(vals[best])}</div>`;
+  }
   else{
+    card.querySelector('h2').textContent='Chi theo ngày';
     card.style.display='';
     const days=[];for(let d=pd(s);ds(d)<=e;d.setDate(d.getDate()+1))days.push(ds(d));
     const vals=days.map(x=>sum(items.filter(i=>i.date===x)));
@@ -658,6 +678,7 @@ function showPage(name){
 async function showTab(name){
   if(name==='set'&&!await unlockSet())return;
   if(name!=='set')setUnlocked=false;
+  if(name==='hist'&&view.mode==='year'){view.mode='month';renderAll()}
   showPage(name);window.scrollTo(0,0);
   if(name==='add'){const a=$('#a-amt');if(a)a.focus()}   /* mở màn nhập: con trỏ vào Số tiền, bàn phím số */
 }

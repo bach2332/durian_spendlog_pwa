@@ -14,7 +14,7 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 |---|---|
 | **Quick entry** | Amount and description on one row, category chips, one-tap date picker. Keyboard flow: Amount → Enter → Description → Enter saves. |
 | **History** | Browse by day, week (Mon–Sun) or month, filter by category, tap an entry to edit or delete. |
-| **Statistics** | Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to see the entries behind its total. |
+| **Statistics** | Day / Week / Month / Year views (default Month; Year shows monthly bars). Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to see the entries behind its total. |
 | **Filter & Review** | Flexible filter (time range, categories, keyword, amount range), pick entries, then open a review table with a grand total. Copy as tab-separated text for Excel or Google Sheets. |
 | **CSV import** | Bulk-import entries from a CSV file with a simple format (see below). |
 | **Monthly budget** | Set a limit; the progress bar turns amber at 80% and red at 100%. |
