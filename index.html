@@ -332,7 +332,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111g</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111h</footer>
 </main>
 
 <nav class="tabs">
@@ -1166,12 +1166,23 @@ let setUnlocked=false;
    Lưu (dr_bio): id passkey + bản mã hóa của mật khẩu. Không có server, không lưu mật khẩu dạng chữ. */
 const BIO_SALT=new TextEncoder().encode('dr27-settings-unlock-v1');
 const bioCfg=()=>{try{return JSON.parse(localStorage.getItem(K.bio)||'null')}catch(e){return null}};
-let bioOk=null;
-async function bioSupported(){
-  if(bioOk!==null)return bioOk;
-  try{bioOk=!!(window.PublicKeyCredential&&crypto.subtle&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())}catch(e){bioOk=false}
-  return bioOk;
+let bioWhy=undefined;   /* '' = dùng được; còn lại là lý do không dùng được */
+async function bioCheck(){
+  if(bioWhy!==undefined)return bioWhy;
+  const inApp=/Zalo|FBAN|FBAV|Instagram|Line\//i.test(navigator.userAgent);
+  if(!window.isSecureContext||!window.crypto||!crypto.subtle)bioWhy='Cần mở app bằng link https.';
+  else if(!window.PublicKeyCredential)bioWhy=inApp?'Đang mở trong trình duyệt của Zalo/Facebook. Hãy mở bằng Chrome (Android) hoặc Safari (iPhone), hoặc cài app ra màn hình chính.':'Trình duyệt này không hỗ trợ passkey. Hãy dùng Chrome (Android) hoặc Safari (iPhone).';
+  else{
+    let uv=false;try{uv=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()}catch(e){}
+    if(!uv)bioWhy=inApp?'Đang mở trong trình duyệt của Zalo/Facebook. Hãy mở bằng Chrome hoặc Safari.':'Máy chưa bật khóa màn hình / vân tay / Face ID, hoặc trình duyệt không cho dùng.';
+    else{
+      let cap=null;try{if(PublicKeyCredential.getClientCapabilities)cap=await PublicKeyCredential.getClientCapabilities()}catch(e){}
+      bioWhy=cap&&cap['extension:prf']===false?'Trình duyệt chưa hỗ trợ (cần Chrome bản mới hoặc iPhone iOS 18 trở lên).':'';
+    }
+  }
+  return bioWhy;
 }
+const bioSupported=async()=>(await bioCheck())==='';
 async function bioPrf(credId){
   const r=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:credId}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:BIO_SALT}}}}});
   const x=r.getClientExtensionResults().prf;
@@ -1213,8 +1224,9 @@ async function bioOffer(pw){
   renderBio();
 }
 async function renderBio(){
-  const sup=await bioSupported(),on=!!bioCfg(),lk=!!getLock();
-  $('#bio-box').style.display=sup&&lk?'':'none';
+  const why=await bioCheck(),on=!!bioCfg();
+  $('#bio-box').style.display='';
+  if(why){$('#bio-state').innerHTML='<b>Vân tay / khuôn mặt:</b> chưa dùng được trên máy này. '+esc(why);$('#bio-on').style.display=$('#bio-off').style.display='none';return}
   $('#bio-state').textContent=on?'Đang bật: mở Cài đặt bằng vân tay / khuôn mặt, không cần gõ mật khẩu.':'Chưa bật: có thể dùng vân tay / khuôn mặt thay cho gõ mật khẩu.';
   $('#bio-on').style.display=on?'none':'';$('#bio-off').style.display=on?'':'none';
 }
