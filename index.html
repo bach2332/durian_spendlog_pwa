@@ -332,7 +332,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111f</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111g</footer>
 </main>
 
 <nav class="tabs">
@@ -384,7 +384,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <div class="big" id="sc-total"></div>
   <div id="sc-list" style="margin-top:6px"></div>
 </div></div>
-<div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
+<div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><button type="button" class="sec" id="pw-bio" style="display:none;width:100%;margin-top:8px">🔐 Dùng vân tay / khuôn mặt</button><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
 <div id="cf"><div class="sheet"><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
 <div id="qr"><div class="sheet">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="qr-title" style="margin:0"></h2><button class="sec sm" id="qr-x" aria-label="Đóng">✕</button></div>
@@ -406,7 +406,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 <script>
 (()=>{
 const FILE='durian2027.json';
-const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock',bio:'dr_bio'};
+const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock',bio:'dr_bio',bioNo:'dr_bio_no'};
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -1204,6 +1204,14 @@ async function bioUnlock(){
   const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64u(c.iv)},key,ub64u(c.ct));
   return new TextDecoder().decode(pt);
 }
+/* Lần đầu gõ mật khẩu đúng: mời bật vân tay / khuôn mặt (hỏi 1 lần; từ chối thì không hỏi lại) */
+async function bioOffer(pw){
+  if(bioCfg()||localStorage.getItem(K.bioNo)||!await bioSupported())return;
+  if(!await askConfirm('Lần sau mở Cài đặt bằng vân tay / khuôn mặt, không cần gõ mật khẩu?\n\nMật khẩu sẽ được mã hóa và khóa bằng passkey của máy này.','Bật')){localStorage.setItem(K.bioNo,'1');return}
+  try{await bioEnable(pw);toast('Đã bật mở khóa bằng vân tay / khuôn mặt')}
+  catch(e){toast(e.name==='NotAllowedError'?'Đã hủy xác thực':(e.message||'Không bật được'))}
+  renderBio();
+}
 async function renderBio(){
   const sup=await bioSupported(),on=!!bioCfg(),lk=!!getLock();
   $('#bio-box').style.display=sup&&lk?'':'none';
@@ -1233,8 +1241,12 @@ async function unlockSet(){
     try{const pw=await bioUnlock();if(pw&&await checkLock(pw)){setUnlocked=true;return true}}
     catch(e){if(e.name!=='NotAllowedError')toast('Vân tay / khuôn mặt lỗi, hãy nhập mật khẩu')}
   }
-  const pw=await askPass('🔒 Nhập mật khẩu để mở Cài đặt','Mở',async p=>await checkLock(p)?null:'Sai mật khẩu',{forgot:resetDevice});
-  if(pw==null)return false;setUnlocked=true;return true;
+  let viaBio=false;
+  const pw=await askPass('🔒 Nhập mật khẩu để mở Cài đặt','Mở',async p=>await checkLock(p)?null:'Sai mật khẩu',{forgot:resetDevice,
+    bio:bioCfg()?async()=>{const p=await bioUnlock();if(p&&await checkLock(p)){viaBio=true;return p}throw new Error('x')}:null});
+  if(pw==null)return false;setUnlocked=true;
+  if(!viaBio)bioOffer(pw);
+  return true;
 }
 async function newPass(title){
   const p1=await askPass(title+'\nÍt nhất 8 ký tự.','Tiếp',async p=>p.length<8?'Mật khẩu cần ít nhất 8 ký tự':null);
@@ -1282,9 +1294,10 @@ function askPass(msg,yes,check,opt={}){
     const inp=$('#pw-in');$('#pw-msg').textContent=msg;$('#pw-yes').textContent=yes||'OK';$('#pw-err').textContent='';
     inp.value=opt.value||'';inp.type=opt.text?'text':'password';inp.placeholder=opt.text?(opt.ph||''):'Mật khẩu';
     $('#pw-seel').style.display=opt.text?'none':'';$('#pw-see').checked=false;
-    $('#pw-forgot').style.display=opt.forgot?'':'none';
+    $('#pw-forgot').style.display=opt.forgot?'':'none';$('#pw-bio').style.display=opt.bio?'':'none';
     $('#pw').classList.add('on');setTimeout(()=>inp.focus(),50);
-    const done=v=>{$('#pw').classList.remove('on');$('#pw-yes').onclick=$('#pw-no').onclick=inp.onkeydown=$('#pw-forgot').onclick=null;res(v)};
+    const done=v=>{$('#pw').classList.remove('on');$('#pw-yes').onclick=$('#pw-no').onclick=inp.onkeydown=$('#pw-forgot').onclick=$('#pw-bio').onclick=null;res(v)};
+    if(opt.bio)$('#pw-bio').onclick=async()=>{$('#pw-err').textContent='';try{const v=await opt.bio();if(v!=null)done(v)}catch(e){$('#pw-err').textContent=e.name==='NotAllowedError'?'Đã hủy xác thực':'Không xác thực được, hãy gõ mật khẩu'}};
     if(opt.forgot)$('#pw-forgot').onclick=async e=>{e.preventDefault();done(null);opt.forgot()};
     $('#pw-yes').onclick=async()=>{
       const v=opt.text?inp.value.trim():inp.value;if(!v&&!opt.empty){$('#pw-err').textContent=opt.text?'Nhập nội dung':'Nhập mật khẩu';return}
