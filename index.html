@@ -278,9 +278,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <div class="card">
       <h2>Thiết lập nhanh</h2>
-      <div class="mut">Máy mới: dán <b>chuỗi cấu hình</b> (bắt đầu bằng <code>DR27E1.</code>) vào ô dưới rồi bấm Áp dụng, nhập mật khẩu là xong. Hoặc quét mã QR.</div>
-      <textarea id="cfg-in" rows="3" placeholder="Dán chuỗi cấu hình DR27E1.…" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
-      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng chuỗi cấu hình</button></div>
+      <div class="mut">Dán <b>file text cấu hình</b> (dạng <code>khóa = giá trị</code>) hoặc <b>chuỗi mã hóa</b> <code>DR27E1.…</code> vào ô dưới, hay chọn file .txt, rồi bấm Áp dụng. Chuỗi mã hóa sẽ hỏi mật khẩu.</div>
+      <textarea id="cfg-in" rows="5" placeholder="github.token = github_pat_…&#10;github.gist = …&#10;user.name = Chị Lan&#10;location.name = Đắk Mil&#10;…  hoặc  DR27E1.…" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
+      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng cấu hình</button><label class="menu" style="margin:0;justify-content:center;cursor:pointer;flex:0 0 auto">📄 Chọn file .txt<input type="file" id="cfg-file" accept=".txt,text/plain" hidden></label></div>
+      <div class="row" style="margin-top:8px"><button class="sec" id="cfg-tpl">⬇️ Tải file mẫu</button><button class="sec" id="cfg-exp">⬇️ Xuất cấu hình máy này</button></div>
       <div class="mut" style="margin-top:12px">Máy đã cài: bấm <b>Tạo mã cấu hình</b>, đặt mật khẩu, rồi gửi chuỗi hoặc ảnh QR cho người mới.</div>
       <div class="row" style="margin-top:8px"><button class="sec" id="qr-show">🔑 Tạo mã cấu hình</button><button class="sec" id="qr-scan">📷 Quét mã QR</button></div>
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
@@ -343,7 +344,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111n</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111o</footer>
 </main>
 
 <nav class="tabs">
@@ -409,7 +410,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     <div class="warn" style="background:#fef3c7;color:#78350f;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px">Mã đã được <b>mã hóa</b>, người quét phải nhập đúng mật khẩu mới dùng được. Hãy báo mật khẩu qua kênh khác (nói trực tiếp, gọi điện), <b>đừng gửi chung</b> với ảnh QR.</div>
     <div class="mut" style="margin-bottom:4px"><b>Chuỗi cấu hình</b> (gửi qua Zalo, người mới dán vào ô "Thiết lập nhanh"):</div>
     <textarea id="cfg-out" rows="4" readonly style="width:100%;font-family:ui-monospace,monospace;font-size:12px;resize:none"></textarea>
-    <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép chuỗi</button></div>
+    <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép chuỗi</button><button class="sec" id="cfg-dl">⬇️ Tải file .txt</button></div>
     <div class="mut" style="margin:12px 0 0">Hoặc dùng mã QR:</div>
     <img id="qr-img" alt="Mã QR cấu hình">
     <div id="qr-info" class="mut" style="text-align:center"></div>
@@ -1171,7 +1172,7 @@ const HELP=[
 <li>Bấm <b>Lưu</b>, sau đó bấm <b>Gửi thử</b> và kiểm tra Zalo.</li>
 </ol>`},
 {id:'qr-setup',group:'D. Hướng dẫn kết nối dịch vụ',title:'3. Thiết lập nhanh (chuỗi cấu hình / QR)',html:`
-<p>Dùng khi cài app cho máy thứ hai hoặc cho người khác trong nhóm, không phải gõ lại token. Chuỗi cấu hình gồm: kết nối GitHub, Zalo, <b>tên người dùng</b> (hiện trong tin nhắn Zalo) và <b>vị trí vườn</b> (để xem thời tiết).</p>
+<p>Dùng khi cài app cho máy thứ hai hoặc cho người khác trong nhóm, không phải gõ lại token. Có 2 cách: <b>file text cấu hình</b> (bấm <b>Tải file mẫu</b>, điền rồi dán vào ô hoặc Chọn file .txt; đặt được cả danh mục và ngân sách) hoặc <b>chuỗi mã hóa</b> bên dưới. Chuỗi cấu hình gồm: kết nối GitHub, Zalo, <b>tên người dùng</b> (hiện trong tin nhắn Zalo) và <b>vị trí vườn</b> (để xem thời tiết).</p>
 <div class="flow"><div>📱 Máy đã cài<br><small>Tạo mã cấu hình</small></div><span>→</span><div>📋 Máy mới<br><small>Dán chuỗi / quét QR</small></div><span>→</span><div>✅ Tự điền<br><small>GitHub, Zalo, tên, vị trí</small></div></div>
 <ol>
 <li><b>Máy đã cài:</b> Cài đặt → Thiết lập nhanh → <b>Tạo mã cấu hình</b>, nhập <b>tên người</b> sẽ dùng máy mới, đặt <b>mật khẩu</b> (ít nhất 8 ký tự) để mã hóa. Bấm <b>Sao chép chuỗi</b> rồi gửi qua Zalo, hoặc <b>Lưu ảnh QR</b>.</li>
@@ -1350,11 +1351,17 @@ async function qrGot(txt,fromText){
     return o&&o.app===QR_APP&&(o.t||o.zt||o.l||o.n)?null:'Nội dung mã không hợp lệ';
   });
   if(pw==null||!o)return true;
+  return cfgApply(o);
+}
+/* Áp dụng cấu hình o = {u,t,g,zt,zc,n,l:[tên,lat,lon],c:[danh mục],b:ngân sách} (từ chuỗi mã hóa hoặc file text) */
+async function cfgApply(o){
   const lines=[];
   if(o.t)lines.push('GitHub: '+(o.u||'(không có User ID)')+(o.g?'\nGist: …'+o.g.slice(-6):'\nGist: tạo mới'));
   if(o.zt&&o.zc)lines.push('Zalo: bật thông báo (Chat ID '+o.zc+')');
   if(o.n)lines.push('Người dùng: '+o.n+' (tên này hiện trong tin nhắn Zalo)');
   if(Array.isArray(o.l))lines.push('Vị trí vườn (thời tiết): '+o.l[0]);
+  if(Array.isArray(o.c)&&o.c.length)lines.push('Danh mục ('+o.c.length+'): '+o.c.join(', '));
+  if(o.b!=null)lines.push('Ngân sách tháng: '+money(o.b));
   if(tok()&&o.t&&o.g&&o.g!==gid())lines.push('\nMáy này đang nối với Gist khác. Áp dụng sẽ chuyển sang Gist trong mã.');
   if(!await askConfirm('Áp dụng cấu hình này?\n\n'+lines.join('\n'),'Áp dụng'))return true;
   try{
@@ -1365,9 +1372,90 @@ async function qrGot(txt,fromText){
   }catch(e){toast('Không lưu được trên trình duyệt này');return true}
   renderWho();wlRender();wxRender();wxLoad(true);
   renderSet();zlLink();zlState();
-  if(o.t){if(o.g){const ok=await load();toast(ok?'Đã thiết lập xong':'Đã điền, nhưng chưa tải được dữ liệu')}else{await save();renderSet();toast('Đã tạo Gist mới')}}
-  else toast('Đã bật thông báo Zalo');
+  let ok=true;
+  if(o.t){if(o.g){ok=await load();if(!ok)toast('Đã điền, nhưng chưa tải được dữ liệu')}else{await save();renderSet()}}
+  const dataCh=(Array.isArray(o.c)&&o.c.length)||o.b!=null;
+  if(dataCh&&ok){if(Array.isArray(o.c)&&o.c.length)data.categories=o.c;if(o.b!=null)data.budget=o.b;renderAll();renderSet();await save()}
+  if(ok)toast('Đã áp dụng cấu hình');
   return true;
+}
+/* ---- File text cấu hình: dòng "khóa = giá trị", # là ghi chú, có thể dùng [nhóm] ---- */
+const CFG_KEYS={'github.user':'u','github.token':'t','github.gist':'g','zalo.bot_token':'zt','zalo.token':'zt','zalo.chat_id':'zc',
+  'user.name':'n','location.name':'ln','location.lat':'la','location.lon':'lo','categories':'c','budget':'b'};
+function cfgParse(txt){
+  const o={app:QR_APP},raw={},bad=[];let sec='';
+  String(txt).replace(/^\uFEFF/,'').split(/\r?\n/).forEach((ln,k)=>{
+    ln=ln.trim();if(!ln||ln[0]==='#'||ln.startsWith('//'))return;
+    const m=ln.match(/^\[([\w.]+)\]$/);if(m){sec=m[1].toLowerCase()+'.';return}
+    const i=ln.indexOf('=');if(i<0){bad.push(k+1);return}
+    let key=ln.slice(0,i).trim().toLowerCase().replace(/\s+/g,'_');const v=ln.slice(i+1).trim().replace(/^["']|["']$/g,'');
+    if(sec&&!key.includes('.')&&!CFG_KEYS[key])key=sec+key;
+    if(!CFG_KEYS[key]){bad.push(k+1);return}
+    if(v!=='')raw[CFG_KEYS[key]]=v;
+  });
+  ['u','t','g','zt','zc','n'].forEach(k=>{if(raw[k])o[k]=raw[k]});
+  if(o.zt&&!o.zc||!o.zt&&o.zc)throw new Error('Zalo cần đủ cả zalo.bot_token và zalo.chat_id');
+  if(o.g&&!o.t)throw new Error('Có github.gist nhưng thiếu github.token');
+  if(raw.c)o.c=[...new Set(raw.c.split(/[,;|]/).map(x=>x.trim()).filter(Boolean))];
+  if(raw.b!=null){const n=+String(raw.b).replace(/[.,\s₫đ]/gi,'');if(!isFinite(n)||n<0)throw new Error('budget không hợp lệ: '+raw.b);o.b=Math.round(n)}
+  if(raw.la!=null||raw.lo!=null){const la=+String(raw.la).replace(',','.'),lo=+String(raw.lo).replace(',','.');if(!isFinite(la)||!isFinite(lo)||Math.abs(la)>90||Math.abs(lo)>180)throw new Error('location.lat / location.lon không hợp lệ');o.l=[raw.ln||'Vườn',+la.toFixed(3),+lo.toFixed(3)]}
+  else if(raw.ln)o.lq=raw.ln;
+  return {o,bad};
+}
+async function cfgGeocode(q){
+  const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&language=vi&format=json&name='+encodeURIComponent(q));
+  const A=(await r.json()).results||[],x=A.find(x=>x.country_code==='VN')||A[0];
+  return x?[[x.name,x.admin1].filter(Boolean).join(', '),+x.latitude.toFixed(3),+x.longitude.toFixed(3)]:null;
+}
+async function cfgFromText(txt){
+  txt=String(txt||'').trim();if(!txt){toast('Dán nội dung cấu hình vào ô trước');return false}
+  if(txt.replace(/\s+/g,'').startsWith(QR_PFX))return qrGot(txt,true);
+  let r;try{r=cfgParse(txt)}catch(e){toast('Lỗi cấu hình: '+e.message);return false}
+  const o=r.o;
+  if(o.lq){try{o.l=await cfgGeocode(o.lq)}catch(e){}if(!o.l){toast('Không tìm được vị trí "'+o.lq+'". Ghi thêm location.lat / location.lon');return false}delete o.lq}
+  if(Object.keys(o).length<2){toast('Không thấy khóa cấu hình nào hợp lệ'+(r.bad.length?' (dòng '+r.bad.join(', ')+')':''));return false}
+  if(r.bad.length)toast('Bỏ qua dòng không hiểu: '+r.bad.slice(0,8).join(', '));
+  return cfgApply(o);
+}
+function dlText(name,txt){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
+function cfgText(v){
+  v=v||{};const L=x=>x==null?'':x;
+  return `# ==============================================
+# Sầu riêng 2027 – file cấu hình nhanh
+# Cài đặt → Thiết lập nhanh → dán nội dung này (hoặc Chọn file .txt) → Áp dụng cấu hình
+# Dòng bắt đầu bằng # là ghi chú. Để trống giá trị = không đổi mục đó.
+# ⚠️ File này chứa token ở dạng đọc được: chỉ gửi riêng, xong thì xóa.
+# ==============================================
+
+# --- GitHub (lưu dữ liệu trên Gist) ---
+github.user  = ${L(v.u)}
+github.token = ${L(v.t)}
+# Để trống github.gist để app tự tạo Gist mới
+github.gist  = ${L(v.g)}
+
+# --- Zalo Bot (thông báo nhóm) – cần đủ cả 2 dòng ---
+zalo.bot_token = ${L(v.zt)}
+zalo.chat_id   = ${L(v.zc)}
+
+# --- Người đang sử dụng (hiện ở đầu app và trong tin nhắn Zalo) ---
+user.name = ${L(v.n)}
+
+# --- Vị trí vườn (thời tiết) ---
+# Chỉ cần location.name (app tự tìm tọa độ), hoặc ghi thêm lat/lon cho chính xác
+location.name = ${L(v.l&&v.l[0])}
+location.lat  = ${L(v.l&&v.l[1])}
+location.lon  = ${L(v.l&&v.l[2])}
+
+# --- Sổ chi (áp dụng cho cả nhóm, lưu lên Gist) ---
+# Danh mục cách nhau bằng dấu phẩy
+categories = ${v.c?v.c.join(', '):''}
+# Ngân sách tháng (đồng), 0 = không đặt
+budget = ${v.b==null?'':v.b}
+`;
+}
+function cfgCurrent(){
+  const z=zlCfg(),wl=jget(K.wxLoc);
+  return {u:localStorage.getItem(K.uid)||'',t:tok()||'',g:gid()||'',zt:z?z.t:'',zc:z?z.c:'',n:who(),l:wl?[wl.name,wl.lat,wl.lon]:null,c:data.categories,b:data.budget||0};
 }
 $('#qr-scan').onclick=async()=>{
   qrOpen('scan');$('#qr-msg').textContent='Đang mở camera...';
@@ -1424,7 +1512,15 @@ $('#qr-show').onclick=async()=>{
   qrOpen('show');
 };
 $('#qr-x').onclick=qrClose;
-$('#cfg-apply').onclick=async()=>{const t=$('#cfg-in').value.trim();if(!t){toast('Dán chuỗi cấu hình vào ô trước');return}if(await qrGot(t,true)!==false)$('#cfg-in').value=''};
+$('#cfg-apply').onclick=async()=>{if(await cfgFromText($('#cfg-in').value)!==false)$('#cfg-in').value=''};
+$('#cfg-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  if(f.size>200000){toast('File quá lớn');return}
+  const t=await f.text();$('#cfg-in').value=t;if(await cfgFromText(t)!==false)$('#cfg-in').value=''};
+$('#cfg-tpl').onclick=()=>{dlText('sau-rieng-cau-hinh-mau.txt',cfgText({u:'',c:DEF_CATS,b:0}));toast('Đã tải file mẫu')};
+$('#cfg-exp').onclick=async()=>{
+  if(!await askConfirm('Xuất toàn bộ cấu hình máy này ra file .txt?\n\nFile chứa token GitHub và Zalo ở dạng đọc được. Chỉ gửi riêng cho người tin cậy, dùng xong thì xóa. Muốn gửi an toàn hơn, dùng "Tạo mã cấu hình" (có mật khẩu).','Xuất file'))return;
+  dlText('sau-rieng-cau-hinh.txt',cfgText(cfgCurrent()));toast('Đã xuất file cấu hình')};
+$('#cfg-dl').onclick=()=>{dlText('sau-rieng-cau-hinh-ma-hoa.txt',$('#cfg-out').value+'\n');toast('Đã tải file .txt')};
 $('#cfg-copy').onclick=async()=>{const t=$('#cfg-out').value;try{await navigator.clipboard.writeText(t);toast('Đã sao chép chuỗi cấu hình')}catch(e){const a=$('#cfg-out');a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép chuỗi cấu hình')}catch(_){toast('Hãy giữ ngón tay vào ô để sao chép')}}};
 $('#qr').onclick=e=>{if(e.target.id==='qr')qrClose()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#qr').classList.contains('on'))qrClose()});

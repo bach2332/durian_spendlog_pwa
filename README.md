@@ -150,6 +150,21 @@ Technical notes and caveats:
 
 A strip under the title shows current weather (temperature, condition, humidity, wind) and a 3-day outlook with rain chance, from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location: Settings → **Vị trí vườn** (search by place name via Open-Meteo geocoding, or use the phone's current position); before it is set, tapping the strip asks for the current position. Cached 30 minutes in `dr_wx`; tap the strip to refresh.
 
+## Config text file
+
+Settings → **Thiết lập nhanh** also accepts a plain-text config (paste it or **Chọn file .txt**), then **Áp dụng cấu hình** shows a summary to confirm. **Tải file mẫu** downloads a template; **Xuất cấu hình máy này** exports the current device's config (contains tokens in readable form — confirm prompt). Format: `key = value`, `#` comments, empty value = leave unchanged, optional `[group]` headers (`[user]` + `name = …` = `user.name = …`).
+
+| Key | Sets |
+|---|---|
+| `github.user`, `github.token`, `github.gist` | GitHub connection (empty gist = create a new Gist) |
+| `zalo.bot_token`, `zalo.chat_id` | Zalo notifications (both required together) |
+| `user.name` | Current user (header, `by` on entries, Zalo messages) |
+| `location.name`, `location.lat`, `location.lon` | Orchard location for weather (name only = geocoded via Open-Meteo, first Vietnam match) |
+| `categories` | Expense categories, comma-separated (saved to the Gist for everyone) |
+| `budget` | Monthly budget in đồng (`50.000.000` accepted; saved to the Gist) |
+
+Unknown lines are skipped and reported by line number. A text starting with `DR27E1.` is treated as the encrypted config below and asks for the password.
+
 ## QR quick setup
 
 Settings → **Thiết lập nhanh**. The simplest way is the **config string**: **Tạo mã cấu hình** shows the encrypted string (`DR27E1.…`) with a **Sao chép chuỗi** button; on the new device paste it into the text box, tap **Áp dụng chuỗi cấu hình** and enter the password. The same string is also shown as a QR code.
