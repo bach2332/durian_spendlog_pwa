@@ -27,6 +27,12 @@ input,select{width:100%;font:inherit;color:var(--text);background:var(--bg);bord
 #cf.on{display:flex}
 #cf .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
 #cf-msg{white-space:pre-line;margin-bottom:16px}
+.danger{background:#fde8e8;color:#7f1d1d;border:2px solid #dc2626;border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.45}
+.danger .skull{font-size:34px;line-height:1;float:left;margin:0 10px 4px 0}
+.danger b.t{display:block;font-size:15px;letter-spacing:.3px;color:#b91c1c}
+@media(prefers-color-scheme:dark){.danger{background:#3b1212;color:#fecaca;border-color:#ef4444}.danger b.t{color:#fca5a5}}
+#cf-head:empty{display:none}
+#cf-head{margin-bottom:12px}
 input:disabled{opacity:.6;cursor:not-allowed}
 input:focus,select:focus{outline:2px solid var(--acc);border-color:transparent}
 button{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:12px 16px;min-height:46px;background:var(--acc);color:var(--onacc);font-weight:600}
@@ -270,9 +276,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <div class="card">
       <h2>Thiết lập nhanh</h2>
-      <div class="mut">Dán đoạn text cấu hình vào ô dưới rồi bấm <b>Áp dụng</b>, nhập mật khẩu là xong.</div>
+      <div class="danger" style="margin-bottom:10px"><span class="skull">☠️</span><b class="t">CẢNH BÁO: GHI ĐÈ TOÀN BỘ CẤU HÌNH</b>Áp dụng sẽ <b>thay thế</b> cấu hình đang có trên máy này: token GitHub, Gist, Zalo, tên người dùng, vị trí vườn. Danh mục và ngân sách bị ghi đè cho <b>cả nhóm</b> trên Gist. <b>Không hoàn tác được.</b> Chỉ dán đoạn text từ người quản lý nhóm.</div>
+      <div class="mut">Dán đoạn text cấu hình vào ô dưới rồi bấm <b>Áp dụng</b>, nhập mật khẩu.</div>
       <textarea id="cfg-in" rows="5" placeholder="Dán đoạn text cấu hình vào đây" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
-      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng</button></div>
+      <div class="row" style="margin-top:8px"><button class="bad" id="cfg-apply">☠️ Áp dụng (ghi đè)</button></div>
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
     </div>
     <div class="card">
@@ -333,7 +340,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111r</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111s</footer>
 </main>
 
 <nav class="tabs">
@@ -386,7 +393,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <div id="sc-list" style="margin-top:6px"></div>
 </div></div>
 <div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
-<div id="cf"><div class="sheet"><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
+<div id="cf"><div class="sheet"><div id="cf-head"></div><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
 <div id="toast"></div>
 
 <script>
@@ -709,10 +716,14 @@ $('#a-save').onclick=()=>{
 $('#a-amt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#a-note').focus()}});
 
 /* Hộp xác nhận tự vẽ (hộp thoại gốc của trình duyệt có thể bị chặn) */
-function askConfirm(msg,yes){
+function askConfirm(msg,yes,opt={}){
   return new Promise(res=>{
-    $('#cf-msg').textContent=msg;$('#cf-yes').textContent=yes||'Xác nhận';$('#cf').classList.add('on');
-    const done=v=>{$('#cf').classList.remove('on');$('#cf-yes').onclick=$('#cf-no').onclick=$('#cf').onclick=null;res(v)};
+    $('#cf-head').innerHTML=opt.danger||'';
+    $('#cf-msg').textContent=msg;const lbl=yes||'Xác nhận',btn=$('#cf-yes');btn.textContent=lbl;btn.disabled=false;btn.style.opacity='';$('#cf').classList.add('on');
+    let tm=null;
+    if(opt.wait){let n=opt.wait;btn.disabled=true;btn.style.opacity=.5;btn.textContent=lbl+' ('+n+')';
+      tm=setInterval(()=>{n--;if(n>0)btn.textContent=lbl+' ('+n+')';else{clearInterval(tm);btn.disabled=false;btn.style.opacity='';btn.textContent=lbl}},1000)}
+    const done=v=>{clearInterval(tm);btn.disabled=false;btn.style.opacity='';$('#cf-head').innerHTML='';$('#cf').classList.remove('on');$('#cf-yes').onclick=$('#cf-no').onclick=$('#cf').onclick=null;res(v)};
     $('#cf-yes').onclick=()=>done(true);$('#cf-no').onclick=()=>done(false);
     $('#cf').onclick=e=>{if(e.target.id==='cf')done(false)};
   });
@@ -1288,15 +1299,18 @@ function askPass(msg,yes,check,opt={}){
 $('#pw-see').onchange=e=>{$('#pw-in').type=e.target.checked?'text':'password'};
 /* Áp dụng cấu hình o = {u,t,g,zt,zc,n,l:[tên,lat,lon],c:[danh mục],b:ngân sách} (từ chuỗi mã hóa hoặc file text) */
 async function cfgApply(o){
-  const lines=[];
-  if(o.t)lines.push('GitHub: '+(o.u||'(không có User ID)')+(o.g?'\nGist: …'+o.g.slice(-6):'\nGist: tạo mới'));
-  if(o.zt&&o.zc)lines.push('Zalo: bật thông báo (Chat ID '+o.zc+')');
-  if(o.n)lines.push('Người dùng: '+o.n+' (tên này hiện trong tin nhắn Zalo)');
-  if(Array.isArray(o.l))lines.push('Vị trí vườn (thời tiết): '+o.l[0]);
-  if(Array.isArray(o.c)&&o.c.length)lines.push('Danh mục ('+o.c.length+'): '+o.c.join(', '));
-  if(o.b!=null)lines.push('Ngân sách tháng: '+money(o.b));
-  if(tok()&&o.t&&o.g&&o.g!==gid())lines.push('\nMáy này đang nối với Gist khác. Áp dụng sẽ chuyển sang Gist trong mã.');
-  if(!await askConfirm('Áp dụng cấu hình này?\n\n'+lines.join('\n'),'Áp dụng'))return true;
+  const lines=[],cur=(v)=>v?v:'(trống)',z0=zlCfg(),wl0=jget(K.wxLoc);
+  const row=(lb,a,b)=>lines.push('• '+lb+':\n   '+cur(a)+'  ➜  '+b);
+  if(o.t){row('GitHub',(tok()?(localStorage.getItem(K.uid)||'đã kết nối'):''),(o.u||'(không có User ID)'));
+          row('Gist',gid()?'…'+gid().slice(-6):'',o.g?'…'+o.g.slice(-6):'tạo Gist mới')}
+  if(o.zt&&o.zc)row('Zalo',z0?'Chat ID '+z0.c:'','Chat ID '+o.zc);
+  if(o.n)row('Người dùng',who(),o.n);
+  if(Array.isArray(o.l))row('Vị trí vườn',wl0&&wl0.name,o.l[0]);
+  if(Array.isArray(o.c)&&o.c.length)row('Danh mục (cả nhóm)',data.categories.length+' mục',o.c.length+' mục: '+o.c.join(', '));
+  if(o.b!=null)row('Ngân sách tháng (cả nhóm)',data.budget?money(data.budget):'',money(o.b));
+  if(tok()&&o.t&&o.g&&o.g!==gid())lines.push('\n⚠️ Máy này sẽ CHUYỂN sang Gist khác: dữ liệu đang xem sẽ được thay bằng dữ liệu của Gist mới.');
+  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Các mục dưới đây sẽ bị thay thế. Kiểm tra kỹ trước khi bấm.</div>';
+  if(!await askConfirm(lines.join('\n'),'☠️ Ghi đè',{danger:head,wait:3}))return true;
   try{
     if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
