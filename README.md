@@ -14,7 +14,7 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 |---|---|
 | **Quick entry** | Amount and description on one row, category chips, one-tap date picker. Keyboard flow: Amount → Enter → Description → Enter saves. |
 | **History** | Browse by day, week (Mon–Sun) or month, filter by category, tap an entry to edit or delete. |
-| **Statistics** | Daily bar chart, per-category breakdown with percentages, monthly budget progress. Tap a category to see the entries behind its total. |
+| **Statistics** | Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category), monthly budget progress. Tap a category to see the entries behind its total. |
 | **Filter & Review** | Flexible filter (time range, categories, keyword, amount range), pick entries, then open a review table with a grand total. Copy as tab-separated text for Excel or Google Sheets. |
 | **CSV import** | Bulk-import entries from a CSV file with a simple format (see below). |
 | **Monthly budget** | Set a limit; the progress bar turns amber at 80% and red at 100%. |
@@ -146,7 +146,6 @@ Technical notes and caveats:
 
 - **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It can come from the setup QR (`"n"` field).
 - **Mật khẩu Cài đặt**: there is a built-in group default (only its PBKDF2 hash is in the code, `DEF_LOCK`); each device can change it, and "Quên mật khẩu?" returns to the default. Opening the Settings tab always asks for the password; it locks again when you leave the tab or the app goes to the background. Only a salted PBKDF2-SHA256 hash (310,000 iterations) is stored (`dr_lock`), never the password. Scanning a setup QR sets the QR password as this device's Settings password. "Quên mật khẩu?" wipes the device's config (token, Gist ID, Zalo, name, password; Gist data is untouched) so it can be set up again.
-- **Vân tay / khuôn mặt**: Settings → "Bật mở bằng vân tay / khuôn mặt" (shown when a Settings password exists and the device has a platform authenticator). It creates a passkey (WebAuthn, `userVerification: required`) and uses the **PRF extension** to get a 32-byte secret only after biometric verification; that secret is the AES-GCM key that encrypts the Settings password (`dr_bio`: credential id + IV + ciphertext). The first time the password is typed correctly, the app offers to enable it (asked once; a "no" is remembered in `dr_bio_no`). Opening Settings then tries biometrics first; if cancelled, the password box appears with a "Dùng vân tay / khuôn mặt" retry button. Changing the password re-wraps it; applying a setup QR or "Quên mật khẩu?" removes it. Needs a recent Android Chrome (Google Password Manager passkeys) or iOS 18+ Safari.
 - This lock protects the screen, not the stored token: `localStorage` is plain text on the device.
 
 ## QR quick setup

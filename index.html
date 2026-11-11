@@ -218,6 +218,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <div class="card" id="s-bars-card"><h2>Chi theo ngày</h2><div id="s-bars"></div></div>
     <div class="card"><h2>Theo danh mục</h2><div id="s-cats"></div></div>
+    <div class="card"><h2>Radar danh mục</h2><div id="s-radar"></div></div>
     <div class="card" id="s-budget"></div>
   </section>
 
@@ -263,10 +264,6 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <h2 style="margin-top:16px">Mật khẩu Cài đặt</h2>
       <div class="mut" id="lk-state"></div>
       <div class="row" style="margin-top:10px"><button class="sec" id="lk-set"></button></div>
-      <div id="bio-box" style="display:none;margin-top:12px">
-        <div class="mut" id="bio-state"></div>
-        <div class="row" style="margin-top:8px"><button class="sec" id="bio-on">🔐 Bật mở bằng vân tay / khuôn mặt</button><button class="sec" id="bio-off" style="display:none">Tắt vân tay / khuôn mặt</button></div>
-      </div>
     </div>
     <div class="card">
       <h2>Thiết lập nhanh bằng QR</h2>
@@ -332,7 +329,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111h</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111i</footer>
 </main>
 
 <nav class="tabs">
@@ -384,7 +381,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <div class="big" id="sc-total"></div>
   <div id="sc-list" style="margin-top:6px"></div>
 </div></div>
-<div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><button type="button" class="sec" id="pw-bio" style="display:none;width:100%;margin-top:8px">🔐 Dùng vân tay / khuôn mặt</button><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
+<div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
 <div id="cf"><div class="sheet"><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
 <div id="qr"><div class="sheet">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="qr-title" style="margin:0"></h2><button class="sec sm" id="qr-x" aria-label="Đóng">✕</button></div>
@@ -406,7 +403,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 <script>
 (()=>{
 const FILE='durian2027.json';
-const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock',bio:'dr_bio',bioNo:'dr_bio_no'};
+const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock'};
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -581,7 +578,37 @@ function renderStat(){
   const by={};items.forEach(i=>by[i.category]=(by[i.category]||0)+i.amount);
   const arr=Object.entries(by).filter(x=>x[1]!==0).sort((a,b)=>b[1]-a[1]);
   $('#s-cats').innerHTML=arr.length?arr.map(([c,v])=>`<div class="cr" data-sc="${esc(c)}" role="button" tabindex="0" style="cursor:pointer"><div class="t"><span>${esc(c)} <span class="mut">›</span></span><span><b>${money(v)}</b> <span class="mut">${Math.round(v/total*100)}%</span></span></div><div class="bar"><i style="width:${v/total*100}%;background:${catColor(c)}"></i></div></div>`).join(''):'<div class="mut">Chưa có dữ liệu.</div>';
+  $('#s-radar').innerHTML=radarSVG(by);
   $('#s-budget').innerHTML=budgetHTML();
+}
+/* Radar: mỗi trục là 1 danh mục trong danh sách hiện tại, độ dài = tổng chi của danh mục trong kỳ */
+const shortMoney=v=>v>=1e9?(v/1e9).toFixed(1).replace(/\.0$/,'').replace('.',',')+' tỷ':v>=1e6?(v/1e6).toFixed(1).replace(/\.0$/,'').replace('.',',')+'tr':v>=1e3?Math.round(v/1e3)+'k':v>0?String(v):'0';
+function radarSVG(by){
+  const cats=data.categories,n=cats.length;
+  if(n<3)return '<div class="mut">Cần ít nhất 3 danh mục để vẽ radar.</div>';
+  const W=340,H=310,cx=W/2,cy=H/2+4,Rr=96;
+  const vals=cats.map(c=>Math.max(0,by[c]||0)),mx=Math.max(...vals);
+  const ang=k=>-Math.PI/2+k*2*Math.PI/n,pt=(k,r)=>[cx+r*Math.cos(ang(k)),cy+r*Math.sin(ang(k))];
+  const poly=r=>cats.map((_,k)=>pt(k,r).map(x=>x.toFixed(1)).join(',')).join(' ');
+  let g='';
+  for(let l=1;l<=4;l++)g+=`<polygon points="${poly(Rr*l/4)}" fill="none" stroke="var(--line)" stroke-width="1"/>`;
+  cats.forEach((_,k)=>{const[x,y]=pt(k,Rr);g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--line)" stroke-width="1"/>`});
+  let d='';
+  if(mx>0){
+    const ps=vals.map((v,k)=>pt(k,Rr*v/mx));
+    d+=`<polygon points="${ps.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" fill="var(--acc)" fill-opacity=".22" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>`;
+    ps.forEach((p,k)=>{if(vals[k]>0)d+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="${catColor(cats[k])}" stroke="var(--card)" stroke-width="1.5"/>`});
+  }
+  let lb='';
+  cats.forEach((c,k)=>{
+    const[x,y]=pt(k,Rr+16),co=Math.cos(ang(k)),si=Math.sin(ang(k));
+    const anc=Math.abs(co)<.25?'middle':co>0?'start':'end',dy=si<-.5?-10:si>.5?6:-2;
+    const nm=c.length>12?c.slice(0,11)+'…':c;
+    lb+=`<g data-sc="${esc(c)}" style="cursor:pointer"><text x="${x.toFixed(1)}" y="${(y+dy).toFixed(1)}" text-anchor="${anc}" font-size="12" font-weight="600" fill="var(--text)">${esc(nm)}</text>`+
+        `<text x="${x.toFixed(1)}" y="${(y+dy+14).toFixed(1)}" text-anchor="${anc}" font-size="11" fill="var(--mut)">${shortMoney(vals[k])}</text></g>`;
+  });
+  const note=mx>0?'Chạm tên danh mục để xem chi tiết. Đỉnh ngoài cùng = '+money(mx)+'.':'Chưa có khoản chi trong kỳ này.';
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Radar chi theo danh mục" style="display:block;max-width:420px;margin:0 auto;overflow:visible">${g}${d}${lb}</svg><div class="mut" style="text-align:center">${note}</div>`;
 }
 
 function renderSet(){
@@ -1014,6 +1041,7 @@ function showCatDetail(cat){
 }
 const closeSc=()=>$('#sc').classList.remove('on');
 $('#s-cats').onclick=e=>{const r=e.target.closest('[data-sc]');if(r)showCatDetail(r.dataset.sc)};
+$('#s-radar').onclick=e=>{const r=e.target.closest('[data-sc]');if(r)showCatDetail(r.dataset.sc)};
 $('#s-cats').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){const r=e.target.closest('[data-sc]');if(r){e.preventDefault();showCatDetail(r.dataset.sc)}}};
 $('#sc-x').onclick=closeSc;
 $('#sc').onclick=e=>{if(e.target.id==='sc')closeSc()};
@@ -1112,7 +1140,6 @@ const HELP=[
 <li><b>Máy mới:</b> mở app → Cài đặt → <b>Quét mã QR</b>, cho phép dùng camera, đưa mã vào khung. Nếu đã nhận ảnh QR qua Zalo thì bấm <b>Chọn ảnh có mã QR</b>.</li>
 <li>Nhập <b>mật khẩu</b> để giải mã. App hiện tóm tắt cấu hình (kể cả tên người dùng), bấm <b>Áp dụng</b> là xong, app tự tải dữ liệu. Mật khẩu vừa nhập trở thành <b>mật khẩu Cài đặt</b> của máy mới.</li>
 </ol>
-<p><b>Vân tay / khuôn mặt:</b> sau khi có mật khẩu Cài đặt, vào Cài đặt → <b>Bật mở bằng vân tay / khuôn mặt</b>, nhập mật khẩu một lần và xác thực. Từ đó mở Cài đặt chỉ cần quét vân tay hoặc khuôn mặt; bấm Hủy thì vẫn gõ mật khẩu được. Cần Android có Chrome mới, hoặc iPhone iOS 18 trở lên.</p>
 <div class="warn">Mã QR được mã hóa AES-256 bằng mật khẩu bạn đặt; không có mật khẩu thì không đọc được token. Báo mật khẩu riêng (nói trực tiếp, gọi điện), đừng gửi chung với ảnh QR. Mật khẩu không lưu trong app, quên thì tạo mã mới. Nếu lộ cả mã lẫn mật khẩu: vào GitHub xóa token cũ, tạo token mới rồi tạo lại mã QR.</div>`}
 ];
 function renderHelp(){
@@ -1154,93 +1181,10 @@ const getLock=()=>myLock()||DEF_LOCK;
 async function setLock(pw){const salt=crypto.getRandomValues(new Uint8Array(16));localStorage.setItem(K.lock,JSON.stringify({s:b64u(salt),h:b64u(await pwHash(pw,salt))}));renderLock()}
 async function checkLock(pw){const l=getLock();if(!l)return true;return b64u(await pwHash(pw,ub64u(l.s)))===l.h}
 function renderLock(){
-  renderBio();
   $('#lk-state').textContent=myLock()?'Mỗi lần mở Cài đặt phải nhập mật khẩu (đã đổi khỏi mật khẩu mặc định).':'Mỗi lần mở Cài đặt phải nhập mật khẩu. Đang dùng mật khẩu mặc định của nhóm.';
   $('#lk-set').textContent='Đổi mật khẩu';
 }
 let setUnlocked=false;
-
-/* ---------- Mở khóa bằng vân tay / khuôn mặt (passkey + PRF) ----------
-   Passkey tạo trên máy, xác thực bằng sinh trắc học. Tiện ích PRF trả về 32 byte bí mật
-   chỉ có được sau khi xác thực -> dùng làm khóa AES-GCM để mã hóa mật khẩu Cài đặt.
-   Lưu (dr_bio): id passkey + bản mã hóa của mật khẩu. Không có server, không lưu mật khẩu dạng chữ. */
-const BIO_SALT=new TextEncoder().encode('dr27-settings-unlock-v1');
-const bioCfg=()=>{try{return JSON.parse(localStorage.getItem(K.bio)||'null')}catch(e){return null}};
-let bioWhy=undefined;   /* '' = dùng được; còn lại là lý do không dùng được */
-async function bioCheck(){
-  if(bioWhy!==undefined)return bioWhy;
-  const inApp=/Zalo|FBAN|FBAV|Instagram|Line\//i.test(navigator.userAgent);
-  if(!window.isSecureContext||!window.crypto||!crypto.subtle)bioWhy='Cần mở app bằng link https.';
-  else if(!window.PublicKeyCredential)bioWhy=inApp?'Đang mở trong trình duyệt của Zalo/Facebook. Hãy mở bằng Chrome (Android) hoặc Safari (iPhone), hoặc cài app ra màn hình chính.':'Trình duyệt này không hỗ trợ passkey. Hãy dùng Chrome (Android) hoặc Safari (iPhone).';
-  else{
-    let uv=false;try{uv=await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable()}catch(e){}
-    if(!uv)bioWhy=inApp?'Đang mở trong trình duyệt của Zalo/Facebook. Hãy mở bằng Chrome hoặc Safari.':'Máy chưa bật khóa màn hình / vân tay / Face ID, hoặc trình duyệt không cho dùng.';
-    else{
-      let cap=null;try{if(PublicKeyCredential.getClientCapabilities)cap=await PublicKeyCredential.getClientCapabilities()}catch(e){}
-      bioWhy=cap&&cap['extension:prf']===false?'Trình duyệt chưa hỗ trợ (cần Chrome bản mới hoặc iPhone iOS 18 trở lên).':'';
-    }
-  }
-  return bioWhy;
-}
-const bioSupported=async()=>(await bioCheck())==='';
-async function bioPrf(credId){
-  const r=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:credId}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:BIO_SALT}}}}});
-  const x=r.getClientExtensionResults().prf;
-  if(!x||!x.results||!x.results.first)throw new Error('Thiết bị không hỗ trợ khóa sinh trắc học cho web (PRF)');
-  return crypto.subtle.importKey('raw',x.results.first,'AES-GCM',false,['encrypt','decrypt']);
-}
-async function bioWrap(credId,key,pw){
-  const iv=crypto.getRandomValues(new Uint8Array(12));
-  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(pw)));
-  localStorage.setItem(K.bio,JSON.stringify({id:b64u(new Uint8Array(credId)),iv:b64u(iv),ct:b64u(ct)}));
-}
-async function bioEnable(pw){
-  const name=(who()||'Người dùng')+' · Sầu riêng 2027';
-  const cred=await navigator.credentials.create({publicKey:{
-    challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'Sầu riêng 2027'},
-    user:{id:crypto.getRandomValues(new Uint8Array(16)),name,displayName:name},
-    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
-    authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},
-    timeout:60000,extensions:{prf:{eval:{first:BIO_SALT}}}}});
-  const x=cred.getClientExtensionResults().prf;
-  if(!x||x.enabled===false)throw new Error('Thiết bị/trình duyệt này chưa hỗ trợ mở khóa web bằng sinh trắc học');
-  let key;
-  if(x.results&&x.results.first)key=await crypto.subtle.importKey('raw',x.results.first,'AES-GCM',false,['encrypt','decrypt']);
-  else key=await bioPrf(cred.rawId);   /* một số máy chỉ trả khóa ở lần xác thực sau */
-  await bioWrap(cred.rawId,key,pw);
-}
-async function bioUnlock(){
-  const c=bioCfg();if(!c)return null;
-  const key=await bioPrf(ub64u(c.id));
-  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64u(c.iv)},key,ub64u(c.ct));
-  return new TextDecoder().decode(pt);
-}
-/* Lần đầu gõ mật khẩu đúng: mời bật vân tay / khuôn mặt (hỏi 1 lần; từ chối thì không hỏi lại) */
-async function bioOffer(pw){
-  if(bioCfg()||localStorage.getItem(K.bioNo)||!await bioSupported())return;
-  if(!await askConfirm('Lần sau mở Cài đặt bằng vân tay / khuôn mặt, không cần gõ mật khẩu?\n\nMật khẩu sẽ được mã hóa và khóa bằng passkey của máy này.','Bật')){localStorage.setItem(K.bioNo,'1');return}
-  try{await bioEnable(pw);toast('Đã bật mở khóa bằng vân tay / khuôn mặt')}
-  catch(e){toast(e.name==='NotAllowedError'?'Đã hủy xác thực':(e.message||'Không bật được'))}
-  renderBio();
-}
-async function renderBio(){
-  const why=await bioCheck(),on=!!bioCfg();
-  $('#bio-box').style.display='';
-  if(why){$('#bio-state').innerHTML='<b>Vân tay / khuôn mặt:</b> chưa dùng được trên máy này. '+esc(why);$('#bio-on').style.display=$('#bio-off').style.display='none';return}
-  $('#bio-state').textContent=on?'Đang bật: mở Cài đặt bằng vân tay / khuôn mặt, không cần gõ mật khẩu.':'Chưa bật: có thể dùng vân tay / khuôn mặt thay cho gõ mật khẩu.';
-  $('#bio-on').style.display=on?'none':'';$('#bio-off').style.display=on?'':'none';
-}
-$('#bio-on').onclick=async()=>{
-  const pw=await askPass('Nhập mật khẩu Cài đặt hiện tại để bật vân tay / khuôn mặt','Tiếp',async p=>await checkLock(p)?null:'Sai mật khẩu');
-  if(pw==null)return;
-  try{await bioEnable(pw);toast('Đã bật mở khóa bằng vân tay / khuôn mặt')}
-  catch(e){toast(e.name==='NotAllowedError'?'Đã hủy xác thực':(e.message||'Không bật được'))}
-  renderBio();
-};
-$('#bio-off').onclick=async()=>{
-  if(!await askConfirm('Tắt mở khóa bằng vân tay / khuôn mặt trên máy này?\n(Passkey vẫn nằm trong trình quản lý mật khẩu của máy, có thể xóa thủ công.)','Tắt'))return;
-  localStorage.removeItem(K.bio);renderBio();toast('Đã tắt');
-};
 async function resetDevice(){
   if(!await askConfirm('Quên mật khẩu: xóa toàn bộ cấu hình trên máy này?\n(token GitHub, Gist ID, Zalo, tên người dùng; mật khẩu Cài đặt trở về mặc định)\n\nDữ liệu trên Gist vẫn còn. Sau đó quét lại mã QR để thiết lập.','Xóa cấu hình'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));Object.values(ZK).forEach(k=>localStorage.removeItem(k));
@@ -1249,16 +1193,8 @@ async function resetDevice(){
 }
 async function unlockSet(){
   if(setUnlocked||!getLock())return true;
-  if(bioCfg()){
-    try{const pw=await bioUnlock();if(pw&&await checkLock(pw)){setUnlocked=true;return true}}
-    catch(e){if(e.name!=='NotAllowedError')toast('Vân tay / khuôn mặt lỗi, hãy nhập mật khẩu')}
-  }
-  let viaBio=false;
-  const pw=await askPass('🔒 Nhập mật khẩu để mở Cài đặt','Mở',async p=>await checkLock(p)?null:'Sai mật khẩu',{forgot:resetDevice,
-    bio:bioCfg()?async()=>{const p=await bioUnlock();if(p&&await checkLock(p)){viaBio=true;return p}throw new Error('x')}:null});
-  if(pw==null)return false;setUnlocked=true;
-  if(!viaBio)bioOffer(pw);
-  return true;
+  const pw=await askPass('🔒 Nhập mật khẩu để mở Cài đặt','Mở',async p=>await checkLock(p)?null:'Sai mật khẩu',{forgot:resetDevice});
+  if(pw==null)return false;setUnlocked=true;return true;
 }
 async function newPass(title){
   const p1=await askPass(title+'\nÍt nhất 8 ký tự.','Tiếp',async p=>p.length<8?'Mật khẩu cần ít nhất 8 ký tự':null);
@@ -1266,15 +1202,7 @@ async function newPass(title){
   const p2=await askPass('Nhập lại mật khẩu để xác nhận','Lưu',async p=>p===p1?null:'Hai lần nhập không khớp');
   return p2==null?null:p1;
 }
-$('#lk-set').onclick=async()=>{
-  const p=await newPass('Đặt mật khẩu Cài đặt mới.');if(p==null)return;
-  await setLock(p);
-  const c=bioCfg();
-  if(c){try{await bioWrap(ub64u(c.id),await bioPrf(ub64u(c.id)),p);toast('Đã đổi mật khẩu, vân tay / khuôn mặt vẫn dùng được')}
-        catch(e){localStorage.removeItem(K.bio);toast('Đã đổi mật khẩu. Hãy bật lại vân tay / khuôn mặt')}}
-  else toast('Đã lưu mật khẩu Cài đặt');
-  renderBio();
-};
+$('#lk-set').onclick=async()=>{const p=await newPass('Đặt mật khẩu Cài đặt mới.');if(p==null)return;await setLock(p);toast('Đã lưu mật khẩu Cài đặt')};
 $('#u-save').onclick=()=>{const n=$('#u-name').value.trim();setWho(n);toast(n?'Đã lưu: '+n:'Đã xóa tên người dùng')};
 $('#u-name').onkeydown=e=>{if(e.key==='Enter')$('#u-save').click()};
 
@@ -1306,10 +1234,9 @@ function askPass(msg,yes,check,opt={}){
     const inp=$('#pw-in');$('#pw-msg').textContent=msg;$('#pw-yes').textContent=yes||'OK';$('#pw-err').textContent='';
     inp.value=opt.value||'';inp.type=opt.text?'text':'password';inp.placeholder=opt.text?(opt.ph||''):'Mật khẩu';
     $('#pw-seel').style.display=opt.text?'none':'';$('#pw-see').checked=false;
-    $('#pw-forgot').style.display=opt.forgot?'':'none';$('#pw-bio').style.display=opt.bio?'':'none';
+    $('#pw-forgot').style.display=opt.forgot?'':'none';
     $('#pw').classList.add('on');setTimeout(()=>inp.focus(),50);
-    const done=v=>{$('#pw').classList.remove('on');$('#pw-yes').onclick=$('#pw-no').onclick=inp.onkeydown=$('#pw-forgot').onclick=$('#pw-bio').onclick=null;res(v)};
-    if(opt.bio)$('#pw-bio').onclick=async()=>{$('#pw-err').textContent='';try{const v=await opt.bio();if(v!=null)done(v)}catch(e){$('#pw-err').textContent=e.name==='NotAllowedError'?'Đã hủy xác thực':'Không xác thực được, hãy gõ mật khẩu'}};
+    const done=v=>{$('#pw').classList.remove('on');$('#pw-yes').onclick=$('#pw-no').onclick=inp.onkeydown=$('#pw-forgot').onclick=null;res(v)};
     if(opt.forgot)$('#pw-forgot').onclick=async e=>{e.preventDefault();done(null);opt.forgot()};
     $('#pw-yes').onclick=async()=>{
       const v=opt.text?inp.value.trim():inp.value;if(!v&&!opt.empty){$('#pw-err').textContent=opt.text?'Nhập nội dung':'Nhập mật khẩu';return}
@@ -1370,7 +1297,7 @@ async function qrGot(txt){
     if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
     if(o.n)localStorage.setItem(K.who,o.n);
-    await setLock(pw);localStorage.removeItem(K.bio);setUnlocked=true;
+    await setLock(pw);setUnlocked=true;
   }catch(e){toast('Không lưu được trên trình duyệt này');return true}
   renderWho();
   renderSet();zlLink();zlState();
@@ -1441,6 +1368,7 @@ renderAll();fltPreset('month');
 if(localStorage.getItem(K.dirty)&&tok()){save()}else{load()}
 renderHelp();
 renderWho();renderLock();
+try{localStorage.removeItem('dr_bio');localStorage.removeItem('dr_bio_no')}catch(e){}   /* dọn dữ liệu Face ID cũ (đã bỏ tính năng) */
 if(!tok())showTab('set');
 else{try{$('#a-amt').focus()}catch(e){}}
 if(/^#help/.test(location.hash))openHelp(location.hash.split('/')[1]||'');
