@@ -1403,9 +1403,16 @@ function cfgParse(txt){
   return {o,bad};
 }
 async function cfgGeocode(q){
-  const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&language=vi&format=json&name='+encodeURIComponent(q));
-  const A=(await r.json()).results||[],x=A.find(x=>x.country_code==='VN')||A[0];
-  return x?[[x.name,x.admin1].filter(Boolean).join(', '),+x.latitude.toFixed(3),+x.longitude.toFixed(3)]:null;
+  /* tìm theo cả chuỗi, không ra thì tìm theo phần trước dấu phẩy rồi ưu tiên kết quả khớp phần sau (tỉnh) */
+  const parts=q.split(',').map(x=>x.trim()).filter(Boolean),tries=[q];if(parts.length>1)tries.push(parts[0]);
+  for(const t of tries){
+    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=10&language=vi&format=json&name='+encodeURIComponent(t));
+    const A=((await r.json()).results||[]),V=A.filter(x=>x.country_code==='VN');
+    const want=parts.slice(1).join(' ').toLowerCase();
+    const x=(want&&V.find(x=>[x.admin1,x.admin2].join(' ').toLowerCase().includes(want)))||V[0]||A[0];
+    if(x)return[q,+x.latitude.toFixed(3),+x.longitude.toFixed(3)];
+  }
+  return null;
 }
 async function cfgFromText(txt){
   txt=String(txt||'').trim();if(!txt){toast('Dán nội dung cấu hình vào ô trước');return false}
