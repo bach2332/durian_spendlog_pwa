@@ -62,7 +62,13 @@ button.sm{min-height:34px;padding:6px 10px;font-size:14px}
 #modal.on{display:flex}
 #modal .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
 #status{font-size:12px;color:var(--mut);text-align:right;min-height:16px;flex:1}
-.brand{display:flex;align-items:center;gap:8px;margin:-14px -14px 12px;padding:10px 14px;background:var(--pri2);border-bottom:2px solid var(--pri)}
+.brand{display:flex;align-items:center;gap:8px;margin:-14px -14px 0;padding:10px 14px 6px;background:var(--pri2)}
+.wx{margin:0 -14px 12px;padding:0 14px 8px;background:var(--pri2);border-bottom:2px solid var(--pri);font-size:13px;cursor:pointer}
+.wx .now{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.wx .now b{font-size:18px}
+.wx .days{display:flex;gap:6px;margin-top:6px}
+.wx .days div{flex:1;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:4px 6px;font-size:12px;text-align:center;line-height:1.35}
+.wxr{display:block;width:100%;text-align:left;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-top:6px;font-weight:400;min-height:0}
 .brand .who{font-size:12px;color:var(--mut);display:block;font-weight:400;cursor:pointer}
 .brand img{width:32px;height:32px;border-radius:8px}
 .brand b{font-size:17px;color:var(--pri)}
@@ -166,6 +172,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 <body>
 <main>
   <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div id="status"></div></div>
+  <div class="wx" id="wx" title="Chạm để cập nhật thời tiết"></div>
 
   <!-- NHẬP -->
   <section class="page on" id="p-add">
@@ -266,10 +273,20 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <div class="row" style="margin-top:10px"><button class="sec" id="lk-set"></button></div>
     </div>
     <div class="card">
-      <h2>Thiết lập nhanh bằng QR</h2>
-      <div class="mut">Máy đã cài xong bấm <b>Hiện mã QR</b> và đặt mật khẩu. Máy mới bấm <b>Quét mã QR</b>, nhập mật khẩu để tự điền kết nối GitHub và Zalo.</div>
-      <div class="row" style="margin-top:12px"><button id="qr-scan">📷 Quét mã QR</button><button class="sec" id="qr-show">Hiện mã QR</button></div>
-      <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập bằng QR</a></div>
+      <h2>Vị trí vườn (thời tiết)</h2>
+      <div class="mut" id="wl-cur"></div>
+      <div class="row" style="margin-top:10px"><input type="text" id="wl-q" placeholder="VD: Đắk Mil, Cai Lậy, Krông Pắc" autocomplete="off"><button id="wl-find" style="flex:0 0 auto">Tìm</button></div>
+      <div id="wl-res"></div>
+      <div class="row" style="margin-top:8px"><button class="sec" id="wl-gps">📍 Dùng vị trí hiện tại</button></div>
+    </div>
+    <div class="card">
+      <h2>Thiết lập nhanh</h2>
+      <div class="mut">Máy mới: dán <b>chuỗi cấu hình</b> (bắt đầu bằng <code>DR27E1.</code>) vào ô dưới rồi bấm Áp dụng, nhập mật khẩu là xong. Hoặc quét mã QR.</div>
+      <textarea id="cfg-in" rows="3" placeholder="Dán chuỗi cấu hình DR27E1.…" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
+      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng chuỗi cấu hình</button></div>
+      <div class="mut" style="margin-top:12px">Máy đã cài: bấm <b>Tạo mã cấu hình</b>, đặt mật khẩu, rồi gửi chuỗi hoặc ảnh QR cho người mới.</div>
+      <div class="row" style="margin-top:8px"><button class="sec" id="qr-show">🔑 Tạo mã cấu hình</button><button class="sec" id="qr-scan">📷 Quét mã QR</button></div>
+      <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
     </div>
     <div class="card">
       <h2>Kết nối GitHub (GitHub Connection)</h2>
@@ -329,7 +346,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111k</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111l</footer>
 </main>
 
 <nav class="tabs">
@@ -393,6 +410,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   </div>
   <div id="qr-showbox">
     <div class="warn" style="background:#fef3c7;color:#78350f;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px">Mã đã được <b>mã hóa</b>, người quét phải nhập đúng mật khẩu mới dùng được. Hãy báo mật khẩu qua kênh khác (nói trực tiếp, gọi điện), <b>đừng gửi chung</b> với ảnh QR.</div>
+    <div class="mut" style="margin-bottom:4px"><b>Chuỗi cấu hình</b> (gửi qua Zalo, người mới dán vào ô "Thiết lập nhanh"):</div>
+    <textarea id="cfg-out" rows="4" readonly style="width:100%;font-family:ui-monospace,monospace;font-size:12px;resize:none"></textarea>
+    <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép chuỗi</button></div>
+    <div class="mut" style="margin:12px 0 0">Hoặc dùng mã QR:</div>
     <img id="qr-img" alt="Mã QR cấu hình">
     <div id="qr-info" class="mut" style="text-align:center"></div>
     <div class="row" style="margin-top:12px"><a id="qr-dl" class="menu" style="margin:0;justify-content:center" download="sau-rieng-2027-qr.png">Lưu ảnh QR</a></div>
@@ -403,7 +424,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 <script>
 (()=>{
 const FILE='durian2027.json';
-const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock'};
+const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock',wxLoc:'dr_wx_loc',wx:'dr_wx'};
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -789,7 +810,7 @@ $('#s-addcat').onclick=()=>{
 
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='hidden'&&setUnlocked&&getLock()){setUnlocked=false;if($('#p-set').classList.contains('on'))showPage('add')}
-  if(document.visibilityState==='visible'){
+  if(document.visibilityState==='visible'){wxLoad();
     $('#a-date').value=today();dLabel();
     if(!localStorage.getItem(K.dirty)&&!saving)load();
   }
@@ -1155,12 +1176,12 @@ const HELP=[
 <li>Vào Cài đặt → Thông báo Zalo, dán token, bấm liên kết <b>mở getUpdates</b> (trang chờ khoảng 30 giây). Trong lúc chờ, nhắn một tin cho bot trên Zalo, rồi tìm <code>chat</code> → <code>id</code> làm Chat ID.</li>
 <li>Bấm <b>Lưu</b>, sau đó bấm <b>Gửi thử</b> và kiểm tra Zalo.</li>
 </ol>`},
-{id:'qr-setup',group:'D. Hướng dẫn kết nối dịch vụ',title:'3. Thiết lập nhanh bằng QR',html:`
+{id:'qr-setup',group:'D. Hướng dẫn kết nối dịch vụ',title:'3. Thiết lập nhanh (chuỗi cấu hình / QR)',html:`
 <p>Dùng khi cài app cho máy thứ hai hoặc cho người khác trong nhóm, không phải gõ lại token.</p>
 <div class="flow"><div>📱 Máy đã cài<br><small>Hiện mã QR</small></div><span>→</span><div>📷 Máy mới<br><small>Quét mã QR</small></div><span>→</span><div>✅ Tự điền<br><small>GitHub + Zalo</small></div></div>
 <ol>
-<li><b>Máy đã cài:</b> Cài đặt → Thiết lập nhanh bằng QR → <b>Hiện mã QR</b>, nhập <b>tên người</b> sẽ dùng máy mới, đặt <b>mật khẩu</b> (ít nhất 8 ký tự) để mã hóa. Có thể bấm <b>Lưu ảnh QR</b> để gửi cho người trong nhóm.</li>
-<li><b>Máy mới:</b> mở app → Cài đặt → <b>Quét mã QR</b>, cho phép dùng camera, đưa mã vào khung. Nếu đã nhận ảnh QR qua Zalo thì bấm <b>Chọn ảnh có mã QR</b>.</li>
+<li><b>Máy đã cài:</b> Cài đặt → Thiết lập nhanh → <b>Tạo mã cấu hình</b>, nhập <b>tên người</b> sẽ dùng máy mới, đặt <b>mật khẩu</b> (ít nhất 8 ký tự) để mã hóa. Bấm <b>Sao chép chuỗi</b> rồi gửi qua Zalo, hoặc <b>Lưu ảnh QR</b>.</li>
+<li><b>Máy mới:</b> mở app → Cài đặt → dán chuỗi vào ô <b>Thiết lập nhanh</b> rồi bấm <b>Áp dụng chuỗi cấu hình</b>. Hoặc bấm <b>Quét mã QR</b>, cho phép dùng camera, đưa mã vào khung. Nếu đã nhận ảnh QR qua Zalo thì bấm <b>Chọn ảnh có mã QR</b>.</li>
 <li>Nhập <b>mật khẩu</b> để giải mã. App hiện tóm tắt cấu hình (kể cả tên người dùng), bấm <b>Áp dụng</b> là xong, app tự tải dữ liệu. Mật khẩu vừa nhập trở thành <b>mật khẩu Cài đặt</b> của máy mới.</li>
 </ol>
 <div class="warn">Mã QR được mã hóa AES-256 bằng mật khẩu bạn đặt; không có mật khẩu thì không đọc được token. Báo mật khẩu riêng (nói trực tiếp, gọi điện), đừng gửi chung với ảnh QR. Mật khẩu không lưu trong app, quên thì tạo mã mới. Nếu lộ cả mã lẫn mật khẩu: vào GitHub xóa token cũ, tạo token mới rồi tạo lại mã QR.</div>`}
@@ -1186,6 +1207,65 @@ const closeHelp=()=>$('#hp').classList.remove('on');
 document.addEventListener('click',e=>{const a=e.target.closest('[data-hs]');if(!a)return;e.preventDefault();openHelp(a.dataset.hs)});
 $('#hp-x').onclick=closeHelp;
 $('#hp').onclick=e=>{if(e.target.id==='hp')closeHelp()};
+
+/* ---------- Thời tiết (Open-Meteo, miễn phí, không cần key) ----------
+   Vị trí: dr_wx_loc {name,lat,lon}; chưa đặt thì dùng vị trí hiện tại khi người dùng chạm. Cache 30 phút (dr_wx). */
+const WMO={0:['☀️','Trời quang'],1:['🌤️','Ít mây'],2:['⛅','Mây rải rác'],3:['☁️','Nhiều mây'],45:['🌫️','Sương mù'],48:['🌫️','Sương mù'],
+  51:['🌦️','Mưa phùn nhẹ'],53:['🌦️','Mưa phùn'],55:['🌦️','Mưa phùn dày'],56:['🌧️','Mưa phùn lạnh'],57:['🌧️','Mưa phùn lạnh'],
+  61:['🌧️','Mưa nhỏ'],63:['🌧️','Mưa vừa'],65:['🌧️','Mưa to'],66:['🌧️','Mưa lạnh'],67:['🌧️','Mưa lạnh to'],
+  71:['🌨️','Tuyết'],73:['🌨️','Tuyết'],75:['🌨️','Tuyết'],77:['🌨️','Tuyết'],80:['🌦️','Mưa rào nhẹ'],81:['🌧️','Mưa rào'],82:['⛈️','Mưa rào rất to'],
+  85:['🌨️','Tuyết'],86:['🌨️','Tuyết'],95:['⛈️','Dông'],96:['⛈️','Dông, mưa đá'],99:['⛈️','Dông, mưa đá']};
+const wmo=c=>WMO[c]||['🌡️','—'];
+const jget=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
+const jset=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
+let wxBusy=false;
+function wxRender(msg){
+  const box=$('#wx'),loc=jget(K.wxLoc),c=jget(K.wx);
+  if(!loc){box.innerHTML='<div class="now">📍 <span>Chạm để xem thời tiết tại vị trí hiện tại, hoặc đặt vị trí vườn trong Cài đặt</span></div>';return}
+  if(!c||!c.d||c.lat!==loc.lat||c.lon!==loc.lon){box.innerHTML=`<div class="now">⏳ <span>${msg?esc(msg):'Đang tải thời tiết'} · ${esc(loc.name)}</span></div>`;return}
+  const d=c.d,cu=d.current,dy=d.daily,[ic,tx]=wmo(cu.weather_code);
+  const age=Math.round((Date.now()-c.t)/60000),ago=age<2?'vừa cập nhật':age<60?age+' phút trước':Math.round(age/60)+' giờ trước';
+  const lb=['Hôm nay','Ngày mai'];
+  box.innerHTML=`<div class="now">${ic} <b>${Math.round(cu.temperature_2m)}°</b><span>${tx}</span><span class="mut">· 💧${cu.relative_humidity_2m}% · 💨${Math.round(cu.wind_speed_10m)} km/h</span></div>
+  <div class="mut" style="font-size:12px">📍 ${esc(loc.name)} · ${msg?esc(msg):ago}</div>
+  <div class="days">${dy.time.slice(0,3).map((t,k)=>{const[i2]=wmo(dy.weather_code[k]);const dd=pd(t);return `<div><b>${lb[k]||dow[dd.getDay()]}</b><br>${i2} ${Math.round(dy.temperature_2m_min[k])}–${Math.round(dy.temperature_2m_max[k])}°<br>☔ ${dy.precipitation_probability_max[k]??'–'}%</div>`}).join('')}</div>`;
+}
+async function wxLoad(force){
+  const loc=jget(K.wxLoc);if(!loc||wxBusy)return;
+  const c=jget(K.wx);
+  if(!force&&c&&c.lat===loc.lat&&c.lon===loc.lon&&Date.now()-c.t<30*60000){wxRender();return}
+  wxBusy=true;wxRender();
+  try{
+    const u='https://api.open-meteo.com/v1/forecast?latitude='+loc.lat+'&longitude='+loc.lon+
+      '&current=temperature_2m,relative_humidity_2m,weather_code,wind_speed_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FHo_Chi_Minh&forecast_days=3';
+    const r=await fetch(u);if(!r.ok)throw new Error('HTTP '+r.status);
+    jset(K.wx,{t:Date.now(),lat:loc.lat,lon:loc.lon,d:await r.json()});wxRender();
+  }catch(e){wxRender(c&&c.lat===loc.lat?'không cập nhật được, đang xem bản cũ':'không tải được thời tiết')}
+  wxBusy=false;
+}
+function wxGps(){
+  return new Promise(res=>{
+    if(!navigator.geolocation){toast('Máy không hỗ trợ định vị');return res(false)}
+    navigator.geolocation.getCurrentPosition(p=>{
+      jset(K.wxLoc,{name:'Vị trí hiện tại',lat:+p.coords.latitude.toFixed(3),lon:+p.coords.longitude.toFixed(3)});wlRender();wxLoad(true);res(true);
+    },e=>{toast(e.code===1?'Chưa cho phép lấy vị trí. Hãy đặt vị trí vườn trong Cài đặt':'Không lấy được vị trí');res(false)},{timeout:15000,maximumAge:600000});
+  });
+}
+$('#wx').onclick=()=>{jget(K.wxLoc)?wxLoad(true):wxGps()};
+function wlRender(){const l=jget(K.wxLoc);$('#wl-cur').textContent=l?'Đang dùng: '+l.name+' ('+l.lat+', '+l.lon+')':'Chưa đặt. Tìm tên xã/huyện nơi có vườn, hoặc dùng vị trí hiện tại.'}
+$('#wl-find').onclick=async()=>{
+  const q=$('#wl-q').value.trim();if(!q){toast('Nhập tên địa điểm');return}
+  $('#wl-res').innerHTML='<div class="mut" style="margin-top:8px">Đang tìm...</div>';
+  try{
+    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=6&language=vi&format=json&name='+encodeURIComponent(q));
+    const j=await r.json(),A=j.results||[],L=A.filter(x=>x.country_code==='VN').concat(A.filter(x=>x.country_code!=='VN')).slice(0,6);
+    if(!L.length){$('#wl-res').innerHTML='<div class="mut" style="margin-top:8px">Không tìm thấy. Thử tên huyện hoặc tỉnh, viết có dấu.</div>';return}
+    $('#wl-res').innerHTML=L.map((x,k)=>`<button class="wxr" data-k="${k}"><b>${esc(x.name)}</b> <span class="mut">${esc([x.admin2,x.admin1,x.country].filter(Boolean).join(', '))}</span></button>`).join('');
+    $$('#wl-res [data-k]').forEach(b=>b.onclick=()=>{const x=L[+b.dataset.k];jset(K.wxLoc,{name:[x.name,x.admin1].filter(Boolean).join(', '),lat:+x.latitude.toFixed(3),lon:+x.longitude.toFixed(3)});$('#wl-res').innerHTML='';$('#wl-q').value='';wlRender();wxLoad(true);toast('Đã đặt vị trí vườn')});
+  }catch(e){$('#wl-res').innerHTML='<div class="mut" style="margin-top:8px">Không tìm được (kiểm tra mạng).</div>'}
+};
+$('#wl-q').onkeydown=e=>{if(e.key==='Enter')$('#wl-find').click()};
+$('#wl-gps').onclick=wxGps;
 
 /* ---------- Người đang sử dụng + mật khẩu Cài đặt ----------
    Mật khẩu KHÔNG lưu dạng chữ: chỉ lưu salt + PBKDF2-SHA256 (310000 vòng) trong localStorage (dr_lock). */
@@ -1281,7 +1361,7 @@ function loadLib(src,name){
 let qrStream=null,qrTimer=null,qrDet=null,qrBusy=false;
 const qrCv=document.createElement('canvas'),qrCx=qrCv.getContext('2d',{willReadFrequently:true});
 function qrOpen(mode){
-  $('#qr-title').textContent=mode==='scan'?'Quét mã QR':'Mã QR cấu hình';
+  $('#qr-title').textContent=mode==='scan'?'Quét mã QR':'Mã cấu hình';
   $('#qr-scanbox').style.display=mode==='scan'?'':'none';$('#qr-showbox').style.display=mode==='show'?'':'none';
   $('#qr').classList.add('on');
 }
@@ -1300,12 +1380,13 @@ async function qrDecode(src,w,h){
   const r=jsQR(d.data,d.width,d.height,{inversionAttempts:'attemptBoth'});
   return r?r.data:null;
 }
-async function qrGot(txt){
-  if(!String(txt).startsWith(QR_PFX)){$('#qr-msg').textContent='Mã này không phải mã cấu hình Sầu riêng 2027.';return false}
+async function qrGot(txt,fromText){
+  txt=String(txt).replace(/\s+/g,'');
+  if(!txt.startsWith(QR_PFX)){const m='Đây không phải chuỗi cấu hình Sầu riêng 2027 (phải bắt đầu bằng '+QR_PFX+').';if(fromText)toast(m);else $('#qr-msg').textContent=m;return false}
   qrClose();
   let o=null;
-  const pw=await askPass('Mã QR đã được mã hóa.\nNhập mật khẩu để giải mã:','Giải mã',async p=>{
-    try{o=await qrDec(txt,p)}catch(e){return 'Sai mật khẩu, hoặc mã QR bị hỏng'}
+  const pw=await askPass('Cấu hình đã được mã hóa.\nNhập mật khẩu để giải mã:','Giải mã',async p=>{
+    try{o=await qrDec(txt,p)}catch(e){return 'Sai mật khẩu, hoặc chuỗi/mã QR bị thiếu, hỏng'}
     return o&&o.app===QR_APP&&(o.t||o.zt)?null:'Nội dung mã không hợp lệ';
   });
   if(pw==null||!o)return true;
@@ -1315,7 +1396,7 @@ async function qrGot(txt){
   if(o.n)lines.push('Người dùng: '+o.n);
   lines.push('Mật khẩu Cài đặt của máy này: mật khẩu vừa nhập.');
   if(tok()&&o.t&&o.g&&o.g!==gid())lines.push('\nMáy này đang nối với Gist khác. Áp dụng sẽ chuyển sang Gist trong mã.');
-  if(!await askConfirm('Áp dụng cấu hình từ mã QR?\n\n'+lines.join('\n'),'Áp dụng'))return true;
+  if(!await askConfirm('Áp dụng cấu hình này?\n\n'+lines.join('\n'),'Áp dụng'))return true;
   try{
     if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
@@ -1377,11 +1458,13 @@ $('#qr-show').onclick=async()=>{
   c.width=c.height=(n+m*2)*sz;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';
   for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+m)*sz,(r+m)*sz,sz,sz);
   const url=c.toDataURL('image/png');
-  $('#qr-img').src=url;$('#qr-dl').href=url;
+  $('#qr-img').src=url;$('#qr-dl').href=url;$('#cfg-out').value=enc;
   $('#qr-info').textContent='🔒 '+(o.n?'Cho: '+o.n+' · ':'')+[t?'GitHub'+(o.u?' ('+o.u+')':''):'',z?'Zalo':''].filter(Boolean).join(' + ')+' · cần mật khẩu khi quét';
   qrOpen('show');
 };
 $('#qr-x').onclick=qrClose;
+$('#cfg-apply').onclick=async()=>{const t=$('#cfg-in').value.trim();if(!t){toast('Dán chuỗi cấu hình vào ô trước');return}if(await qrGot(t,true)!==false)$('#cfg-in').value=''};
+$('#cfg-copy').onclick=async()=>{const t=$('#cfg-out').value;try{await navigator.clipboard.writeText(t);toast('Đã sao chép chuỗi cấu hình')}catch(e){const a=$('#cfg-out');a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép chuỗi cấu hình')}catch(_){toast('Hãy giữ ngón tay vào ô để sao chép')}}};
 $('#qr').onclick=e=>{if(e.target.id==='qr')qrClose()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#qr').classList.contains('on'))qrClose()});
 
@@ -1390,7 +1473,7 @@ $('#a-date').value=today();dLabel();
 renderAll();fltPreset('month');
 if(localStorage.getItem(K.dirty)&&tok()){save()}else{load()}
 renderHelp();
-renderWho();renderLock();
+renderWho();renderLock();wlRender();wxRender();wxLoad();
 try{localStorage.removeItem('dr_bio');localStorage.removeItem('dr_bio_no')}catch(e){}   /* dọn dữ liệu Face ID cũ (đã bỏ tính năng) */
 if(!tok())showTab('set');
 else{try{$('#a-amt').focus()}catch(e){}}

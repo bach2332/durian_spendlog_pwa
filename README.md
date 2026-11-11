@@ -148,9 +148,13 @@ Technical notes and caveats:
 - **Mật khẩu Cài đặt**: there is a built-in group default (only its PBKDF2 hash is in the code, `DEF_LOCK`); each device can change it, and "Quên mật khẩu?" returns to the default. Opening the Settings tab always asks for the password; it locks again when you leave the tab or the app goes to the background. Only a salted PBKDF2-SHA256 hash (310,000 iterations) is stored (`dr_lock`), never the password. Scanning a setup QR sets the QR password as this device's Settings password. "Quên mật khẩu?" wipes the device's config (token, Gist ID, Zalo, name, password; Gist data is untouched) so it can be set up again.
 - This lock protects the screen, not the stored token: `localStorage` is plain text on the device.
 
+## Weather
+
+A strip under the title shows current weather (temperature, condition, humidity, wind) and a 3-day outlook with rain chance, from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location: Settings → **Vị trí vườn** (search by place name via Open-Meteo geocoding, or use the phone's current position); before it is set, tapping the strip asks for the current position. Cached 30 minutes in `dr_wx`; tap the strip to refresh.
+
 ## QR quick setup
 
-Settings → **Thiết lập nhanh bằng QR**.
+Settings → **Thiết lập nhanh**. The simplest way is the **config string**: **Tạo mã cấu hình** shows the encrypted string (`DR27E1.…`) with a **Sao chép chuỗi** button; on the new device paste it into the text box, tap **Áp dụng chuỗi cấu hình** and enter the password. The same string is also shown as a QR code.
 
 - **Hiện mã QR** (on a device that is already set up) asks for a password (min. 8 characters), encrypts the config (GitHub user, token, Gist ID and, if enabled, Zalo bot token and chat ID) and shows it as a QR code. **Lưu ảnh QR** saves it as a PNG.
 - **Quét mã QR** (on a new device) opens the camera, or reads a QR image from the gallery, asks for the password, shows a summary, and on **Áp dụng** fills the settings and loads the data. A wrong password is rejected and can be retried.
