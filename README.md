@@ -151,14 +151,16 @@ A one-line strip under the title shows current weather (temperature, condition, 
 
 ## Quick setup (encrypted config text)
 
-Settings → **Thiết lập nhanh**: paste the config text, tap **Áp dụng**, enter the shared password, confirm the summary. That's all.
+Settings → **Thiết lập nhanh** has two buttons and no text box on the page:
+
+- **📥 Thiết lập nhanh** opens a dialog with a text box: paste the config text, tap **Tiếp**, enter the shared password, confirm the ☠️ override warning.
+- **📋 Sao chép thiết lập hiện tại** asks for the shared password and copies this device's config (encrypted) to the clipboard; if the browser blocks it, a read-only dialog shows the text with a copy button.
 
 - The text is always encrypted: `DR27E1.` + base64url(`salt(16) | iv(12) | AES-256-GCM ciphertext+tag`), key = PBKDF2-SHA256(password, salt, 310,000 iterations). Plain text is rejected.
 - Inside (JSON): `{"app":"dr27","t":token,"g":Gist ID,"zt":Zalo bot token,"zc":Zalo chat ID,"n":user name,"l":[place,lat,lon],"c":[categories],"b":monthly budget}` — every key except `app` is optional. Categories and budget are saved to the Gist (shared).
 - **One shared password** for the whole app. It is never stored in clear text: the code only holds its salted PBKDF2-SHA256 hash (`PW_HASH`) to check what is typed; nothing password-related is stored on the device. Opening Settings needs no password.
-- **Xuất cấu hình**: after the shared password, shows this device's current config (GitHub, Zalo, user name, location, categories, budget) as encrypted text with a copy button; cleared when leaving Settings.
 - Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
-- Override warning: after tapping Áp dụng and entering the password, a ☠️ dialog warns that everything will be overwritten (no config details shown) and the "☠️ Ghi đè" button unlocks after a 3-second countdown.
+- Override warning: after tapping Tiếp and entering the password, a ☠️ dialog warns that everything will be overwritten (no config details shown) and the "☠️ Ghi đè" button unlocks after a 3-second countdown.
 - Secrets are never shown in full anywhere in the UI (`mask()`: first 2–4 and last 2 characters): the Settings fields (saved values appear only as a masked placeholder; leave a field empty to keep the saved value), and the Gist / getUpdates links (URLs are built only on click, not put in the page).
 
 ## Updating and versioning

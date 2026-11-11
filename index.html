@@ -164,6 +164,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .mock .mf div{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card);word-break:break-all}
 .mock .mf.hl div{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc2)}
 .mock .mb{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px;margin-top:4px}
+#ts{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:29;padding:16px}
+#ts.on{display:flex}
+#ts .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
+#ts textarea{width:100%;margin-top:8px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical}
 #pw{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
 #pw.on{display:flex}
 #pw .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
@@ -267,14 +271,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <section class="page" id="p-set">
     <div class="card">
       <h2>Thiết lập nhanh</h2>
-      <div class="mut">Dán đoạn text cấu hình vào ô dưới rồi bấm <b>Áp dụng</b>, nhập mật khẩu. Bấm <b>Xuất cấu hình</b> để lấy đoạn text của máy này.</div>
-      <textarea id="cfg-in" rows="5" placeholder="Dán đoạn text cấu hình vào đây" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
-      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng</button><button class="sec" id="cfg-export">Xuất cấu hình</button></div>
-      <div id="cfg-exbox" style="display:none;margin-top:10px">
-        <div class="mut">Cấu hình hiện tại của máy này (đã mã hóa). Gửi riêng cho người cần, họ dán vào ô trên và nhập mật khẩu.</div>
-        <textarea id="cfg-out" rows="4" readonly style="width:100%;margin-top:6px;font-family:ui-monospace,monospace;font-size:12px;resize:none"></textarea>
-        <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép</button><button class="sec" id="cfg-hide">Ẩn</button></div>
-      </div>
+      <div class="row" style="margin-top:8px"><button id="cfg-apply">📥 Thiết lập nhanh</button><button class="sec" id="cfg-export">📋 Sao chép thiết lập hiện tại</button></div>
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
     </div>
     <div class="card">
@@ -333,7 +330,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112d</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112e</footer>
 </main>
 
 <nav class="tabs">
@@ -385,6 +382,9 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
   <div class="big" id="sc-total"></div>
   <div id="sc-list" style="margin-top:6px"></div>
 </div></div>
+<div id="ts"><div class="sheet"><h2 id="ts-title" style="margin:0"></h2><div id="ts-msg" class="mut" style="margin-top:4px"></div>
+<textarea id="ts-in" rows="6" autocomplete="off" autocapitalize="off" spellcheck="false"></textarea>
+<div class="row" style="margin-top:10px"><button class="sec" id="ts-no">Hủy</button><button id="ts-yes"></button></div></div></div>
 <div id="pw"><div class="sheet"><div id="pw-msg" style="white-space:pre-line;margin-bottom:10px"></div><input type="password" id="pw-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Mật khẩu"><label class="inl" id="pw-seel"><input type="checkbox" id="pw-see"> Hiện mật khẩu</label><a href="#" id="pw-forgot" class="mut" style="display:none;margin-top:8px">Quên mật khẩu?</a><div id="pw-err" style="color:var(--bad);font-size:13px;min-height:18px;margin-top:6px"></div><div class="row" style="margin-top:6px"><button class="sec" id="pw-no">Hủy</button><button id="pw-yes">OK</button></div></div></div>
 <div id="cf"><div class="sheet"><div id="cf-head"></div><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
 <div id="toast"></div>
@@ -669,7 +669,7 @@ function showPage(name){
 }
 async function showTab(name){
   if(name==='hist'&&view.mode==='year'){view.mode='month';renderAll()}
-  if(name!=='set'&&$('#cfg-out').value)$('#cfg-hide').click();
+  if(name!=='set')tsClose();
   showPage(name);window.scrollTo(0,0);
   if(name==='add'){const a=$('#a-amt');if(a)a.focus()}   /* mở màn nhập: con trỏ vào Số tiền, bàn phím số */
 }
@@ -1153,10 +1153,10 @@ const HELP=[
 <p>Dùng khi cài app cho máy mới hoặc cho người khác trong nhóm: dán một đoạn text mã hóa là có đủ cấu hình.</p>
 <div class="flow"><div>📋 Dán đoạn text<br><small>Cài đặt → Thiết lập nhanh</small></div><span>→</span><div>🔒 Nhập mật khẩu<br><small>mật khẩu chung</small></div><span>→</span><div>✅ Xong<br><small>app tự tải dữ liệu</small></div></div>
 <ol>
-<li>Mở app → <b>Cài đặt</b> → ô <b>Thiết lập nhanh</b>, dán đoạn text được gửi cho bạn, bấm <b>Áp dụng</b>.</li>
+<li>Mở app → <b>Cài đặt</b> → bấm <b>Thiết lập nhanh</b>, dán đoạn text được gửi cho bạn vào hộp hiện ra, bấm <b>Tiếp</b>.</li>
 <li>Nhập <b>mật khẩu chung</b> của nhóm. App hiện tóm tắt, bấm <b>Áp dụng</b>.</li>
 </ol>
-<p>Lấy đoạn text: trên máy đã cài, bấm <b>Xuất cấu hình</b>, nhập mật khẩu chung, rồi <b>Sao chép</b> và gửi riêng.</p>
+<p>Lấy đoạn text: trên máy đã cài, bấm <b>Sao chép thiết lập hiện tại</b>, nhập mật khẩu chung, rồi dán gửi riêng cho người cần.</p>
 <p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn, danh mục và ngân sách.</p>
 <div class="warn">Đoạn text được mã hóa AES-256-GCM bằng <b>mật khẩu chung</b> của nhóm. App không lưu mật khẩu (chỉ giữ bản băm để kiểm tra nhập đúng). Không có mật khẩu thì không đọc được token trong đoạn text.</div>`}
 ];
@@ -1311,6 +1311,23 @@ async function cfgFromText(txt){
   if(pw==null||!o)return false;
   return cfgApply(o);
 }
+/* Hộp nhập/hiện đoạn text. Trả về nội dung khi bấm nút chính, null khi Hủy. */
+function textDlg({title,msg,value='',ro=false,yes,onYes}){
+  return new Promise(res=>{
+    const a=$('#ts-in');$('#ts-title').textContent=title;$('#ts-msg').textContent=msg||'';$('#ts-yes').textContent=yes;
+    a.value=value;a.readOnly=ro;a.placeholder=ro?'':'Dán đoạn text cấu hình vào đây';$('#ts').classList.add('on');
+    if(!ro)setTimeout(()=>a.focus(),50);
+    const done=v=>{$('#ts').classList.remove('on');a.value='';$('#ts-yes').onclick=$('#ts-no').onclick=null;res(v)};
+    $('#ts-yes').onclick=async()=>{if(onYes){await onYes(a);return}const v=a.value.trim();if(!v){toast('Dán đoạn text cấu hình vào ô trước');return}done(v)};
+    $('#ts-no').onclick=()=>done(null);
+  });
+}
+const tsClose=()=>{if($('#ts').classList.contains('on'))$('#ts-no').click()};
+async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){return false}}
+$('#cfg-apply').onclick=async()=>{
+  const t=await textDlg({title:'Thiết lập nhanh',msg:'Dán đoạn text cấu hình (bắt đầu bằng DR27E1.) rồi bấm Tiếp.',yes:'Tiếp'});
+  if(t)await cfgFromText(t);
+};
 $('#cfg-export').onclick=async()=>{
   if(!window.crypto||!crypto.subtle){toast('Cần mở app bằng link https');return}
   const z=zlCfg(),wl=jget(K.wxLoc),o={app:QR_APP};
@@ -1320,13 +1337,13 @@ $('#cfg-export').onclick=async()=>{
   if(wl)o.l=[wl.name,wl.lat,wl.lon];
   o.c=data.categories;if(data.budget)o.b=data.budget;
   let enc='';
-  const pw=await askPass('🔒 Nhập mật khẩu để xuất cấu hình','Xuất',async p=>{if(!await pwOk(p))return 'Sai mật khẩu';enc=await qrEnc(o,p);return null});
+  const pw=await askPass('🔒 Nhập mật khẩu để sao chép thiết lập hiện tại','Sao chép',async p=>{if(!await pwOk(p))return 'Sai mật khẩu';enc=await qrEnc(o,p);return null});
   if(pw==null)return;
-  $('#cfg-out').value=enc;$('#cfg-exbox').style.display='';toast('Đã xuất cấu hình');
+  if(await copyText(enc)){toast('Đã sao chép thiết lập hiện tại (đã mã hóa)');return}
+  /* trình duyệt chặn sao chép tự động: hiện để người dùng tự bấm */
+  await textDlg({title:'Thiết lập hiện tại',msg:'Bấm Sao chép, hoặc giữ ngón tay vào ô để chọn và sao chép.',value:enc,ro:true,yes:'📋 Sao chép',
+    onYes:async a=>{if(await copyText(a.value)){toast('Đã sao chép');$('#ts-no').click()}else{a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép')}catch(_){toast('Giữ ngón tay vào ô để sao chép')}}}});
 };
-$('#cfg-copy').onclick=async()=>{const t=$('#cfg-out').value;try{await navigator.clipboard.writeText(t);toast('Đã sao chép')}catch(e){const a=$('#cfg-out');a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép')}catch(_){toast('Giữ ngón tay vào ô để sao chép')}}};
-$('#cfg-hide').onclick=()=>{$('#cfg-out').value='';$('#cfg-exbox').style.display='none'};
-$('#cfg-apply').onclick=async()=>{if(await cfgFromText($('#cfg-in').value)!==false)$('#cfg-in').value=''};
 
 /* ---------- init ---------- */
 $('#a-date').value=today();dLabel();
