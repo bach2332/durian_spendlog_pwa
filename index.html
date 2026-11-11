@@ -329,7 +329,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111i</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111j</footer>
 </main>
 
 <nav class="tabs">
@@ -581,23 +581,25 @@ function renderStat(){
   $('#s-radar').innerHTML=radarSVG(by);
   $('#s-budget').innerHTML=budgetHTML();
 }
-/* Radar: mỗi trục là 1 danh mục trong danh sách hiện tại, độ dài = tổng chi của danh mục trong kỳ */
+/* Radar: mỗi trục là 1 danh mục (trong danh sách hiện tại) có phát sinh chi trong kỳ; danh mục chưa chi thì bỏ qua */
 const shortMoney=v=>v>=1e9?(v/1e9).toFixed(1).replace(/\.0$/,'').replace('.',',')+' tỷ':v>=1e6?(v/1e6).toFixed(1).replace(/\.0$/,'').replace('.',',')+'tr':v>=1e3?Math.round(v/1e3)+'k':v>0?String(v):'0';
 function radarSVG(by){
-  const cats=data.categories,n=cats.length;
-  if(n<3)return '<div class="mut">Cần ít nhất 3 danh mục để vẽ radar.</div>';
+  const cats=data.categories.filter(c=>(by[c]||0)>0),n=cats.length;
+  const skip=data.categories.filter(c=>!((by[c]||0)>0));
+  const skipNote=skip.length?`<div class="mut" style="margin-top:6px">Danh mục chưa phát sinh chi phí không hiển thị trên radar: ${skip.map(esc).join(', ')}.</div>`:'';
+  if(n<3)return `<div class="mut">Cần ít nhất 3 danh mục có phát sinh chi phí trong kỳ này để vẽ radar${n?' (hiện có '+n+')':''}.</div>`+skipNote;
   const W=340,H=310,cx=W/2,cy=H/2+4,Rr=96;
-  const vals=cats.map(c=>Math.max(0,by[c]||0)),mx=Math.max(...vals);
+  const vals=cats.map(c=>by[c]),mx=Math.max(...vals);
   const ang=k=>-Math.PI/2+k*2*Math.PI/n,pt=(k,r)=>[cx+r*Math.cos(ang(k)),cy+r*Math.sin(ang(k))];
   const poly=r=>cats.map((_,k)=>pt(k,r).map(x=>x.toFixed(1)).join(',')).join(' ');
   let g='';
   for(let l=1;l<=4;l++)g+=`<polygon points="${poly(Rr*l/4)}" fill="none" stroke="var(--line)" stroke-width="1"/>`;
   cats.forEach((_,k)=>{const[x,y]=pt(k,Rr);g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="var(--line)" stroke-width="1"/>`});
   let d='';
-  if(mx>0){
+  {
     const ps=vals.map((v,k)=>pt(k,Rr*v/mx));
     d+=`<polygon points="${ps.map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" fill="var(--acc)" fill-opacity=".22" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>`;
-    ps.forEach((p,k)=>{if(vals[k]>0)d+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="${catColor(cats[k])}" stroke="var(--card)" stroke-width="1.5"/>`});
+    ps.forEach((p,k)=>{d+=`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" fill="${catColor(cats[k])}" stroke="var(--card)" stroke-width="1.5"/>`});
   }
   let lb='';
   cats.forEach((c,k)=>{
@@ -607,8 +609,8 @@ function radarSVG(by){
     lb+=`<g data-sc="${esc(c)}" style="cursor:pointer"><text x="${x.toFixed(1)}" y="${(y+dy).toFixed(1)}" text-anchor="${anc}" font-size="12" font-weight="600" fill="var(--text)">${esc(nm)}</text>`+
         `<text x="${x.toFixed(1)}" y="${(y+dy+14).toFixed(1)}" text-anchor="${anc}" font-size="11" fill="var(--mut)">${shortMoney(vals[k])}</text></g>`;
   });
-  const note=mx>0?'Chạm tên danh mục để xem chi tiết. Đỉnh ngoài cùng = '+money(mx)+'.':'Chưa có khoản chi trong kỳ này.';
-  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Radar chi theo danh mục" style="display:block;max-width:420px;margin:0 auto;overflow:visible">${g}${d}${lb}</svg><div class="mut" style="text-align:center">${note}</div>`;
+  const note='Chạm tên danh mục để xem chi tiết. Đỉnh ngoài cùng = '+money(mx)+'.';
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Radar chi theo danh mục" style="display:block;max-width:420px;margin:0 auto;overflow:visible">${g}${d}${lb}</svg><div class="mut" style="text-align:center">${note}</div>`+skipNote;
 }
 
 function renderSet(){
