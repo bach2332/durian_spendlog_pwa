@@ -263,6 +263,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <h2 style="margin-top:16px">Mật khẩu Cài đặt</h2>
       <div class="mut" id="lk-state"></div>
       <div class="row" style="margin-top:10px"><button class="sec" id="lk-set"></button></div>
+      <div id="bio-box" style="display:none;margin-top:12px">
+        <div class="mut" id="bio-state"></div>
+        <div class="row" style="margin-top:8px"><button class="sec" id="bio-on">🔐 Bật mở bằng vân tay / khuôn mặt</button><button class="sec" id="bio-off" style="display:none">Tắt vân tay / khuôn mặt</button></div>
+      </div>
     </div>
     <div class="card">
       <h2>Thiết lập nhanh bằng QR</h2>
@@ -328,7 +332,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111d</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111e</footer>
 </main>
 
 <nav class="tabs">
@@ -402,7 +406,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 <script>
 (()=>{
 const FILE='durian2027.json';
-const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock'};
+const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',lock:'dr_lock',bio:'dr_bio'};
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -1108,6 +1112,7 @@ const HELP=[
 <li><b>Máy mới:</b> mở app → Cài đặt → <b>Quét mã QR</b>, cho phép dùng camera, đưa mã vào khung. Nếu đã nhận ảnh QR qua Zalo thì bấm <b>Chọn ảnh có mã QR</b>.</li>
 <li>Nhập <b>mật khẩu</b> để giải mã. App hiện tóm tắt cấu hình (kể cả tên người dùng), bấm <b>Áp dụng</b> là xong, app tự tải dữ liệu. Mật khẩu vừa nhập trở thành <b>mật khẩu Cài đặt</b> của máy mới.</li>
 </ol>
+<p><b>Vân tay / khuôn mặt:</b> sau khi có mật khẩu Cài đặt, vào Cài đặt → <b>Bật mở bằng vân tay / khuôn mặt</b>, nhập mật khẩu một lần và xác thực. Từ đó mở Cài đặt chỉ cần quét vân tay hoặc khuôn mặt; bấm Hủy thì vẫn gõ mật khẩu được. Cần Android có Chrome mới, hoặc iPhone iOS 18 trở lên.</p>
 <div class="warn">Mã QR được mã hóa AES-256 bằng mật khẩu bạn đặt; không có mật khẩu thì không đọc được token. Báo mật khẩu riêng (nói trực tiếp, gọi điện), đừng gửi chung với ảnh QR. Mật khẩu không lưu trong app, quên thì tạo mã mới. Nếu lộ cả mã lẫn mật khẩu: vào GitHub xóa token cũ, tạo token mới rồi tạo lại mã QR.</div>`}
 ];
 function renderHelp(){
@@ -1146,11 +1151,73 @@ const getLock=()=>{try{return JSON.parse(localStorage.getItem(K.lock)||'null')}c
 async function setLock(pw){const salt=crypto.getRandomValues(new Uint8Array(16));localStorage.setItem(K.lock,JSON.stringify({s:b64u(salt),h:b64u(await pwHash(pw,salt))}));renderLock()}
 async function checkLock(pw){const l=getLock();if(!l)return true;return b64u(await pwHash(pw,ub64u(l.s)))===l.h}
 function renderLock(){
-  const on=!!getLock();
+  const on=!!getLock();renderBio();
   $('#lk-state').textContent=on?'Đã bật: mỗi lần mở Cài đặt phải nhập mật khẩu.':'Chưa đặt: ai cầm máy cũng mở được Cài đặt (xem token, sửa kết nối). Nên đặt mật khẩu.';
   $('#lk-set').textContent=on?'Đổi mật khẩu':'Đặt mật khẩu';
 }
 let setUnlocked=false;
+
+/* ---------- Mở khóa bằng vân tay / khuôn mặt (passkey + PRF) ----------
+   Passkey tạo trên máy, xác thực bằng sinh trắc học. Tiện ích PRF trả về 32 byte bí mật
+   chỉ có được sau khi xác thực -> dùng làm khóa AES-GCM để mã hóa mật khẩu Cài đặt.
+   Lưu (dr_bio): id passkey + bản mã hóa của mật khẩu. Không có server, không lưu mật khẩu dạng chữ. */
+const BIO_SALT=new TextEncoder().encode('dr27-settings-unlock-v1');
+const bioCfg=()=>{try{return JSON.parse(localStorage.getItem(K.bio)||'null')}catch(e){return null}};
+let bioOk=null;
+async function bioSupported(){
+  if(bioOk!==null)return bioOk;
+  try{bioOk=!!(window.PublicKeyCredential&&crypto.subtle&&await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable())}catch(e){bioOk=false}
+  return bioOk;
+}
+async function bioPrf(credId){
+  const r=await navigator.credentials.get({publicKey:{challenge:crypto.getRandomValues(new Uint8Array(32)),allowCredentials:[{type:'public-key',id:credId}],userVerification:'required',timeout:60000,extensions:{prf:{eval:{first:BIO_SALT}}}}});
+  const x=r.getClientExtensionResults().prf;
+  if(!x||!x.results||!x.results.first)throw new Error('Thiết bị không hỗ trợ khóa sinh trắc học cho web (PRF)');
+  return crypto.subtle.importKey('raw',x.results.first,'AES-GCM',false,['encrypt','decrypt']);
+}
+async function bioWrap(credId,key,pw){
+  const iv=crypto.getRandomValues(new Uint8Array(12));
+  const ct=new Uint8Array(await crypto.subtle.encrypt({name:'AES-GCM',iv},key,new TextEncoder().encode(pw)));
+  localStorage.setItem(K.bio,JSON.stringify({id:b64u(new Uint8Array(credId)),iv:b64u(iv),ct:b64u(ct)}));
+}
+async function bioEnable(pw){
+  const name=(who()||'Người dùng')+' · Sầu riêng 2027';
+  const cred=await navigator.credentials.create({publicKey:{
+    challenge:crypto.getRandomValues(new Uint8Array(32)),rp:{name:'Sầu riêng 2027'},
+    user:{id:crypto.getRandomValues(new Uint8Array(16)),name,displayName:name},
+    pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],
+    authenticatorSelection:{authenticatorAttachment:'platform',residentKey:'preferred',userVerification:'required'},
+    timeout:60000,extensions:{prf:{eval:{first:BIO_SALT}}}}});
+  const x=cred.getClientExtensionResults().prf;
+  if(!x||x.enabled===false)throw new Error('Thiết bị/trình duyệt này chưa hỗ trợ mở khóa web bằng sinh trắc học');
+  let key;
+  if(x.results&&x.results.first)key=await crypto.subtle.importKey('raw',x.results.first,'AES-GCM',false,['encrypt','decrypt']);
+  else key=await bioPrf(cred.rawId);   /* một số máy chỉ trả khóa ở lần xác thực sau */
+  await bioWrap(cred.rawId,key,pw);
+}
+async function bioUnlock(){
+  const c=bioCfg();if(!c)return null;
+  const key=await bioPrf(ub64u(c.id));
+  const pt=await crypto.subtle.decrypt({name:'AES-GCM',iv:ub64u(c.iv)},key,ub64u(c.ct));
+  return new TextDecoder().decode(pt);
+}
+async function renderBio(){
+  const sup=await bioSupported(),on=!!bioCfg(),lk=!!getLock();
+  $('#bio-box').style.display=sup&&lk?'':'none';
+  $('#bio-state').textContent=on?'Đang bật: mở Cài đặt bằng vân tay / khuôn mặt, không cần gõ mật khẩu.':'Chưa bật: có thể dùng vân tay / khuôn mặt thay cho gõ mật khẩu.';
+  $('#bio-on').style.display=on?'none':'';$('#bio-off').style.display=on?'':'none';
+}
+$('#bio-on').onclick=async()=>{
+  const pw=await askPass('Nhập mật khẩu Cài đặt hiện tại để bật vân tay / khuôn mặt','Tiếp',async p=>await checkLock(p)?null:'Sai mật khẩu');
+  if(pw==null)return;
+  try{await bioEnable(pw);toast('Đã bật mở khóa bằng vân tay / khuôn mặt')}
+  catch(e){toast(e.name==='NotAllowedError'?'Đã hủy xác thực':(e.message||'Không bật được'))}
+  renderBio();
+};
+$('#bio-off').onclick=async()=>{
+  if(!await askConfirm('Tắt mở khóa bằng vân tay / khuôn mặt trên máy này?\n(Passkey vẫn nằm trong trình quản lý mật khẩu của máy, có thể xóa thủ công.)','Tắt'))return;
+  localStorage.removeItem(K.bio);renderBio();toast('Đã tắt');
+};
 async function resetDevice(){
   if(!await askConfirm('Quên mật khẩu: xóa toàn bộ cấu hình trên máy này?\n(token GitHub, Gist ID, Zalo, tên người dùng, mật khẩu Cài đặt)\n\nDữ liệu trên Gist vẫn còn. Sau đó quét lại mã QR để thiết lập.','Xóa cấu hình'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));Object.values(ZK).forEach(k=>localStorage.removeItem(k));
@@ -1159,6 +1226,10 @@ async function resetDevice(){
 }
 async function unlockSet(){
   if(setUnlocked||!getLock())return true;
+  if(bioCfg()){
+    try{const pw=await bioUnlock();if(pw&&await checkLock(pw)){setUnlocked=true;return true}}
+    catch(e){if(e.name!=='NotAllowedError')toast('Vân tay / khuôn mặt lỗi, hãy nhập mật khẩu')}
+  }
   const pw=await askPass('🔒 Nhập mật khẩu để mở Cài đặt','Mở',async p=>await checkLock(p)?null:'Sai mật khẩu',{forgot:resetDevice});
   if(pw==null)return false;setUnlocked=true;return true;
 }
@@ -1168,7 +1239,15 @@ async function newPass(title){
   const p2=await askPass('Nhập lại mật khẩu để xác nhận','Lưu',async p=>p===p1?null:'Hai lần nhập không khớp');
   return p2==null?null:p1;
 }
-$('#lk-set').onclick=async()=>{const p=await newPass(getLock()?'Đặt mật khẩu Cài đặt mới.':'Đặt mật khẩu để khóa màn hình Cài đặt.');if(p==null)return;await setLock(p);toast('Đã lưu mật khẩu Cài đặt')};
+$('#lk-set').onclick=async()=>{
+  const p=await newPass(getLock()?'Đặt mật khẩu Cài đặt mới.':'Đặt mật khẩu để khóa màn hình Cài đặt.');if(p==null)return;
+  await setLock(p);
+  const c=bioCfg();
+  if(c){try{await bioWrap(ub64u(c.id),await bioPrf(ub64u(c.id)),p);toast('Đã đổi mật khẩu, vân tay / khuôn mặt vẫn dùng được')}
+        catch(e){localStorage.removeItem(K.bio);toast('Đã đổi mật khẩu. Hãy bật lại vân tay / khuôn mặt')}}
+  else toast('Đã lưu mật khẩu Cài đặt');
+  renderBio();
+};
 $('#u-save').onclick=()=>{const n=$('#u-name').value.trim();setWho(n);toast(n?'Đã lưu: '+n:'Đã xóa tên người dùng')};
 $('#u-name').onkeydown=e=>{if(e.key==='Enter')$('#u-save').click()};
 
@@ -1263,7 +1342,7 @@ async function qrGot(txt){
     if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
     if(o.n)localStorage.setItem(K.who,o.n);
-    await setLock(pw);setUnlocked=true;
+    await setLock(pw);localStorage.removeItem(K.bio);setUnlocked=true;
   }catch(e){toast('Không lưu được trên trình duyệt này');return true}
   renderWho();
   renderSet();zlLink();zlState();

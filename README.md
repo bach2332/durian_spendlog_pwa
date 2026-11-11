@@ -146,6 +146,7 @@ Technical notes and caveats:
 
 - **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It can come from the setup QR (`"n"` field).
 - **Mật khẩu Cài đặt**: once set, opening the Settings tab asks for the password; it locks again when you leave the tab or the app goes to the background. Only a salted PBKDF2-SHA256 hash (310,000 iterations) is stored (`dr_lock`), never the password. Scanning a setup QR sets the QR password as this device's Settings password. "Quên mật khẩu?" wipes the device's config (token, Gist ID, Zalo, name, password; Gist data is untouched) so it can be set up again.
+- **Vân tay / khuôn mặt**: Settings → "Bật mở bằng vân tay / khuôn mặt" (shown when a Settings password exists and the device has a platform authenticator). It creates a passkey (WebAuthn, `userVerification: required`) and uses the **PRF extension** to get a 32-byte secret only after biometric verification; that secret is the AES-GCM key that encrypts the Settings password (`dr_bio`: credential id + IV + ciphertext). Opening Settings then tries biometrics first and falls back to typing the password if cancelled or unsupported. Changing the password re-wraps it; applying a setup QR or "Quên mật khẩu?" removes it. Needs a recent Android Chrome (Google Password Manager passkeys) or iOS 18+ Safari.
 - This lock protects the screen, not the stored token: `localStorage` is plain text on the device.
 
 ## QR quick setup
