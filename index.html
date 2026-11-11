@@ -340,7 +340,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111t</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111u</footer>
 </main>
 
 <nav class="tabs">
@@ -1306,18 +1306,8 @@ function askPass(msg,yes,check,opt={}){
 $('#pw-see').onchange=e=>{$('#pw-in').type=e.target.checked?'text':'password'};
 /* Áp dụng cấu hình o = {u,t,g,zt,zc,n,l:[tên,lat,lon],c:[danh mục],b:ngân sách} (từ chuỗi mã hóa hoặc file text) */
 async function cfgApply(o){
-  const lines=[],cur=(v)=>v?v:'(trống)',z0=zlCfg(),wl0=jget(K.wxLoc);
-  const row=(lb,a,b)=>lines.push('• '+lb+':\n   '+cur(a)+'  ➜  '+b);
-  if(o.t){row('GitHub',(tok()?(localStorage.getItem(K.uid)||'đã kết nối'):''),(o.u||'(không có User ID)')+' · token '+mask(o.t));
-          row('Gist',gid()?mask(gid()):'',o.g?mask(o.g):'tạo Gist mới')}
-  if(o.zt&&o.zc)row('Zalo',z0?'Chat '+mask(z0.c):'','Chat '+mask(o.zc));
-  if(o.n)row('Người dùng',who(),o.n);
-  if(Array.isArray(o.l))row('Vị trí vườn',wl0&&wl0.name,o.l[0]);
-  if(Array.isArray(o.c)&&o.c.length)row('Danh mục (cả nhóm)',data.categories.length+' mục',o.c.length+' mục: '+o.c.join(', '));
-  if(o.b!=null)row('Ngân sách tháng (cả nhóm)',data.budget?money(data.budget):'',money(o.b));
-  if(tok()&&o.t&&o.g&&o.g!==gid())lines.push('\n⚠️ Máy này sẽ CHUYỂN sang Gist khác: dữ liệu đang xem sẽ được thay bằng dữ liệu của Gist mới.');
-  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Các mục dưới đây sẽ bị thay thế. Kiểm tra kỹ trước khi bấm.</div>';
-  if(!await askConfirm(lines.join('\n'),'☠️ Ghi đè',{danger:head,wait:3}))return true;
+  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Toàn bộ cấu hình hiện tại trên máy này sẽ bị thay thế, kể cả danh mục và ngân sách của cả nhóm.</div>';
+  if(!await askConfirm('Bạn chắc chắn muốn ghi đè?','☠️ Ghi đè',{danger:head,wait:3}))return true;
   try{
     if(o.t){localStorage.setItem(K.token,o.t);localStorage.setItem(K.uid,o.u||'');o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
