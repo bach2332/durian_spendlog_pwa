@@ -332,7 +332,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111e</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111f</footer>
 </main>
 
 <nav class="tabs">
@@ -1147,13 +1147,16 @@ async function pwHash(pw,salt){
   const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
   return new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt,iterations:310000},base,256));
 }
-const getLock=()=>{try{return JSON.parse(localStorage.getItem(K.lock)||'null')}catch(e){return null}};
+/* Mật khẩu Cài đặt mặc định: chỉ lưu dạng băm (PBKDF2), không có mật khẩu gốc trong code. Đổi trong Cài đặt thì dùng mật khẩu mới. */
+const DEF_LOCK={s:'SEOFITAiw8tqDc-cF7htjg',h:'3Io-j4kwkWB7K_JAJzfDZkLyD0ZRJ-e1pHE5LhuMDD0'};
+const myLock=()=>{try{return JSON.parse(localStorage.getItem(K.lock)||'null')}catch(e){return null}};
+const getLock=()=>myLock()||DEF_LOCK;
 async function setLock(pw){const salt=crypto.getRandomValues(new Uint8Array(16));localStorage.setItem(K.lock,JSON.stringify({s:b64u(salt),h:b64u(await pwHash(pw,salt))}));renderLock()}
 async function checkLock(pw){const l=getLock();if(!l)return true;return b64u(await pwHash(pw,ub64u(l.s)))===l.h}
 function renderLock(){
-  const on=!!getLock();renderBio();
-  $('#lk-state').textContent=on?'Đã bật: mỗi lần mở Cài đặt phải nhập mật khẩu.':'Chưa đặt: ai cầm máy cũng mở được Cài đặt (xem token, sửa kết nối). Nên đặt mật khẩu.';
-  $('#lk-set').textContent=on?'Đổi mật khẩu':'Đặt mật khẩu';
+  renderBio();
+  $('#lk-state').textContent=myLock()?'Mỗi lần mở Cài đặt phải nhập mật khẩu (đã đổi khỏi mật khẩu mặc định).':'Mỗi lần mở Cài đặt phải nhập mật khẩu. Đang dùng mật khẩu mặc định của nhóm.';
+  $('#lk-set').textContent='Đổi mật khẩu';
 }
 let setUnlocked=false;
 
@@ -1219,7 +1222,7 @@ $('#bio-off').onclick=async()=>{
   localStorage.removeItem(K.bio);renderBio();toast('Đã tắt');
 };
 async function resetDevice(){
-  if(!await askConfirm('Quên mật khẩu: xóa toàn bộ cấu hình trên máy này?\n(token GitHub, Gist ID, Zalo, tên người dùng, mật khẩu Cài đặt)\n\nDữ liệu trên Gist vẫn còn. Sau đó quét lại mã QR để thiết lập.','Xóa cấu hình'))return;
+  if(!await askConfirm('Quên mật khẩu: xóa toàn bộ cấu hình trên máy này?\n(token GitHub, Gist ID, Zalo, tên người dùng; mật khẩu Cài đặt trở về mặc định)\n\nDữ liệu trên Gist vẫn còn. Sau đó quét lại mã QR để thiết lập.','Xóa cấu hình'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));Object.values(ZK).forEach(k=>localStorage.removeItem(k));
   data={categories:[...DEF_CATS],budget:0,items:[]};status('Đã xóa cấu hình');renderAll();renderWho();renderLock();
   setUnlocked=true;showPage('set');window.scrollTo(0,0);toast('Đã xóa cấu hình máy này');
@@ -1240,7 +1243,7 @@ async function newPass(title){
   return p2==null?null:p1;
 }
 $('#lk-set').onclick=async()=>{
-  const p=await newPass(getLock()?'Đặt mật khẩu Cài đặt mới.':'Đặt mật khẩu để khóa màn hình Cài đặt.');if(p==null)return;
+  const p=await newPass('Đặt mật khẩu Cài đặt mới.');if(p==null)return;
   await setLock(p);
   const c=bioCfg();
   if(c){try{await bioWrap(ub64u(c.id),await bioPrf(ub64u(c.id)),p);toast('Đã đổi mật khẩu, vân tay / khuôn mặt vẫn dùng được')}
