@@ -155,17 +155,13 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .mock .mf div{border:1px solid var(--line);border-radius:8px;padding:8px;background:var(--card);word-break:break-all}
 .mock .mf.hl div{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc2)}
 .mock .mb{display:inline-block;background:var(--acc);color:var(--onacc);border-radius:8px;padding:6px 12px;font-weight:600;font-size:14px;margin-top:4px}
-/* QR thiết lập nhanh */
+/* Popup mã cấu hình */
 #pw{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
 #pw.on{display:flex}
 #pw .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
 #qr{position:fixed;inset:0;background:#000c;display:none;align-items:center;justify-content:center;z-index:25;padding:16px}
 #qr.on{display:flex}
 #qr .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:16px;border:1px solid var(--line);max-height:92vh;overflow:auto}
-#qr-cam{position:relative;width:100%;aspect-ratio:1;background:#000;border-radius:12px;overflow:hidden}
-#qr-cam video{width:100%;height:100%;object-fit:cover;display:block}
-#qr-cam i{position:absolute;inset:16%;border:3px solid #fff;border-radius:14px;box-shadow:0 0 0 999px #0006}
-#qr-img{display:block;width:100%;max-width:300px;margin:8px auto;image-rendering:pixelated;background:#fff;border-radius:10px}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 </style>
 </head>
@@ -278,12 +274,10 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <div class="card">
       <h2>Thiết lập nhanh</h2>
-      <div class="mut">Dán <b>file text cấu hình</b> (dạng <code>khóa = giá trị</code>) hoặc <b>chuỗi mã hóa</b> <code>DR27E1.…</code> vào ô dưới, hay chọn file .txt, rồi bấm Áp dụng. Chuỗi mã hóa sẽ hỏi mật khẩu.</div>
-      <textarea id="cfg-in" rows="5" placeholder="github.token = github_pat_…&#10;github.gist = …&#10;user.name = Chị Lan&#10;location.name = Đắk Mil&#10;…  hoặc  DR27E1.…" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
-      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng cấu hình</button><label class="menu" style="margin:0;justify-content:center;cursor:pointer;flex:0 0 auto">📄 Chọn file .txt<input type="file" id="cfg-file" accept=".txt,text/plain" hidden></label></div>
-      <div class="row" style="margin-top:8px"><button class="sec" id="cfg-tpl">⬇️ Tải file mẫu</button><button class="sec" id="cfg-exp">⬇️ Xuất cấu hình máy này</button></div>
-      <div class="mut" style="margin-top:12px">Máy đã cài: bấm <b>Tạo mã cấu hình</b>, đặt mật khẩu, rồi gửi chuỗi hoặc ảnh QR cho người mới.</div>
-      <div class="row" style="margin-top:8px"><button class="sec" id="qr-show">🔑 Tạo mã cấu hình</button><button class="sec" id="qr-scan">📷 Quét mã QR</button></div>
+      <div class="mut">Dán đoạn text cấu hình vào ô dưới rồi bấm <b>Áp dụng</b>, nhập mật khẩu là xong.</div>
+      <textarea id="cfg-in" rows="5" placeholder="Dán đoạn text cấu hình vào đây" autocomplete="off" autocapitalize="off" spellcheck="false" style="width:100%;margin-top:10px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical"></textarea>
+      <div class="row" style="margin-top:8px"><button id="cfg-apply">Áp dụng</button></div>
+      <div class="row" style="margin-top:8px"><button class="sec" id="qr-show">🔑 Tạo mã cấu hình (gửi cho người khác)</button></div>
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
     </div>
     <div class="card">
@@ -344,7 +338,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
     </div>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261111o</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261111q</footer>
 </main>
 
 <nav class="tabs">
@@ -400,21 +394,12 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 <div id="cf"><div class="sheet"><div id="cf-msg"></div><div class="row"><button class="sec" id="cf-no">Hủy</button><button class="bad" id="cf-yes">Xác nhận</button></div></div></div>
 <div id="qr"><div class="sheet">
   <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="qr-title" style="margin:0"></h2><button class="sec sm" id="qr-x" aria-label="Đóng">✕</button></div>
-  <div id="qr-scanbox">
-    <div class="mut" style="margin:6px 0 10px">Đưa mã QR vào giữa khung.</div>
-    <div id="qr-cam"><video id="qr-video" playsinline muted></video><i></i></div>
-    <div id="qr-msg" class="mut" style="margin-top:8px;min-height:18px"></div>
-    <label class="menu" style="margin:10px 0 0;justify-content:center;cursor:pointer">🖼️ Chọn ảnh có mã QR<input type="file" id="qr-file" accept="image/*" hidden></label>
-  </div>
   <div id="qr-showbox">
-    <div class="warn" style="background:#fef3c7;color:#78350f;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px">Mã đã được <b>mã hóa</b>, người quét phải nhập đúng mật khẩu mới dùng được. Hãy báo mật khẩu qua kênh khác (nói trực tiếp, gọi điện), <b>đừng gửi chung</b> với ảnh QR.</div>
-    <div class="mut" style="margin-bottom:4px"><b>Chuỗi cấu hình</b> (gửi qua Zalo, người mới dán vào ô "Thiết lập nhanh"):</div>
+    <div class="warn" style="background:#fef3c7;color:#78350f;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:14px">Đoạn text đã được <b>mã hóa</b>. Người nhận dán vào ô <b>Thiết lập nhanh</b> và nhập mật khẩu chung để dùng. Báo mật khẩu riêng, đừng gửi chung với đoạn text.</div>
+    <div class="mut" style="margin-bottom:4px"><b>Đoạn text cấu hình</b> (gửi qua Zalo):</div>
     <textarea id="cfg-out" rows="4" readonly style="width:100%;font-family:ui-monospace,monospace;font-size:12px;resize:none"></textarea>
-    <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép chuỗi</button><button class="sec" id="cfg-dl">⬇️ Tải file .txt</button></div>
-    <div class="mut" style="margin:12px 0 0">Hoặc dùng mã QR:</div>
-    <img id="qr-img" alt="Mã QR cấu hình">
-    <div id="qr-info" class="mut" style="text-align:center"></div>
-    <div class="row" style="margin-top:12px"><a id="qr-dl" class="menu" style="margin:0;justify-content:center" download="sau-rieng-2027-qr.png">Lưu ảnh QR</a></div>
+    <div class="row" style="margin-top:6px"><button id="cfg-copy">📋 Sao chép</button></div>
+    <div id="qr-info" class="mut" style="text-align:center;margin-top:8px"></div>
   </div>
 </div></div>
 <div id="toast"></div>
@@ -1171,15 +1156,15 @@ const HELP=[
 <li>Vào Cài đặt → Thông báo Zalo, dán token, bấm liên kết <b>mở getUpdates</b> (trang chờ khoảng 30 giây). Trong lúc chờ, nhắn một tin cho bot trên Zalo, rồi tìm <code>chat</code> → <code>id</code> làm Chat ID.</li>
 <li>Bấm <b>Lưu</b>, sau đó bấm <b>Gửi thử</b> và kiểm tra Zalo.</li>
 </ol>`},
-{id:'qr-setup',group:'D. Hướng dẫn kết nối dịch vụ',title:'3. Thiết lập nhanh (chuỗi cấu hình / QR)',html:`
-<p>Dùng khi cài app cho máy thứ hai hoặc cho người khác trong nhóm, không phải gõ lại token. Có 2 cách: <b>file text cấu hình</b> (bấm <b>Tải file mẫu</b>, điền rồi dán vào ô hoặc Chọn file .txt; đặt được cả danh mục và ngân sách) hoặc <b>chuỗi mã hóa</b> bên dưới. Chuỗi cấu hình gồm: kết nối GitHub, Zalo, <b>tên người dùng</b> (hiện trong tin nhắn Zalo) và <b>vị trí vườn</b> (để xem thời tiết).</p>
-<div class="flow"><div>📱 Máy đã cài<br><small>Tạo mã cấu hình</small></div><span>→</span><div>📋 Máy mới<br><small>Dán chuỗi / quét QR</small></div><span>→</span><div>✅ Tự điền<br><small>GitHub, Zalo, tên, vị trí</small></div></div>
+{id:'qr-setup',group:'D. Hướng dẫn kết nối dịch vụ',title:'3. Thiết lập nhanh bằng đoạn text',html:`
+<p>Dùng khi cài app cho máy mới hoặc cho người khác trong nhóm: dán một đoạn text mã hóa là có đủ cấu hình.</p>
+<div class="flow"><div>📋 Dán đoạn text<br><small>Cài đặt → Thiết lập nhanh</small></div><span>→</span><div>🔒 Nhập mật khẩu<br><small>mật khẩu chung</small></div><span>→</span><div>✅ Xong<br><small>app tự tải dữ liệu</small></div></div>
 <ol>
-<li><b>Máy đã cài:</b> Cài đặt → Thiết lập nhanh → <b>Tạo mã cấu hình</b>, nhập <b>tên người</b> sẽ dùng máy mới, đặt <b>mật khẩu</b> (ít nhất 8 ký tự) để mã hóa. Bấm <b>Sao chép chuỗi</b> rồi gửi qua Zalo, hoặc <b>Lưu ảnh QR</b>.</li>
-<li><b>Máy mới:</b> mở app → Cài đặt → dán chuỗi vào ô <b>Thiết lập nhanh</b> rồi bấm <b>Áp dụng chuỗi cấu hình</b>. Hoặc bấm <b>Quét mã QR</b>, cho phép dùng camera, đưa mã vào khung. Nếu đã nhận ảnh QR qua Zalo thì bấm <b>Chọn ảnh có mã QR</b>.</li>
-<li>Nhập <b>mật khẩu</b> để giải mã. App hiện tóm tắt cấu hình (kể cả tên người dùng), bấm <b>Áp dụng</b> là xong, app tự tải dữ liệu.</li>
+<li>Mở app → <b>Cài đặt</b> → ô <b>Thiết lập nhanh</b>, dán đoạn text được gửi cho bạn, bấm <b>Áp dụng</b>.</li>
+<li>Nhập <b>mật khẩu chung</b> của nhóm. App hiện tóm tắt, bấm <b>Áp dụng</b>.</li>
 </ol>
-<div class="warn">Mã QR được mã hóa AES-256 bằng mật khẩu bạn đặt; không có mật khẩu thì không đọc được token. Báo mật khẩu riêng (nói trực tiếp, gọi điện), đừng gửi chung với ảnh QR. Mật khẩu không lưu trong app, quên thì tạo mã mới. Nếu lộ cả mã lẫn mật khẩu: vào GitHub xóa token cũ, tạo token mới rồi tạo lại mã QR.</div>`}
+<p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn, danh mục và ngân sách. Người đã cài bấm <b>Tạo mã cấu hình</b>, nhập tên người dùng máy mới và mật khẩu chung, rồi bấm <b>Sao chép</b> và gửi qua Zalo.</p>
+<div class="warn">Đoạn text được mã hóa AES-256-GCM bằng <b>mật khẩu chung</b> của nhóm. App không lưu mật khẩu (chỉ giữ bản băm để kiểm tra nhập đúng). Không có mật khẩu thì không đọc được token trong đoạn text.</div>`}
 ];
 function renderHelp(){
   let toc='',body='',lastG=null;
@@ -1270,11 +1255,18 @@ $('#who').onclick=()=>showTab('set');
 $('#u-save').onclick=()=>{const n=$('#u-name').value.trim();setWho(n);toast(n?'Đã lưu: '+n:'Đã xóa tên người dùng')};
 $('#u-name').onkeydown=e=>{if(e.key==='Enter')$('#u-save').click()};
 
-/* ---------- Thiết lập nhanh bằng QR ----------
-   Dữ liệu gốc: {"app":"dr27","u":user,"t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat}
-   Mã QR = "DR27E1." + base64url(salt 16B | iv 12B | AES-256-GCM(dữ liệu gốc))
-   Khóa = PBKDF2-SHA256(mật khẩu, salt, 310000 vòng). Mật khẩu không lưu ở đâu cả. */
+/* ---------- Thiết lập nhanh bằng đoạn text mã hóa ----------
+   Dữ liệu gốc: {"app":"dr27","u":user,"t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat,"n":tên,"l":[vị trí,lat,lon],"c":[danh mục],"b":ngân sách}
+   Đoạn text = "DR27E1." + base64url(salt 16B | iv 12B | AES-256-GCM(dữ liệu gốc))
+   Khóa = PBKDF2-SHA256(mật khẩu, salt, 310000 vòng). Mật khẩu không lưu, chỉ có bản băm PW_HASH để kiểm tra. */
 const QR_APP='dr27',QR_PFX='DR27E1.',QR_ITER=310000;
+/* Mật khẩu chung DUY NHẤT của app: chỉ lưu bản băm PBKDF2-SHA256 (salt, 310000 vòng), không có mật khẩu gốc trong code hay trên máy. */
+const PW_HASH={s:'XblE9KRE7wBJV8aJanA74g',h:'BFxj9G0yM8QFklKbDeFEsZaQ3n6Nki-wd1NDyE5RYqY'};
+async function pwOk(pw){
+  const base=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveBits']);
+  const bits=new Uint8Array(await crypto.subtle.deriveBits({name:'PBKDF2',hash:'SHA-256',salt:ub64u(PW_HASH.s),iterations:310000},base,256));
+  return b64u(bits)===PW_HASH.h;
+}
 const b64u=b=>btoa(String.fromCharCode(...b)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const ub64u=s=>Uint8Array.from(atob(s.replace(/-/g,'+').replace(/_/g,'/')),c=>c.charCodeAt(0));
 async function qrKey(pw,salt){
@@ -1315,44 +1307,8 @@ function askPass(msg,yes,check,opt={}){
   });
 }
 $('#pw-see').onchange=e=>{$('#pw-in').type=e.target.checked?'text':'password'};
-function loadLib(src,name){
-  if(window[name])return Promise.resolve();
-  return new Promise((res,rej)=>{const sc=document.createElement('script');sc.src=src;sc.onload=()=>window[name]?res():rej(new Error('Thư viện lỗi'));sc.onerror=()=>rej(new Error('Không tải được thư viện QR, kiểm tra mạng'));document.head.appendChild(sc)});
-}
-let qrStream=null,qrTimer=null,qrDet=null,qrBusy=false;
-const qrCv=document.createElement('canvas'),qrCx=qrCv.getContext('2d',{willReadFrequently:true});
-function qrOpen(mode){
-  $('#qr-title').textContent=mode==='scan'?'Quét mã QR':'Mã cấu hình';
-  $('#qr-scanbox').style.display=mode==='scan'?'':'none';$('#qr-showbox').style.display=mode==='show'?'':'none';
-  $('#qr').classList.add('on');
-}
-function qrStop(){
-  clearInterval(qrTimer);qrTimer=null;
-  if(qrStream){qrStream.getTracks().forEach(t=>t.stop());qrStream=null}
-  $('#qr-video').srcObject=null;
-}
-function qrClose(){qrStop();$('#qr').classList.remove('on')}
-async function qrDecode(src,w,h){
-  if(qrDet){try{const r=await qrDet.detect(src);return r.length?r[0].rawValue:null}catch(e){}}
-  await loadLib('lib/jsQR.min.js','jsQR');
-  const k=Math.min(1,800/Math.max(w,h));qrCv.width=Math.round(w*k);qrCv.height=Math.round(h*k);
-  qrCx.drawImage(src,0,0,qrCv.width,qrCv.height);
-  const d=qrCx.getImageData(0,0,qrCv.width,qrCv.height);
-  const r=jsQR(d.data,d.width,d.height,{inversionAttempts:'attemptBoth'});
-  return r?r.data:null;
-}
-async function qrGot(txt,fromText){
-  txt=String(txt).replace(/\s+/g,'');
-  if(!txt.startsWith(QR_PFX)){const m='Đây không phải chuỗi cấu hình Sầu riêng 2027 (phải bắt đầu bằng '+QR_PFX+').';if(fromText)toast(m);else $('#qr-msg').textContent=m;return false}
-  qrClose();
-  let o=null;
-  const pw=await askPass('Cấu hình đã được mã hóa.\nNhập mật khẩu để giải mã:','Giải mã',async p=>{
-    try{o=await qrDec(txt,p)}catch(e){return 'Sai mật khẩu, hoặc chuỗi/mã QR bị thiếu, hỏng'}
-    return o&&o.app===QR_APP&&(o.t||o.zt||o.l||o.n)?null:'Nội dung mã không hợp lệ';
-  });
-  if(pw==null||!o)return true;
-  return cfgApply(o);
-}
+function qrOpen(){$('#qr-title').textContent='Mã cấu hình';$('#qr').classList.add('on')}
+function qrClose(){$('#qr').classList.remove('on')}
 /* Áp dụng cấu hình o = {u,t,g,zt,zc,n,l:[tên,lat,lon],c:[danh mục],b:ngân sách} (từ chuỗi mã hóa hoặc file text) */
 async function cfgApply(o){
   const lines=[];
@@ -1379,155 +1335,42 @@ async function cfgApply(o){
   if(ok)toast('Đã áp dụng cấu hình');
   return true;
 }
-/* ---- File text cấu hình: dòng "khóa = giá trị", # là ghi chú, có thể dùng [nhóm] ---- */
-const CFG_KEYS={'github.user':'u','github.token':'t','github.gist':'g','zalo.bot_token':'zt','zalo.token':'zt','zalo.chat_id':'zc',
-  'user.name':'n','location.name':'ln','location.lat':'la','location.lon':'lo','categories':'c','budget':'b'};
-function cfgParse(txt){
-  const o={app:QR_APP},raw={},bad=[];let sec='';
-  String(txt).replace(/^\uFEFF/,'').split(/\r?\n/).forEach((ln,k)=>{
-    ln=ln.trim();if(!ln||ln[0]==='#'||ln.startsWith('//'))return;
-    const m=ln.match(/^\[([\w.]+)\]$/);if(m){sec=m[1].toLowerCase()+'.';return}
-    const i=ln.indexOf('=');if(i<0){bad.push(k+1);return}
-    let key=ln.slice(0,i).trim().toLowerCase().replace(/\s+/g,'_');const v=ln.slice(i+1).trim().replace(/^["']|["']$/g,'');
-    if(sec&&!key.includes('.')&&!CFG_KEYS[key])key=sec+key;
-    if(!CFG_KEYS[key]){bad.push(k+1);return}
-    if(v!=='')raw[CFG_KEYS[key]]=v;
-  });
-  ['u','t','g','zt','zc','n'].forEach(k=>{if(raw[k])o[k]=raw[k]});
-  if(o.zt&&!o.zc||!o.zt&&o.zc)throw new Error('Zalo cần đủ cả zalo.bot_token và zalo.chat_id');
-  if(o.g&&!o.t)throw new Error('Có github.gist nhưng thiếu github.token');
-  if(raw.c)o.c=[...new Set(raw.c.split(/[,;|]/).map(x=>x.trim()).filter(Boolean))];
-  if(raw.b!=null){const n=+String(raw.b).replace(/[.,\s₫đ]/gi,'');if(!isFinite(n)||n<0)throw new Error('budget không hợp lệ: '+raw.b);o.b=Math.round(n)}
-  if(raw.la!=null||raw.lo!=null){const la=+String(raw.la).replace(',','.'),lo=+String(raw.lo).replace(',','.');if(!isFinite(la)||!isFinite(lo)||Math.abs(la)>90||Math.abs(lo)>180)throw new Error('location.lat / location.lon không hợp lệ');o.l=[raw.ln||'Vườn',+la.toFixed(3),+lo.toFixed(3)]}
-  else if(raw.ln)o.lq=raw.ln;
-  return {o,bad};
-}
-async function cfgGeocode(q){
-  /* tìm theo cả chuỗi, không ra thì tìm theo phần trước dấu phẩy rồi ưu tiên kết quả khớp phần sau (tỉnh) */
-  const parts=q.split(',').map(x=>x.trim()).filter(Boolean),tries=[q];if(parts.length>1)tries.push(parts[0]);
-  for(const t of tries){
-    const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=10&language=vi&format=json&name='+encodeURIComponent(t));
-    const A=((await r.json()).results||[]),V=A.filter(x=>x.country_code==='VN');
-    const want=parts.slice(1).join(' ').toLowerCase();
-    const x=(want&&V.find(x=>[x.admin1,x.admin2].join(' ').toLowerCase().includes(want)))||V[0]||A[0];
-    if(x)return[q,+x.latitude.toFixed(3),+x.longitude.toFixed(3)];
-  }
-  return null;
-}
 async function cfgFromText(txt){
-  txt=String(txt||'').trim();if(!txt){toast('Dán nội dung cấu hình vào ô trước');return false}
-  if(txt.replace(/\s+/g,'').startsWith(QR_PFX))return qrGot(txt,true);
-  let r;try{r=cfgParse(txt)}catch(e){toast('Lỗi cấu hình: '+e.message);return false}
-  const o=r.o;
-  if(o.lq){try{o.l=await cfgGeocode(o.lq)}catch(e){}if(!o.l){toast('Không tìm được vị trí "'+o.lq+'". Ghi thêm location.lat / location.lon');return false}delete o.lq}
-  if(Object.keys(o).length<2){toast('Không thấy khóa cấu hình nào hợp lệ'+(r.bad.length?' (dòng '+r.bad.join(', ')+')':''));return false}
-  if(r.bad.length)toast('Bỏ qua dòng không hiểu: '+r.bad.slice(0,8).join(', '));
+  txt=String(txt||'').replace(/\s+/g,'');if(!txt){toast('Dán đoạn text cấu hình vào ô trước');return false}
+  if(!txt.startsWith(QR_PFX)){toast('Đoạn text không đúng: phải là đoạn đã mã hóa, bắt đầu bằng '+QR_PFX);return false}
+  if(!window.crypto||!crypto.subtle){toast('Cần mở app bằng link https');return false}
+  let o=null;
+  const pw=await askPass('🔒 Nhập mật khẩu để giải mã cấu hình','Giải mã',async p=>{
+    if(!await pwOk(p))return 'Sai mật khẩu';
+    try{o=await qrDec(txt,p)}catch(e){return 'Đoạn text bị thiếu hoặc hỏng, hãy dán lại'}
+    return o&&o.app===QR_APP?null:'Đoạn text không hợp lệ';
+  });
+  if(pw==null||!o)return false;
   return cfgApply(o);
 }
-function dlText(name,txt){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'}));a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),5000)}
-function cfgText(v){
-  v=v||{};const L=x=>x==null?'':x;
-  return `# ==============================================
-# Sầu riêng 2027 – file cấu hình nhanh
-# Cài đặt → Thiết lập nhanh → dán nội dung này (hoặc Chọn file .txt) → Áp dụng cấu hình
-# Dòng bắt đầu bằng # là ghi chú. Để trống giá trị = không đổi mục đó.
-# ⚠️ File này chứa token ở dạng đọc được: chỉ gửi riêng, xong thì xóa.
-# ==============================================
-
-# --- GitHub (lưu dữ liệu trên Gist) ---
-github.user  = ${L(v.u)}
-github.token = ${L(v.t)}
-# Để trống github.gist để app tự tạo Gist mới
-github.gist  = ${L(v.g)}
-
-# --- Zalo Bot (thông báo nhóm) – cần đủ cả 2 dòng ---
-zalo.bot_token = ${L(v.zt)}
-zalo.chat_id   = ${L(v.zc)}
-
-# --- Người đang sử dụng (hiện ở đầu app và trong tin nhắn Zalo) ---
-user.name = ${L(v.n)}
-
-# --- Vị trí vườn (thời tiết) ---
-# Chỉ cần location.name (app tự tìm tọa độ), hoặc ghi thêm lat/lon cho chính xác
-location.name = ${L(v.l&&v.l[0])}
-location.lat  = ${L(v.l&&v.l[1])}
-location.lon  = ${L(v.l&&v.l[2])}
-
-# --- Sổ chi (áp dụng cho cả nhóm, lưu lên Gist) ---
-# Danh mục cách nhau bằng dấu phẩy
-categories = ${v.c?v.c.join(', '):''}
-# Ngân sách tháng (đồng), 0 = không đặt
-budget = ${v.b==null?'':v.b}
-`;
-}
-function cfgCurrent(){
-  const z=zlCfg(),wl=jget(K.wxLoc);
-  return {u:localStorage.getItem(K.uid)||'',t:tok()||'',g:gid()||'',zt:z?z.t:'',zc:z?z.c:'',n:who(),l:wl?[wl.name,wl.lat,wl.lon]:null,c:data.categories,b:data.budget||0};
-}
-$('#qr-scan').onclick=async()=>{
-  qrOpen('scan');$('#qr-msg').textContent='Đang mở camera...';
-  try{if(!qrDet&&'BarcodeDetector' in window&&(await BarcodeDetector.getSupportedFormats()).includes('qr_code'))qrDet=new BarcodeDetector({formats:['qr_code']})}catch(e){}
-  if(!qrDet)loadLib('lib/jsQR.min.js','jsQR').catch(e=>{$('#qr-msg').textContent=e.message});
-  try{
-    qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});
-    const v=$('#qr-video');v.srcObject=qrStream;await v.play();
-    $('#qr-msg').textContent='Đang tìm mã QR...';
-    qrTimer=setInterval(async()=>{
-      if(qrBusy||!v.videoWidth)return;qrBusy=true;
-      try{const t=await qrDecode(v,v.videoWidth,v.videoHeight);if(t)await qrGot(t)}catch(e){$('#qr-msg').textContent=e.message}
-      qrBusy=false;
-    },300);
-  }catch(e){
-    $('#qr-msg').textContent='Không mở được camera ('+(e.name==='NotAllowedError'?'chưa cho phép quyền camera':e.message||e.name)+'). Bấm "Chọn ảnh có mã QR" bên dưới.';
-  }
-};
-$('#qr-file').onchange=async e=>{
-  const f=e.target.files[0];e.target.value='';if(!f)return;
-  $('#qr-msg').textContent='Đang đọc ảnh...';
-  try{
-    const img=await createImageBitmap(f);
-    const t=await qrDecode(img,img.width,img.height);
-    if(!t){$('#qr-msg').textContent='Không tìm thấy mã QR trong ảnh. Chụp rõ hơn rồi thử lại.';return}
-    await qrGot(t);
-  }catch(err){$('#qr-msg').textContent='Không đọc được ảnh: '+err.message}
-};
 $('#qr-show').onclick=async()=>{
   const t=tok(),z=zlCfg();
-  if(!t&&!z&&!jget(K.wxLoc)){toast('Máy này chưa có gì để chia sẻ (GitHub, Zalo, vị trí vườn)');return}
   if(t&&!gid()){toast('Chưa có Gist ID — bấm Kết nối & tải trước');return}
   if(!window.crypto||!crypto.subtle){toast('Trình duyệt không hỗ trợ mã hóa (cần mở bằng https)');return}
-  try{await loadLib('lib/qrcode.min.js','qrcode')}catch(e){toast(e.message);return}
   const o={app:QR_APP};
   if(t){o.u=localStorage.getItem(K.uid)||'';o.t=t;o.g=gid()}
   if(z){o.zt=z.t;o.zc=z.c}
   const wl=jget(K.wxLoc);if(wl)o.l=[wl.name,wl.lat,wl.lon];
+  o.c=data.categories;if(data.budget)o.b=data.budget;
   const nm=await askPass('Tên người sẽ dùng máy mới (để trống nếu chưa biết)','Tiếp',null,{text:true,empty:true,ph:'VD: Chị Lan'});
   if(nm==null)return;if(nm)o.n=nm;
   let enc='';
-  const pw=await askPass('Đặt mật khẩu cho mã QR (ít nhất 8 ký tự).\nNgười dùng máy mới phải nhập đúng mật khẩu này khi áp dụng.','Tạo mã',async p=>{
-    if(p.length<8)return 'Mật khẩu cần ít nhất 8 ký tự';
+  const pw=await askPass('🔒 Nhập mật khẩu để tạo mã cấu hình','Tạo mã',async p=>{
+    if(!await pwOk(p))return 'Sai mật khẩu';
     enc=await qrEnc(o,p);return null;
   });
   if(pw==null)return;
-  const q=qrcode(0,'M');q.addData(enc,'Byte');q.make();
-  const n=q.getModuleCount(),m=4,sz=8,c=document.createElement('canvas');
-  c.width=c.height=(n+m*2)*sz;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.fillStyle='#000';
-  for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+m)*sz,(r+m)*sz,sz,sz);
-  const url=c.toDataURL('image/png');
-  $('#qr-img').src=url;$('#qr-dl').href=url;$('#cfg-out').value=enc;
-  $('#qr-info').textContent='🔒 '+(o.n?'Cho: '+o.n+' · ':'')+[t?'GitHub'+(o.u?' ('+o.u+')':''):'',z?'Zalo':'',o.l?'Vị trí vườn':''].filter(Boolean).join(' + ')+' · cần mật khẩu khi áp dụng';
-  qrOpen('show');
+  $('#cfg-out').value=enc;
+  $('#qr-info').textContent='🔒 '+(o.n?'Cho: '+o.n+' · ':'')+[t?'GitHub'+(o.u?' ('+o.u+')':''):'',z?'Zalo':'',o.l?'Vị trí vườn':''].filter(Boolean).join(' + ');
+  qrOpen();
 };
 $('#qr-x').onclick=qrClose;
 $('#cfg-apply').onclick=async()=>{if(await cfgFromText($('#cfg-in').value)!==false)$('#cfg-in').value=''};
-$('#cfg-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
-  if(f.size>200000){toast('File quá lớn');return}
-  const t=await f.text();$('#cfg-in').value=t;if(await cfgFromText(t)!==false)$('#cfg-in').value=''};
-$('#cfg-tpl').onclick=()=>{dlText('sau-rieng-cau-hinh-mau.txt',cfgText({u:'',c:DEF_CATS,b:0}));toast('Đã tải file mẫu')};
-$('#cfg-exp').onclick=async()=>{
-  if(!await askConfirm('Xuất toàn bộ cấu hình máy này ra file .txt?\n\nFile chứa token GitHub và Zalo ở dạng đọc được. Chỉ gửi riêng cho người tin cậy, dùng xong thì xóa. Muốn gửi an toàn hơn, dùng "Tạo mã cấu hình" (có mật khẩu).','Xuất file'))return;
-  dlText('sau-rieng-cau-hinh.txt',cfgText(cfgCurrent()));toast('Đã xuất file cấu hình')};
-$('#cfg-dl').onclick=()=>{dlText('sau-rieng-cau-hinh-ma-hoa.txt',$('#cfg-out').value+'\n');toast('Đã tải file .txt')};
 $('#cfg-copy').onclick=async()=>{const t=$('#cfg-out').value;try{await navigator.clipboard.writeText(t);toast('Đã sao chép chuỗi cấu hình')}catch(e){const a=$('#cfg-out');a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép chuỗi cấu hình')}catch(_){toast('Hãy giữ ngón tay vào ô để sao chép')}}};
 $('#qr').onclick=e=>{if(e.target.id==='qr')qrClose()};
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$('#qr').classList.contains('on'))qrClose()});

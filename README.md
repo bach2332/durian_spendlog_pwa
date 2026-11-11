@@ -150,30 +150,15 @@ Technical notes and caveats:
 
 A strip under the title shows current weather (temperature, condition, humidity, wind) and a 3-day outlook with rain chance, from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location: Settings → **Vị trí vườn** (search by place name via Open-Meteo geocoding, or use the phone's current position); before it is set, tapping the strip asks for the current position. Cached 30 minutes in `dr_wx`; tap the strip to refresh.
 
-## Config text file
+## Quick setup (encrypted config text)
 
-Settings → **Thiết lập nhanh** also accepts a plain-text config (paste it or **Chọn file .txt**), then **Áp dụng cấu hình** shows a summary to confirm. **Tải file mẫu** downloads a template; **Xuất cấu hình máy này** exports the current device's config (contains tokens in readable form — confirm prompt). Format: `key = value`, `#` comments, empty value = leave unchanged, optional `[group]` headers (`[user]` + `name = …` = `user.name = …`).
+Settings → **Thiết lập nhanh**: paste the config text, tap **Áp dụng**, enter the shared password, confirm the summary. That's all.
 
-| Key | Sets |
-|---|---|
-| `github.user`, `github.token`, `github.gist` | GitHub connection (empty gist = create a new Gist) |
-| `zalo.bot_token`, `zalo.chat_id` | Zalo notifications (both required together) |
-| `user.name` | Current user (header, `by` on entries, Zalo messages) |
-| `location.name`, `location.lat`, `location.lon` | Orchard location for weather (name only = geocoded via Open-Meteo, first Vietnam match) |
-| `categories` | Expense categories, comma-separated (saved to the Gist for everyone) |
-| `budget` | Monthly budget in đồng (`50.000.000` accepted; saved to the Gist) |
-
-Unknown lines are skipped and reported by line number. A text starting with `DR27E1.` is treated as the encrypted config below and asks for the password.
-
-## QR quick setup
-
-Settings → **Thiết lập nhanh**. The simplest way is the **config string**: **Tạo mã cấu hình** shows the encrypted string (`DR27E1.…`) with a **Sao chép chuỗi** button; on the new device paste it into the text box, tap **Áp dụng chuỗi cấu hình** and enter the password. The same string is also shown as a QR code.
-
-- **Hiện mã QR** (on a device that is already set up) asks for a password (min. 8 characters), encrypts the config (GitHub user, token, Gist ID and, if enabled, Zalo bot token and chat ID) and shows it as a QR code. **Lưu ảnh QR** saves it as a PNG.
-- **Quét mã QR** (on a new device) opens the camera, or reads a QR image from the gallery, asks for the password, shows a summary, and on **Áp dụng** fills the settings and loads the data. A wrong password is rejected and can be retried.
-- Encryption: AES-256-GCM with a key derived by PBKDF2-SHA256 (310,000 iterations, random 16-byte salt, random 12-byte IV), all via the browser's Web Crypto API (needs HTTPS). QR text: `DR27E1.` + base64url(`salt | iv | ciphertext+tag`). Plain JSON inside: `{"app":"dr27","u":"…","t":"…","g":"…","zt":"…","zc":"…","n":"user name","l":["place",lat,lon]}` — GitHub, Zalo, the new user's name (shown in Zalo messages) and the orchard location (weather).
-- The password is never stored or hard-coded (this repo is public). Share it separately from the QR image. Forgot it: make a new QR. If both QR and password leak: revoke the token on GitHub and make a new QR.
-- Scanning uses `BarcodeDetector` when available, otherwise `lib/jsQR.min.js`; the QR is drawn with `lib/qrcode.min.js`. Both are bundled locally (MIT) and loaded only when needed.
+- The text is always encrypted: `DR27E1.` + base64url(`salt(16) | iv(12) | AES-256-GCM ciphertext+tag`), key = PBKDF2-SHA256(password, salt, 310,000 iterations). Plain text is rejected.
+- Inside (JSON): `{"app":"dr27","u":GitHub user,"t":token,"g":Gist ID,"zt":Zalo bot token,"zc":Zalo chat ID,"n":user name,"l":[place,lat,lon],"c":[categories],"b":monthly budget}` — every key except `app` is optional. Categories and budget are saved to the Gist (shared).
+- **One shared password** for the whole app. It is never stored in clear text: the code only holds its salted PBKDF2-SHA256 hash (`PW_HASH`) to check what is typed; nothing password-related is stored on the device. Opening Settings needs no password.
+- **Tạo mã cấu hình** (on a device that is set up): asks the new user's name and the shared password, then shows the encrypted text with a **Sao chép** button to send via Zalo.
+- Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
 
 ## Updating and versioning
 

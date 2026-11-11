@@ -1,8 +1,8 @@
 // Service worker: cache vỏ app để mở được khi offline.
 // Khi sửa index.html, hãy đổi số phiên bản VERSION để máy cập nhật.
-const VERSION = 'v3';
+const VERSION = 'v4';
 const CACHE = 'durian-' + VERSION;
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png', './lib/jsQR.min.js', './lib/qrcode.min.js'];
+const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all(SHELL.map(u => c.add(new Request(u, { cache: 'reload' }))))).then(() => self.skipWaiting()));
