@@ -354,7 +354,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112g</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112h</footer>
 </main>
 
 <nav class="tabs">
@@ -1037,14 +1037,16 @@ function zlSend(text){
 }
 function zlNew(it){
   const day=sum(data.items.filter(x=>x.date===it.date));
-  zlSend('🌳 Sầu riêng – chi mới\n'+money(it.amount)+(it.note?' · '+it.note:'')+'\nDanh mục: '+it.category+' · '+dmy(it.date)+(it.by?'\nNgười nhập: '+it.by:'')+'\nTổng ngày '+dmy(it.date).slice(0,5)+': '+money(day));
+  const dd=dmy(it.date).slice(0,5);
+  zlSend(['🌳 Chi mới','💸 '+money(it.amount)+(it.note?' · '+it.note:''),'🏷️ '+it.category+' · 📅 '+dd,it.by?'👤 '+it.by:'',
+    '📊 '+(it.date===today()?'Hôm nay':'Ngày '+dd)+': '+money(day)].filter(Boolean).join('\n'));
 }
 function zlEdit(i,oldN,oldC){
   const ch=[];
-  if((oldN||'')!==(i.note||''))ch.push('Nội dung: '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
-  if(oldC!==i.category)ch.push('Danh mục: '+oldC+' → '+i.category);
+  if((oldN||'')!==(i.note||''))ch.push('📝 '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
+  if(oldC!==i.category)ch.push('🏷️ '+oldC+' → '+i.category);
   if(!ch.length)return;
-  zlSend('✏️ Đã sửa khoản chi\n'+money(i.amount)+' · '+dmy(i.date)+'\n'+ch.join('\n')+(who()?'\nNgười sửa: '+who():''));
+  zlSend(['✏️ Sửa khoản chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date).slice(0,5),...ch,who()?'👤 '+who():''].filter(Boolean).join('\n'));
 }
 $('#z-token').addEventListener('input',zlLink);
 $('#z-save').onclick=()=>{
@@ -1063,7 +1065,7 @@ $('#z-test').onclick=async()=>{
   const z=zlCfg();if(!z){toast('Điền token, Chat ID và bấm Lưu trước');return}
   $('#z-state').textContent='Đang gửi thử...';
   try{
-    const r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text:'✅ Sầu riêng 2027: kết nối Zalo thành công'+(who()?'\nNgười dùng: '+who():'')})});
+    const r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text:'✅ Sầu riêng 2027 · Zalo OK'+(who()?'\n👤 '+who():'')})});
     const j=await r.json();
     $('#z-state').textContent=j.ok?'Gửi thử thành công, hãy kiểm tra Zalo.':'Zalo báo lỗi: '+(j.description||j.error_code||'không rõ');
   }catch(e){

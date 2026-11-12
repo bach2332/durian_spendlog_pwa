@@ -138,6 +138,15 @@ Setup (per the Zalo Bot Platform documentation):
 3. Paste it as **Chat ID**, tap **Lưu**, then **Gửi thử** (send test).
 
 Technical notes and caveats:
+- Messages use emoji labels to stay short:
+  ```
+  🌳 Chi mới
+  💸 12.500.000 ₫ · Phân NPK 20 bao
+  🏷️ Mua phân · 📅 12/11
+  👤 Chị Lan
+  📊 Hôm nay: 13.250.000 ₫
+  ```
+  Edits: `✏️ Sửa khoản chi` / `💸 amount · 📅 date` / `📝 old → new` / `🏷️ old → new` / `👤 user`. Test: `✅ Sầu riêng 2027 · Zalo OK` / `👤 user`.
 - Calls go from the browser to `https://bot-api.zaloplatforms.com/bot<TOKEN>/sendMessage` as a form-encoded request with `mode: 'no-cors'`, so messages go out even if the API does not send CORS headers. The trade-off is that regular sends cannot read the response; only the test button tries to.
 - Each notification is sent once, with no automatic retry (to avoid duplicates or late messages).
 - The token and Chat ID are stored only in this browser (`localStorage`), per device.
