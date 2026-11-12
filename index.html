@@ -132,6 +132,18 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .srow:last-child{border-bottom:0}
 .cr:hover .t span:first-child{text-decoration:underline}
 /* hướng dẫn sử dụng */
+details.set{padding:0;overflow:hidden}
+details.set>summary{list-style:none;display:flex;align-items:center;gap:10px;padding:14px;cursor:pointer;user-select:none}
+details.set>summary::-webkit-details-marker{display:none}
+details.set>summary .si{font-size:20px;width:26px;text-align:center;flex:0 0 auto}
+details.set>summary .stt{flex:1;min-width:0;display:flex;flex-direction:column}
+details.set>summary .stt b{font-size:16px;font-weight:600}
+details.set>summary .stt small{color:var(--mut);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+details.set>summary .chev{color:var(--mut);font-size:20px;transition:transform .2s;flex:0 0 auto}
+details.set[open]>summary .chev{transform:rotate(90deg)}
+details.set[open]>summary{border-bottom:1px solid var(--line)}
+details.set .sb{padding:12px 14px 14px}
+details.set .sb>label:first-child{margin-top:0}
 .menu{display:flex;justify-content:space-between;align-items:center;padding:14px;margin-bottom:12px;background:var(--card);border:1px solid var(--line);border-radius:14px;color:var(--text);text-decoration:none;font-weight:600}
 .guide .gh{font-size:18px;margin:24px 0 4px;padding-top:12px;border-top:2px solid var(--line)}
 .guide h3{font-size:17px;margin:0 0 8px}
@@ -269,13 +281,16 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 
   <!-- CÀI ĐẶT -->
   <section class="page" id="p-set">
-    <div class="card">
-      <h2>Thiết lập nhanh</h2>
+    <details class="card set" id="sd-quick">
+      <summary><span class="si">⚡</span><span class="stt"><b>Thiết lập nhanh</b><small id="sm-quick"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
       <div class="row" style="margin-top:8px"><button id="cfg-apply">📥 Thiết lập nhanh</button><button class="sec" id="cfg-export">📋 Sao chép thiết lập hiện tại</button></div>
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
-    </div>
-    <div class="card">
-      <h2>Kết nối GitHub (GitHub Connection)</h2>
+      </div>
+    </details>
+    <details class="card set" id="sd-gh">
+      <summary><span class="si">🔗</span><span class="stt"><b>Kết nối GitHub</b><small id="sm-gh"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
       <div class="mut">Tạo token (chỉ cần quyền <b>gist</b>) tại <a href="https://github.com/settings/tokens/new?scopes=gist&description=sau-rieng-2027" target="_blank" rel="noopener">github.com/settings/tokens</a>.</div>
       <label>Mật khẩu (GitHub Token)</label>
       <input type="password" id="s-token" placeholder="ghp_... hoặc github_pat_..." autocomplete="off">
@@ -288,15 +303,19 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       </div>
       <div class="mut" style="margin-top:8px">Token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu vườn lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
-    </div>
-    <div class="card">
-      <h2>Ngân sách tháng</h2>
+      </div>
+    </details>
+    <details class="card set" id="sd-bud">
+      <summary><span class="si">💰</span><span class="stt"><b>Ngân sách tháng</b><small id="sm-bud"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
       <label style="margin-top:0">Hạn mức mỗi tháng (nghìn đồng, 0 = tắt)</label>
       <input type="text" id="s-budget-in" inputmode="numeric" placeholder="0">
       <div style="margin-top:12px"><button id="s-budget-save" style="width:100%">Lưu ngân sách</button></div>
-    </div>
-    <div class="card">
-      <h2>Thông báo Zalo <span class="chip" style="background:var(--warn);color:#fff;vertical-align:middle">Thử nghiệm</span></h2>
+      </div>
+    </details>
+    <details class="card set" id="sd-zl">
+      <summary><span class="si">🔔</span><span class="stt"><b>Thông báo Zalo <span class="chip" style="background:var(--warn);color:#fff;vertical-align:middle">Thử nghiệm</span></b><small id="sm-zl"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
       <div class="mut" style="margin-bottom:4px"><b>Tính năng đang thử nghiệm</b>: chưa kiểm chứng đầy đủ với Zalo Bot thật, tin nhắn có thể không đến hoặc không báo lỗi.</div>
       <div class="mut">Tùy chọn. Điền đủ <b>Bot token</b> và <b>Chat ID</b> thì mới bật. Để trống thì app chạy bình thường, không gửi gì. Mỗi khoản chi <b>thêm mới</b> hoặc <b>sửa</b> gửi đúng 1 tin.</div>
       <label>Bot token</label>
@@ -307,14 +326,18 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <div class="row" style="margin-top:12px"><button id="z-save">Lưu</button><button class="sec" id="z-test">Gửi thử</button><button class="sec" id="z-off">Tắt</button></div>
       <div id="z-state" class="mut" style="margin-top:8px"></div>
       <div class="mut" style="margin-top:8px"><a href="#help/zalo-connection" data-hs="zalo-connection">Hướng dẫn kết nối Zalo (How to connect Zalo?)</a></div>
-    </div>
-    <div class="card">
-      <h2>Danh mục</h2>
+      </div>
+    </details>
+    <details class="card set" id="sd-cat">
+      <summary><span class="si">🏷️</span><span class="stt"><b>Danh mục</b><small id="sm-cat"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
       <div id="s-catlist"></div>
       <div class="row" style="margin-top:10px"><input type="text" id="s-newcat" placeholder="Tên danh mục mới"><button id="s-addcat" style="flex:0 0 auto">Thêm</button></div>
-    </div>
-    <div class="card">
-      <h2>Import từ CSV</h2>
+      </div>
+    </details>
+    <details class="card set" id="sd-imp">
+      <summary><span class="si">📄</span><span class="stt"><b>Import từ CSV</b><small id="sm-imp"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
       <div class="mut">File CSV (UTF-8) có dòng tiêu đề <code>date,note,category,amount</code>:<br>
       • <b>date</b>: <code>2026-11-01</code> hoặc <code>01/11/2026</code> (bắt buộc)<br>
       • <b>note</b>: nội dung (tùy chọn)<br>
@@ -327,10 +350,11 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
       <label class="inl"><input type="checkbox" id="imp-skip" checked> Bỏ qua dòng trùng với dữ liệu đã có</label>
       <div id="imp-sum" style="margin-top:10px;font-size:14px"></div>
       <div style="margin-top:10px"><button id="imp-go" style="width:100%;display:none"></button></div>
-    </div>
+      </div>
+    </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112f</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261112g</footer>
 </main>
 
 <nav class="tabs">
@@ -622,11 +646,20 @@ function radarSVG(by){
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Radar chi theo danh mục" style="display:block;max-width:420px;margin:0 auto;overflow:visible">${g}${d}${lb}</svg><div class="mut" style="text-align:center">${note}</div>`+skipNote;
 }
 
+function setSum(){
+  const z=zlCfg(),T=(id,t)=>{const e=$('#sm-'+id);if(e)e.textContent=t};
+  T('quick','Dán đoạn text để cài, hoặc sao chép thiết lập');
+  T('gh',tok()?'✅ Đã kết nối'+(gid()?' · Gist '+mask(gid()):''):'Chưa kết nối');
+  T('bud',data.budget?money(data.budget)+' / tháng':'Chưa đặt');
+  T('zl',z?'✅ Đang bật':'Đang tắt');
+  T('cat',data.categories.length+' danh mục: '+data.categories.join(', '));
+  T('imp','Nhập nhiều khoản chi từ file CSV');
+}
 function renderSet(){
   $('#s-token').value='';$('#s-gist').value='';
   $('#s-token').placeholder=tok()?'Đã lưu: '+mask(tok())+' (nhập để thay)':'ghp_... hoặc github_pat_...';
   $('#s-gist').placeholder=gid()?'Đã lưu: '+mask(gid())+' (nhập để thay)':'Để trống để tạo Gist mới';
-  gistLink();zlFill();
+  gistLink();zlFill();setSum();
   kSet($('#s-budget-in'),data.budget);
   $('#s-catlist').innerHTML=data.categories.map((c,i)=>`<div class="catrow"><span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${catColor(c)};margin-right:8px"></i>${esc(c)}</span><button class="sec sm" data-delcat="${i}">Xóa</button></div>`).join('');
 }
@@ -992,7 +1025,7 @@ const zlTok=()=>{const z=zlCfg();return $('#z-token').value.trim()||(z?z.t:'')};
 function zlLink(){}
 function zlState(){$('#z-state').textContent=zlCfg()?'Đang bật: khoản chi mới hoặc được sửa sẽ gửi tin Zalo.':'Đang tắt: không gửi tin nhắn.'}
 function zlFill(){
-  const z=zlCfg();
+  const z=zlCfg();setSum();
   if(document.activeElement!==$('#z-token')){$('#z-token').value='';$('#z-token').placeholder=z?'Đã lưu: '+mask(z.t)+' (nhập để thay)':'123456:ABC...'}
   if(document.activeElement!==$('#z-chat')){$('#z-chat').value='';$('#z-chat').placeholder=z?'Đã lưu: '+mask(z.c)+' (nhập để thay)':'VD: abc.xyz'}
   zlLink();zlState();
@@ -1350,7 +1383,7 @@ if(localStorage.getItem(K.dirty)&&tok()){save()}else{load()}
 renderHelp();
 renderWho();wlRender();wxRender();wxLoad();
 try{['dr_bio','dr_bio_no','dr_lock'].forEach(k=>localStorage.removeItem(k))}catch(e){}   /* dọn dữ liệu của tính năng đã bỏ (Face ID, mật khẩu Cài đặt) */
-if(!tok())showTab('set');
+if(!tok()){$('#sd-quick').open=true;showTab('set')}
 else{try{$('#a-amt').focus()}catch(e){}}
 if(/^#help/.test(location.hash))openHelp(location.hash.split('/')[1]||'');
 })();

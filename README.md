@@ -69,6 +69,8 @@ Switch between day, week and month. Tap any category row to open a popup listing
 Pick a time range (presets: today, this week, this month, last month, this year, or custom dates), categories (none selected = all), a keyword, and an amount range (entered in thousands). Voided entries are hidden unless you tick *show voided*. Tick the entries you want and tap **Review** for a table (date, description, amount) with a total at the bottom. **Copy** produces tab-separated text.
 
 ### Settings
+Each section is a collapsed row (icon, title, one-line status, ›) like the User Guide row; tap it to expand the details below, tap again to collapse. Status lines: GitHub connected + masked Gist, monthly budget, Zalo on/off, category count, etc. On a device with no GitHub token the app opens Settings with **Thiết lập nhanh** already expanded.
+- **Thiết lập nhanh** (quick setup, see below).
 - **GitHub connection** and **Log out** (clears the token and local cache from this device; the Gist is untouched).
 - **Monthly budget** (in thousands, `0` disables it).
 - **Categories** (default: Mua phân, Làm công, Làm cỏ, Phun thuốc, Thu hoạch, Mua cơm, Mua nước, Khác). Deleting a category does not change existing entries.
