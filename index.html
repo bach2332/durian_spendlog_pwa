@@ -354,7 +354,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261112h</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261113a</footer>
 </main>
 
 <nav class="tabs">
@@ -416,7 +416,7 @@ details.set .sb>label:first-child{margin-top:0}
 <script>
 (()=>{
 const FILE='durian2027.json';
-const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',uid:'dr_uid',who:'dr_who',wxLoc:'dr_wx_loc',wx:'dr_wx'};
+const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:'dr_base',uid:'dr_uid',who:'dr_who',wxLoc:'dr_wx_loc',wx:'dr_wx'};
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -432,10 +432,17 @@ const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 let data={categories:[...DEF_CATS],budget:0,items:[]};
 let view={mode:'month',anchor:today(),cat:'all'};
-let editId=null, saving=false, queued=false;
+let editId=null;
 
 try{const c=JSON.parse(localStorage.getItem(K.cache)||'null');if(c&&c.items)data=norm(c)}catch(e){}
-function norm(d){return{categories:Array.isArray(d.categories)&&d.categories.length?d.categories:[...DEF_CATS],budget:+d.budget||0,items:Array.isArray(d.items)?d.items:[]}}
+/* nâng cấp từ bản cũ: máy đã có dữ liệu thì lấy làm mốc so sánh; máy mới (chưa có dữ liệu) thì để trống */
+try{if(localStorage.getItem(K.cache)&&!localStorage.getItem('dr_base'))localStorage.setItem('dr_base',JSON.stringify({cats:data.categories,budget:data.budget}))}catch(e){}
+function norm(d){
+  const o={categories:Array.isArray(d.categories)&&d.categories.length?d.categories:[...DEF_CATS],budget:+d.budget||0,items:Array.isArray(d.items)?d.items:[]};
+  if(d.catLog&&typeof d.catLog==='object')o.catLog=d.catLog;
+  if(d.budgetT)o.budgetT=d.budgetT;
+  return o;
+}
 
 /* ---------- toast / status ---------- */
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
@@ -445,46 +452,134 @@ function status(m){$('#status').textContent=m}
 const tok=()=>localStorage.getItem(K.token)||'';
 const gid=()=>localStorage.getItem(K.gist)||'';
 async function gh(path,opt={}){
-  const r=await fetch('https://api.github.com'+path,{...opt,headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+tok(),'Content-Type':'application/json',...(opt.headers||{})}});
+  const r=await fetch('https://api.github.com'+path,{cache:'no-store',...opt,headers:{'Accept':'application/vnd.github+json','Authorization':'Bearer '+tok(),'Content-Type':'application/json',...(opt.headers||{})}});
   if(!r.ok){let m=r.status+'';try{m+=' '+(await r.json()).message}catch(e){}throw new Error(m)}
   return r.json();
 }
-async function load(){
-  if(!tok()||!gid()){status(tok()?'Chưa có Gist ID':'Chưa kết nối GitHub — vào Cài đặt');return}
-  status('Đang tải...');
-  try{
-    const g=await gh('/gists/'+gid());
-    const f=g.files&&g.files[FILE];
-    if(f){
-      let txt=f.content;
-      if(f.truncated){txt=await (await fetch(f.raw_url)).text()}
-      data=norm(JSON.parse(txt));
-      localStorage.setItem(K.cache,JSON.stringify(data));
-      localStorage.removeItem(K.dirty);
-    }
-    status('Đã đồng bộ');renderAll();return true;
-  }catch(e){status('Lỗi tải: '+e.message);return false}
+/* ---------- Đồng bộ: tải về → gộp → ghi lên → kiểm tra lại ----------
+   Không bao giờ chép đè cả file nữa. Gộp theo id từng khoản (khoản chỉ được thêm, xóa là thêm dòng âm),
+   sửa thì bản có "upd" mới hơn thắng; danh mục theo catLog {tên:{on,t}}, ngân sách theo budgetT.
+   Máy nào còn khoản mà Gist thiếu (bị máy khác ghi chen) sẽ tự ghi bù ở lần đồng bộ sau. */
+const nowISO=()=>new Date().toISOString();
+const TS=x=>x||'';
+const getBase=()=>{try{return JSON.parse(localStorage.getItem(K.base)||'null')}catch(e){return null}};
+const setBase=d=>{try{localStorage.setItem(K.base,JSON.stringify({cats:d.categories,budget:d.budget}))}catch(e){}};
+function stampLocal(d){   /* so với lần đồng bộ trước để biết máy này vừa thêm/xóa danh mục, đổi ngân sách */
+  const b=getBase()||{cats:DEF_CATS,budget:0};   /* máy chưa đồng bộ lần nào: so với danh mục mặc định */
+  const t=nowISO();d.catLog=d.catLog||{};
+  d.categories.forEach(c=>{if(!b.cats.includes(c))d.catLog[c]={on:true,t}});
+  b.cats.forEach(c=>{if(!d.categories.includes(c))d.catLog[c]={on:false,t}});
+  if(+d.budget!==+b.budget)d.budgetT=t;
 }
-async function save(){
-  localStorage.setItem(K.cache,JSON.stringify(data));
-  if(!tok()){status('Chưa kết nối — dữ liệu chỉ lưu trên máy');return}
-  if(saving){queued=true;return}
-  saving=true;status('Đang lưu...');
-  localStorage.setItem(K.dirty,'1');
+function mergeItems(A,B){
+  const m=new Map(),order=[];
+  A.forEach(x=>{if(!m.has(x.id))order.push(x.id);m.set(x.id,x)});
+  B.forEach(x=>{
+    const a=m.get(x.id);
+    if(!a){m.set(x.id,x);order.push(x.id);return}
+    if(a===x||JSON.stringify(a)===JSON.stringify(x))return;
+    let w=TS(x.upd)>TS(a.upd)?x:a;const l=w===x?a:x;
+    if(l.voidedBy&&!w.voidedBy)w={...w,voidedBy:l.voidedBy};
+    m.set(x.id,w);
+  });
+  const out=order.map(id=>m.get(id)),at=new Map(out.map((x,k)=>[x.id,k]));
+  /* nối lại khoản gốc với dòng xóa; nếu 2 máy cùng xóa 1 khoản thì chỉ giữ 1 dòng âm */
+  out.forEach((x,k)=>{
+    if(x.type!=='void'||!x.ref||!at.has(x.ref)||x.dup)return;
+    const gk=at.get(x.ref),g=out[gk];
+    if(!g.voidedBy){out[gk]={...g,voidedBy:x.id};return}
+    if(g.voidedBy!==x.id&&at.has(g.voidedBy))out[k]={...x,amount:0,dup:true,note:'Xóa trùng: '+String(x.note||'').replace(/^Xóa: /,''),upd:TS(x.upd)>TS(g.upd)?x.upd:(g.upd||x.at||'')};
+  });
+  return out;
+}
+function catState(d,fresh){const L={};(d.catLog?Object.entries(d.catLog):[]).forEach(([k,v])=>L[k]=v);if(!fresh)d.categories.forEach(c=>{if(!L[c])L[c]={on:true,t:''}});return L}
+function mergeData(R,L,fresh){   /* fresh: L là máy chưa đồng bộ lần nào, danh mục mặc định của nó không tính */
+  if(!R)return L;
+  const rs=catState(R),ls=catState(L,fresh),log={};
+  [...Object.keys(rs),...Object.keys(ls)].forEach(k=>{
+    if(log[k])return;const a=rs[k],b=ls[k];
+    log[k]=!a?b:!b?a:TS(b.t)>TS(a.t)?b:TS(a.t)>TS(b.t)?a:{on:a.on||b.on,t:a.t};
+  });
+  const cats=[];[...R.categories,...(fresh?[]:L.categories),...Object.keys(log)].forEach(c=>{if(log[c]&&log[c].on&&!cats.includes(c))cats.push(c)});
+  const lb=TS(L.budgetT)>TS(R.budgetT);
+  const o={categories:cats.length?cats:[...DEF_CATS],budget:lb?L.budget:R.budget,items:mergeItems(R.items,L.items)};
+  const hasLog=Object.values(log).some(v=>v.t);if(hasLog)o.catLog=log;
+  const bt=lb?L.budgetT:R.budgetT;if(bt)o.budgetT=bt;
+  return o;
+}
+let etag='';
+async function fetchRemote(cond){
+  const h={'Accept':'application/vnd.github+json','Authorization':'Bearer '+tok()};if(cond&&etag)h['If-None-Match']=etag;
+  const r=await fetch('https://api.github.com/gists/'+encodeURIComponent(gid()),{cache:'no-store',headers:h});
+  if(r.status===304)return{same:true};
+  if(!r.ok){let m=r.status+'';try{m+=' '+(await r.json()).message}catch(e){}throw new Error(m)}
+  const e=r.headers.get('ETag');if(e)etag=e;
+  const g=await r.json(),f=g.files&&g.files[FILE];
+  if(!f)return{d:null};
+  let txt=f.content;if(f.truncated)txt=await (await fetch(f.raw_url,{cache:'no-store'})).text();
+  return{d:norm(JSON.parse(txt))};
+}
+const putRemote=d=>gh('/gists/'+encodeURIComponent(gid()),{method:'PATCH',body:JSON.stringify({files:{[FILE]:{content:JSON.stringify(d,null,1)}}})});
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const isDirty=()=>!!localStorage.getItem(K.dirty);
+function keepLocal(){try{localStorage.setItem(K.cache,JSON.stringify(data))}catch(e){status('⚠️ Bộ nhớ trình duyệt đầy, không lưu được trên máy')}}
+let syncing=false,again=false,againLocal=false;
+/* local=true: máy này vừa có thay đổi. quiet=true: kiểm tra định kỳ, chỉ tải nếu Gist đã đổi */
+async function sync(opt={}){
+  if(opt.local){stampLocal(data);localStorage.setItem(K.dirty,'1')}
+  keepLocal();
+  if(!tok()){status('Chưa kết nối — dữ liệu chỉ lưu trên máy');return false}
+  if(syncing){if(opt.local)againLocal=true;else again=true;return false}
+  syncing=true;let ok=false;
+  const c0=JSON.stringify(data.categories),b0=data.budget,fresh=!getBase();
   try{
-    const content=JSON.stringify(data,null,1);
     if(!gid()){
-      const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Sầu riêng 2027 - chi tiêu',public:false,files:{[FILE]:{content}}})});
-      localStorage.setItem(K.gist,g.id);renderSet();
-      toast('Đã tạo Gist mới');
+      status('Đang tạo Gist...');
+      const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Sầu riêng 2027 - chi tiêu',public:false,files:{[FILE]:{content:JSON.stringify(data,null,1)}}})});
+      localStorage.setItem(K.gist,g.id);setBase(data);localStorage.removeItem(K.dirty);renderSet();toast('Đã tạo Gist mới');status('Đã lưu');ok=true;
     }else{
-      await gh('/gists/'+gid(),{method:'PATCH',body:JSON.stringify({files:{[FILE]:{content}}})});
+      if(!opt.quiet||isDirty())status(isDirty()?'Đang lưu...':'Đang tải...');
+      let r=await fetchRemote(opt.quiet&&!isDirty());
+      if(r.same){ok=true}
+      else{
+        const before=new Set(data.items.map(x=>x.id));
+        let remote=r.d,merged,tries=0,wrote=false;
+        for(;;){
+          merged=mergeData(remote,data,fresh);
+          if(!remote||JSON.stringify(merged)!==JSON.stringify(remote)){
+            await putRemote(merged);wrote=true;
+            await sleep(1200);
+            const chk=(await fetchRemote(false)).d;
+            if(chk&&JSON.stringify(mergeData(chk,merged))!==JSON.stringify(chk)&&++tries<3){remote=chk;continue}
+            if(chk)merged=mergeData(chk,merged);
+          }
+          break;
+        }
+        const got=merged.items.filter(x=>!before.has(x.id)).length;
+        /* thay đổi trên máy trong lúc đang đồng bộ: giữ lại, đồng bộ tiếp ở lượt sau */
+        const cur=data,cc=JSON.stringify(cur.categories)!==c0,bc=cur.budget!==b0;
+        data={...merged,items:mergeItems(merged.items,cur.items)};
+        if(cc)data.categories=cur.categories;if(bc)data.budget=cur.budget;
+        if(cc||bc||data.items.length!==merged.items.length)againLocal=true;
+        setBase(merged);keepLocal();
+        if(!againLocal)localStorage.removeItem(K.dirty);
+        const tm=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'});
+        status(fresh?'Đã tải '+merged.items.length+' khoản · '+tm:(wrote?'Đã lưu ':'Đã đồng bộ ')+tm+(got?' · +'+got+' khoản từ máy khác':''));
+        if(got||JSON.stringify(cur)!==JSON.stringify(data))renderAll();
+        ok=true;
+      }
     }
-    localStorage.removeItem(K.dirty);status('Đã lưu '+new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit'}));
-  }catch(e){status('Lỗi lưu: '+e.message+' (sẽ thử lại lần sau)');toast('Lưu lên Gist thất bại')}
-  saving=false;
-  if(queued){queued=false;save()}
+  }catch(e){status('Lỗi đồng bộ: '+e.message+(isDirty()?' · dữ liệu vẫn còn trên máy, sẽ thử lại':''));if(opt.local)toast('Chưa lưu lên Gist được, sẽ thử lại')}
+  syncing=false;
+  if(againLocal){againLocal=again=false;setTimeout(()=>sync({local:true}),300)}
+  else if(again){again=false;setTimeout(()=>sync(),300)}
+  return ok;
 }
+const save=()=>sync({local:true});
+const load=()=>sync();
+/* đổi sang Gist khác / đăng xuất: bỏ dữ liệu của sổ cũ để không trộn vào sổ mới */
+function resetLocal(){data={categories:[...DEF_CATS],budget:0,items:[]};etag='';[K.cache,K.base,K.dirty].forEach(k=>localStorage.removeItem(k))}
+setInterval(()=>{if(document.visibilityState==='visible'&&tok()&&gid()&&!syncing)sync({quiet:true})},60000);
 
 /* ---------- date ranges ---------- */
 function range(){
@@ -785,14 +880,14 @@ $('#modal').onclick=e=>{if(e.target.id==='modal')closeM()};
 $('#e-save').onclick=()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
   const oldN=i.note,oldC=i.category;
-  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;zlEdit(i,oldN,oldC);
+  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;if(i.note!==oldN||i.category!==oldC)i.upd=nowISO();zlEdit(i,oldN,oldC);
   closeM();renderAll();save();toast('Đã cập nhật');
 };
 $('#e-del').onclick=async()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
   if(!await askConfirm('Xóa khoản chi này?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.','Xóa'))return;
   const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};if(who())r.by=who();
-  i.voidedBy=r.id;data.items.push(r);
+  i.voidedBy=r.id;i.upd=r.at;data.items.push(r);
   closeM();renderAll();save();toast('Đã xóa (ghi dòng âm)');
 };
 
@@ -800,13 +895,13 @@ $('#s-connect').onclick=async()=>{
   const t=$('#s-token').value.trim()||tok(),g=$('#s-gist').value.trim()||gid();
   if(!t){toast('Nhập GitHub token');return}
   localStorage.setItem(K.token,t);
-  if(g){localStorage.setItem(K.gist,g);gistLink();const ok=await load();toast(ok?'Đã kết nối':'Chưa kết nối được, xem dòng trạng thái phía trên')}
+  if(g){if(g!==gid())resetLocal();localStorage.setItem(K.gist,g);gistLink();renderAll();const ok=await load();toast(ok?'Đã kết nối':'Chưa kết nối được, xem dòng trạng thái phía trên')}
   else{localStorage.removeItem(K.gist);await save();renderSet();toast('Đã tạo Gist mới')}
 };
 $('#s-logout').onclick=async()=>{
   if(!await askConfirm('Xóa token và dữ liệu cache khỏi thiết bị này?\n(Dữ liệu trên Gist vẫn còn)','Đăng xuất'))return;
-  Object.values(K).forEach(k=>localStorage.removeItem(k));
-  data={categories:[...DEF_CATS],budget:0,items:[]};status('Đã đăng xuất');renderAll();
+  Object.values(K).forEach(k=>localStorage.removeItem(k));resetLocal();
+  status('Đã đăng xuất');renderAll();
 };
 $('#s-budget-save').onclick=()=>{data.budget=kval($('#s-budget-in'));renderAll();save();toast('Đã lưu ngân sách')};
 $('#s-addcat').onclick=()=>{
@@ -818,7 +913,7 @@ $('#s-addcat').onclick=()=>{
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){wxLoad();
     $('#a-date').value=today();dLabel();
-    if(!localStorage.getItem(K.dirty)&&!saving)load();
+    sync({quiet:true});
   }
 });
 
@@ -1319,7 +1414,7 @@ async function cfgApply(o){
   const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ CẤU HÌNH – KHÔNG HOÀN TÁC</b>Toàn bộ cấu hình hiện tại trên máy này sẽ bị thay thế.</div>';
   if(!await askConfirm('Bạn chắc chắn muốn ghi đè?','☠️ Ghi đè',{danger:head,wait:3}))return true;
   try{
-    if(o.t){localStorage.setItem(K.token,o.t);o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
+    if(o.t){if((o.g||'')!==gid())resetLocal();localStorage.setItem(K.token,o.t);o.g?localStorage.setItem(K.gist,o.g):localStorage.removeItem(K.gist)}
     if(o.zt&&o.zc){localStorage.setItem(ZK.t,o.zt);localStorage.setItem(ZK.c,o.zc)}
     if(o.n)localStorage.setItem(K.who,o.n);
     if(Array.isArray(o.l)&&isFinite(o.l[1])&&isFinite(o.l[2])){jset(K.wxLoc,{name:String(o.l[0]||'Vườn'),lat:+o.l[1],lon:+o.l[2]});jset(K.wx,null)}
@@ -1381,7 +1476,7 @@ $('#cfg-export').onclick=async()=>{
 /* ---------- init ---------- */
 $('#a-date').value=today();dLabel();
 renderAll();fltPreset('month');
-if(localStorage.getItem(K.dirty)&&tok()){save()}else{load()}
+sync();
 renderHelp();
 renderWho();wlRender();wxRender();wxLoad();
 try{['dr_bio','dr_bio_no','dr_lock'].forEach(k=>localStorage.removeItem(k))}catch(e){}   /* dọn dữ liệu của tính năng đã bỏ (Face ID, mật khẩu Cài đặt) */

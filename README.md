@@ -118,11 +118,18 @@ Data lives in a single file, `durian2027.json`, inside a **secret Gist**:
 ```
 Voided originals carry `"voidedBy": "<id of the void entry>"`. Amounts are integer đồng.
 
-How syncing works:
-- On start (and when the app returns to the foreground with nothing unsynced) the app loads the Gist; files above the API's inline size limit are fetched through their raw URL.
-- Every change is applied locally first, cached in `localStorage`, then written to the Gist (the whole file is replaced). Failed saves are marked as pending and retried on the next save or app start.
-- The device keeps a local cache, so the app opens and records entries without network access.
-- Concurrent edits from two devices are **last write wins** (see Limitations).
+Extra fields used for merging (all optional, older files without them still work): `"upd"` on an entry (ISO time of its last edit or void), `"catLog": {"<category>": {"on": true|false, "t": "<ISO time>"}}` (when each category was added or removed) and `"budgetT"` (when the budget was last set).
+
+How syncing works (**pull → merge → push → verify**, the whole file is never blindly overwritten):
+1. Every change is applied locally first and cached in `localStorage` (marked pending).
+2. The app downloads the current Gist file (`cache: no-store`; files over the API's inline limit are fetched via their raw URL) and **merges** it with the local data:
+   - entries: union by `id` (entries are never removed, a delete is an extra negative "void" entry, so nothing can be lost); if both sides changed the same entry, the newer `upd` wins and a `voidedBy` from either side is kept; if two devices voided the same entry, the extra void is turned into a 0 ₫ "Xóa trùng" record so the total stays right;
+   - categories: per-category add/remove with timestamps (`catLog`), the newer action wins; a device that has never synced does not contribute its default categories;
+   - budget: the newer `budgetT` wins.
+3. The merged file is written back, then re-downloaded after ~1 s; if another device wrote in between and something of ours is missing, merge and write again (up to 3 tries). Anything still missing is restored the next time this device syncs, because its local copy keeps every entry.
+4. Sync also runs on app start, when the app returns to the foreground, and every 60 s while it is open. These checks send `If-None-Match` with the last ETag, so an unchanged Gist answers `304` with no download and no write.
+5. Status line: *Đang lưu… / Đã lưu hh:mm / Đã đồng bộ hh:mm · +N khoản từ máy khác / Lỗi đồng bộ … dữ liệu vẫn còn trên máy*.
+- Connecting to a different Gist (or applying a config text with another Gist ID) clears the local copy first, so two ledgers are never mixed.
 
 ## Zalo notifications (experimental)
 
@@ -206,8 +213,8 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 ## Known limitations
 
 - **Single owner, no identity:** only the Gist owner's token can write, so multiple people must share one token. There is no record of who created or changed an entry.
-- **Last write wins:** every save replaces the whole file, so simultaneous edits from two devices can overwrite each other.
-- **Growth:** an entry is roughly 120 bytes of JSON; a single file beyond about 1 MB is no longer returned inline by the Gist API (the app falls back to the raw URL), and every save rewrites the full file. GitHub's authenticated API rate limit is 5,000 requests per hour.
+- **Merge, not locking:** Gists cannot be locked, so two devices writing within the same second may briefly overwrite each other; the verify step and the next sync of the affected device restore the missing entries. Edit conflicts on the same entry use the device clocks (newer wins).
+- **Growth:** an entry is roughly 120 bytes of JSON; a single file beyond about 1 MB is no longer returned inline by the Gist API (the app falls back to the raw URL), and every save downloads, merges and rewrites the full file (about 1.6 MB at 10,000 entries). GitHub's authenticated API rate limit is 5,000 requests per hour.
 - Whole-đồng integers only; amounts are entered in thousands (CSV import uses full đồng).
 - Vietnamese-only UI. Verified in headless Chromium only, not on every real device or browser.
 
