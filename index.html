@@ -305,13 +305,10 @@ details.set .sb>label:first-child{margin-top:0}
     <details class="card set" id="sd-tool">
       <summary><span class="si">🛠️</span><span class="stt"><b>Tạo chuỗi cấu hình</b><small id="sm-tool"></small></span><span class="chev">›</span></summary>
       <div class="sb">
-      <div class="mut">Soạn chuỗi cấu hình (và link thiết lập) để gửi cho máy khác, hoặc giải mã một chuỗi có sẵn để xem và sửa. Không thay đổi cấu hình của máy này. Mật khẩu chỉ dùng lúc bấm, <b>không lưu</b>; đóng mục này là xóa hết.</div>
+      <div class="mut">Soạn chuỗi cấu hình và link thiết lập để gửi cho máy khác. Chỉ tạo mới, không giải mã chuỗi có sẵn. Không thay đổi cấu hình của máy này. Mật khẩu chỉ dùng lúc bấm, <b>không lưu</b>; đóng mục này là xóa hết.</div>
       <label>Mật khẩu</label>
       <div class="eyein"><input type="password" id="tl-pw" autocomplete="off" placeholder="Mật khẩu chung của app"><button type="button" data-eye="tl-pw" aria-label="Hiện/ẩn">👁</button></div>
-      <div class="tlh">1 · Giải mã chuỗi có sẵn (tùy chọn)</div>
-      <textarea id="tl-in" rows="3" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Dán chuỗi DR27E1... hoặc link thiết lập"></textarea>
-      <button class="sec" id="tl-dec" style="width:100%;margin-top:6px">🔓 Giải mã → điền vào các ô</button>
-      <div class="tlh">2 · Thông tin cấu hình</div>
+      <div class="tlh">1 · Thông tin cấu hình</div>
       <label>Tên người dùng</label><input type="text" id="tl-n" placeholder="vd: Chị Lan">
       <label>GitHub token</label><div class="eyein"><input type="password" id="tl-t" autocomplete="off" placeholder="github_pat_... hoặc ghp_..."><button type="button" data-eye="tl-t">👁</button></div>
       <label>Gist ID</label><div class="eyein"><input type="password" id="tl-g" autocomplete="off" placeholder="32 ký tự 0-9, a-f"><button type="button" data-eye="tl-g">👁</button></div>
@@ -320,7 +317,7 @@ details.set .sb>label:first-child{margin-top:0}
       <label>Vị trí vườn</label>
       <div class="row"><input type="text" id="tl-ln" placeholder="Tên địa điểm"><button class="sec" id="tl-geo" style="flex:0 0 auto">🔎 Tìm</button></div>
       <div class="row" style="margin-top:8px"><input type="text" id="tl-la" inputmode="decimal" placeholder="Vĩ độ"><input type="text" id="tl-lo" inputmode="decimal" placeholder="Kinh độ"></div>
-      <div class="tlh">3 · Tạo chuỗi và link</div>
+      <div class="tlh">2 · Tạo chuỗi và link</div>
       <div class="row" style="margin-top:6px"><button id="tl-enc">🔒 Mã hóa</button><button class="sec" id="tl-clr" style="flex:0 0 auto">🧹 Xóa hết</button></div>
       <div id="tl-msg"></div>
       <div id="tl-out" style="display:none">
@@ -396,7 +393,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114e</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114f</footer>
 </main>
 
 <nav class="tabs">
@@ -1516,7 +1513,7 @@ async function copyText(t){try{await navigator.clipboard.writeText(t);return tru
    phòng khi app tự tải lại (cập nhật service worker) trước khi người dùng bấm Tiếp. Vẫn phải nhập mật khẩu như cũ. */
 const LINK_KEY='dr_cfg_link';
 /* ===== Công cụ tạo chuỗi cấu hình (Cài đặt → Tạo chuỗi cấu hình) =====
-   Chỉ soạn/giải mã, không đụng tới cấu hình của máy này. Mật khẩu không lưu ở đâu cả:
+   Chỉ tạo mới (không có chức năng giải mã ngược), không đụng tới cấu hình của máy này. Mật khẩu không lưu ở đâu cả:
    chỉ đọc từ ô lúc bấm, kiểm tra với PW_HASH sẵn có, và bị xóa khi đóng mục hoặc rời app. */
 const TL_DEF_LOC=['Vườn Trùng Dương, Pơng Drang, Đắk Lắk',12.9507,108.2332];
 const TLF={t:'#tl-t',g:'#tl-g',zt:'#tl-zt',zc:'#tl-zc',n:'#tl-n'};
@@ -1527,7 +1524,7 @@ function tlToForm(o){
   const l=o&&Array.isArray(o.l)?o.l:['','',''];$('#tl-ln').value=l[0]||'';$('#tl-la').value=l[1]??'';$('#tl-lo').value=l[2]??'';
 }
 function tlClear(all){
-  $('#tl-pw').value='';$('#tl-in').value='';tlOut('');tlSay('');
+  $('#tl-pw').value='';tlOut('');tlSay('');
   $$('#sd-tool .eyein input').forEach(i=>i.type='password');
   if(all)tlToForm({l:TL_DEF_LOC});
 }
@@ -1559,21 +1556,6 @@ $('#tl-enc').onclick=async()=>{
   tlBusy(true);tlSay('Đang mã hóa...',true);
   try{const pw=await tlPw();if(!pw)return;tlOut(await qrEnc(c.o,pw));tlSay('Đã tạo chuỗi và link. Gửi link cho người dùng máy mới: họ mở bằng Chrome/Safari, bấm Tiếp và nhập mật khẩu.',true)}
   catch(e){tlSay('Không mã hóa được: '+e.message)}finally{tlBusy(false)}
-};
-$('#tl-dec').onclick=async()=>{
-  tlSay('');let t=$('#tl-in').value.trim();
-  const m=t.match(/[#?&]cfg=([^&\s]+)/);if(m){try{t=decodeURIComponent(m[1])}catch(e){t=m[1]}}
-  t=t.replace(/\s+/g,'');
-  if(!t)return tlSay('Dán chuỗi hoặc link vào ô ở bước 1 trước');
-  if(!t.startsWith(QR_PFX))return tlSay('Đây không phải chuỗi cấu hình Sầu riêng 2027 (phải bắt đầu bằng '+QR_PFX+')');
-  tlBusy(true);tlSay('Đang giải mã...',true);
-  try{
-    const pw=await tlPw();if(!pw)return;
-    let o;try{o=await qrDec(t,pw)}catch(e){return tlSay('Chuỗi bị thiếu hoặc hỏng, hãy dán lại')}
-    if(!o||o.app!==QR_APP)return tlSay('Chuỗi không hợp lệ');
-    tlToForm(o);tlOut(t);
-    tlSay('Đã giải mã và điền vào các ô (thông tin nhạy cảm đang ẩn, bấm 👁 để xem). Sửa xong bấm 🔒 Mã hóa để tạo chuỗi mới.',true);
-  }finally{tlBusy(false)}
 };
 $('#tl-clr').onclick=()=>{tlClear(true);tlSay('Đã xóa hết',true)};
 async function tlCopy(sel,what){

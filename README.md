@@ -184,12 +184,11 @@ Settings → **Thiết lập nhanh** has two buttons and no text box on the page
 
 ### Config builder (Settings → 🛠️ Tạo chuỗi cấu hình)
 
-A separate tool for preparing config text and setup links for *other* devices; it never changes this device's config.
+A separate tool for preparing config text and setup links for *other* devices; it never changes this device's config. Create-only by design: there is no decrypt function in this tool.
 
 1. Type the shared password (checked against `PW_HASH`; not stored anywhere).
-2. Optional: paste an existing `DR27E1.…` string or a full setup link and tap **🔓 Giải mã** to fill the fields.
-3. Fill or edit: user name, GitHub token, Gist ID, Zalo bot token + chat ID, orchard location (**🔎 Tìm** looks up coordinates; default is the Trùng Dương orchard, Pơng Drang, Đắk Lắk).
-4. **🔒 Mã hóa** shows the encrypted string and the setup link (`<app URL>#cfg=…`) with copy buttons.
+2. Fill in: user name, GitHub token, Gist ID, Zalo bot token + chat ID, orchard location (**🔎 Tìm** looks up coordinates; default is the Trùng Dương orchard, Pơng Drang, Đắk Lắk).
+3. **🔒 Mã hóa** shows the encrypted string and the setup link (`<app URL>#cfg=…`) with copy buttons.
 
 Token, Gist ID and Zalo fields are password-type inputs (tap 👁 to reveal). The password and every field are cleared when the section is closed, when **🧹 Xóa hết** is tapped, or when the app goes to the background.
 
