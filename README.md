@@ -163,11 +163,18 @@ Technical notes and caveats:
 
 ## Current user
 
-- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. It is set only by the quick-setup text (`"n"`); there is no input for it. It is not shown in Settings; the header shows it ("Chưa thiết lập người dùng" until set).
+- **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. Set it in **Cài đặt → 👤 Người dùng & vườn** or via the quick-setup text (`"n"`). Tapping the name in the header opens that section.
 
 ## Weather
 
-A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location is set only by the quick-setup text (`"l"`); it is not shown in Settings. Until set, the strip says "Chưa thiết lập vị trí vườn" and tapping it opens Settings. Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
+A one-line strip under the title shows current weather (temperature, condition, today's rain chance, humidity); tap it to expand location, wind and a 3-day outlook (tap again to collapse, state remembered). Data from [Open-Meteo](https://open-meteo.com/) (free, no API key). Location is set in **Cài đặt → 👤 Người dùng & vườn** or via the quick-setup text (`"l"`). Until set, the strip says "Chưa thiết lập vị trí vườn" and tapping it opens that section.
+
+Setting the orchard location (no typing coordinates):
+- **🛰️ Vị trí hiện tại**: GPS of the phone (stand in the orchard). Warns if accuracy is worse than 200 m.
+- Paste into the box (read automatically on paste, or tap **📍 Đọc vị trí**): a full Google Maps link (`!3d…!4d…` pin, `@lat,lon`, `?q=`/`query=`), plain coordinates (`12.95066, 108.23319`), or degrees-minutes-seconds (`12°57'02.4"N 108°13'59.5"E`). In Google Maps, long-press the orchard to drop a pin and copy its coordinates.
+- Short links (`maps.app.goo.gl/…`) contain no coordinates and the browser cannot follow them (no CORS), so the app explains how to open the link and copy the full URL instead. If the shared text includes a place name, it tries that name first.
+- Anything else is searched as a place name (OpenStreetMap Nominatim, Vietnam only).
+- **Tên vườn** fills itself from the Google Maps place name or by reverse geocoding (Nominatim), and can be edited. Coordinates are rounded to 5 decimals (~1 m). Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
 
 ## Quick setup (encrypted config text)
 

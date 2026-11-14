@@ -295,6 +295,20 @@ details.set .sb>label:first-child{margin-top:0}
 
   <!-- CÀI ĐẶT -->
   <section class="page" id="p-set">
+    <details class="card set" id="sd-me">
+      <summary><span class="si">👤</span><span class="stt"><b>Người dùng & vườn</b><small id="sm-me"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
+      <label>Tên người dùng</label><input type="text" id="me-n" maxlength="40" placeholder="vd: Chị Lan" autocomplete="name">
+      <div class="mut" style="font-size:12.5px;margin-top:4px">Hiện ở đầu app, ghi vào từng khoản chi và tin Zalo.</div>
+      <label>Vị trí vườn</label>
+      <input type="text" id="me-q" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Dán link Google Maps hoặc tọa độ">
+      <div class="row" style="margin-top:8px"><button class="sec" id="me-parse">📍 Đọc vị trí</button><button class="sec" id="me-gps">🛰️ Vị trí hiện tại</button></div>
+      <div id="me-msg" class="mut" style="margin-top:8px;white-space:pre-line"></div>
+      <label>Tên vườn</label><input type="text" id="me-ln" maxlength="80" placeholder="Tự điền khi có vị trí, sửa được">
+      <div class="mut" style="font-size:12.5px;margin-top:6px">Cách nhanh nhất: <b>đứng ở vườn</b> bấm 🛰️ Vị trí hiện tại. Hoặc mở Google Maps, <b>nhấn giữ</b> vào vườn để hiện tọa độ, sao chép rồi dán vào ô trên. Link Google Maps đầy đủ (có số tọa độ) cũng dán được.</div>
+      <button id="me-save" style="width:100%;margin-top:12px">Lưu</button>
+      </div>
+    </details>
     <details class="card set" id="sd-quick">
       <summary><span class="si">⚡</span><span class="stt"><b>Thiết lập nhanh</b><small id="sm-quick"></small></span><span class="chev">›</span></summary>
       <div class="sb">
@@ -393,7 +407,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114j</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114k</footer>
 </main>
 
 <nav class="tabs">
@@ -798,7 +812,8 @@ function radarSVG(by){
 function setSum(){
   const z=zlCfg(),T=(id,t)=>{const e=$('#sm-'+id);if(e)e.textContent=t};
   T('quick','Dán đoạn text để cài, hoặc sao chép thiết lập');
-  T('tool','Mã hóa / giải mã chuỗi và link thiết lập cho máy khác');
+  T('tool','Tạo chuỗi và link thiết lập cho máy khác');
+  {const l=jget(K.wxLoc);T('me',(who()||'Chưa đặt tên')+' · '+(l?l.name:'chưa có vị trí vườn'))}
   T('gh',tok()?'✅ Đã kết nối'+(gid()?' · Gist '+mask(gid()):''):'Chưa kết nối');
   T('bud',data.budget?money(data.budget)+' / tháng':'Chưa đặt');
   T('zl',z?'✅ Đang bật':'Đang tắt');
@@ -1416,14 +1431,101 @@ async function wxLoad(force){
   }catch(e){wxRender(c&&c.lat===loc.lat?'không cập nhật được, đang xem bản cũ':'không tải được thời tiết')}
   wxBusy=false;
 }
-$('#wx').onclick=()=>{if(!jget(K.wxLoc)){showTab('set');return}const o=$('#wx').classList.toggle('open');try{localStorage.setItem('dr_wx_open',o?'1':'')}catch(e){}wxRender();if(o)wxLoad()};
+$('#wx').onclick=()=>{if(!jget(K.wxLoc)){openMe();return}const o=$('#wx').classList.toggle('open');try{localStorage.setItem('dr_wx_open',o?'1':'')}catch(e){}wxRender();if(o)wxLoad()};
 try{if(localStorage.getItem('dr_wx_open'))$('#wx').classList.add('open')}catch(e){}
 function wlRender(){}
+
+/* ---------- Người dùng & vườn (Cài đặt) ----------
+   Vị trí: dán link Google Maps / tọa độ / tọa độ độ-phút-giây, hoặc lấy GPS. Tên vườn tự điền (OSM Nominatim). */
+function locParse(raw){
+  let t=String(raw||'').trim();if(!t)return null;
+  try{t=decodeURIComponent(t.replace(/\+/g,' '))}catch(e){}
+  const ok=(a,b)=>isFinite(a)&&isFinite(b)&&Math.abs(a)<=90&&Math.abs(b)<=180&&!(a==0&&b==0);
+  let name='';const pm=t.match(/\/maps\/place\/([^\/@?]+)/);if(pm)name=pm[1].trim();
+  const N='(-?\\d{1,3}(?:\\.\\d+)?)';
+  const pats=[new RegExp('!3d'+N+'!4d'+N),new RegExp('[?&](?:q|query|ll|sll|destination|center|daddr)=(?:loc:)?'+N+'\\s*,\\s*'+N),new RegExp('@'+N+','+N),
+    /(-?\d{1,2}\.\d{2,})\s*[,; ]\s*(-?\d{1,3}\.\d{2,})/];
+  for(const re of pats){const m=t.match(re);if(m&&ok(+m[1],+m[2]))return{lat:+m[1],lon:+m[2],name}}
+  // 12°57'02.4"N 108°13'59.5"E
+  const dms=[...t.matchAll(/(\d{1,3})\s*°\s*(\d{1,2})?\s*['′]?\s*(\d{1,2}(?:\.\d+)?)?\s*["″]?\s*([NSEW])/gi)];
+  if(dms.length>=2){
+    const v=m=>((+m[1])+(+(m[2]||0))/60+(+(m[3]||0))/3600)*(/[SW]/i.test(m[4])?-1:1);
+    const la=dms.find(m=>/[NS]/i.test(m[4])),lo=dms.find(m=>/[EW]/i.test(m[4]));
+    if(la&&lo&&ok(v(la),v(lo)))return{lat:v(la),lon:v(lo),name};
+  }
+  return null;
+}
+let meLoc=null;
+async function meSearch(q){
+  try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=vn&accept-language=vi&q='+encodeURIComponent(q));
+    const A=await r.json();return A&&A[0]?{lat:+A[0].lat,lon:+A[0].lon}:null}catch(e){return null}
+}
+const r5=x=>Math.round(x*1e5)/1e5;
+function meShow(msg,ok){const e=$('#me-msg');e.innerHTML=msg;e.style.color=ok===true?'var(--ok)':ok===false?'var(--warn)':''}
+function meShowLoc(){if(!meLoc)return meShow('');meShow('✅ '+meLoc.lat.toFixed(5)+', '+meLoc.lon.toFixed(5)+' · <a href="https://www.google.com/maps?q='+meLoc.lat+','+meLoc.lon+'" target="_blank" rel="noopener">kiểm tra trên bản đồ ↗</a>',true)}
+async function meName(lat,lon){
+  try{
+    const r=await fetch('https://nominatim.openstreetmap.org/reverse?format=jsonv2&zoom=14&accept-language=vi&lat='+lat+'&lon='+lon);
+    const a=((await r.json())||{}).address||{};
+    return [a.village||a.hamlet||a.suburb||a.town||a.city_district||a.quarter,a.county||a.city||a.district,a.state].filter((x,i,A)=>x&&A.indexOf(x)===i).join(', ');
+  }catch(e){return ''}
+}
+async function meSet(lat,lon,name){
+  meLoc={lat:r5(lat),lon:r5(lon)};meShowLoc();
+  if(!$('#me-ln').value.trim()){
+    let n=name||'';
+    if(!n){$('#me-ln').placeholder='Đang tìm tên địa điểm...';const a=await meName(meLoc.lat,meLoc.lon);n=a?'Vườn '+a:'';$('#me-ln').placeholder='Tự điền khi có vị trí, sửa được'}
+    if(n&&!$('#me-ln').value.trim())$('#me-ln').value=n;
+  }
+}
+function meFill(){
+  $('#me-n').value=who();const l=jget(K.wxLoc);meLoc=l?{lat:l.lat,lon:l.lon}:null;
+  $('#me-ln').value=l?l.name:'';$('#me-q').value='';meShowLoc();
+}
+$('#me-parse').onclick=async()=>{
+  const t=$('#me-q').value.trim();if(!t)return meShow('Dán link Google Maps hoặc tọa độ vào ô trên trước',false);
+  const p=locParse(t);
+  if(p)return meSet(p.lat,p.lon,p.name);
+  if(/(maps\.app\.goo\.gl|goo\.gl\/maps|g\.co\/kgs)/i.test(t)){
+    const u=(t.match(/https?:\/\/\S+/)||[t])[0],nm=t.replace(/https?:\/\/\S+/g,' ').replace(/\s+/g,' ').trim();
+    if(nm.length>2){const f=await meSearch(nm);if(f){await meSet(f.lat,f.lon,nm.slice(0,80));return meShow($('#me-msg').innerHTML+'<br>ℹ️ Tìm theo tên "'+esc(nm.slice(0,60))+'", hãy kiểm tra trên bản đồ cho chắc',true)}}
+    return meShow('Link rút gọn không chứa tọa độ nên app không đọc trực tiếp được.\n• Cách 1: <a href="'+esc(u)+'" target="_blank" rel="noopener">mở link này</a> bằng trình duyệt, đợi bản đồ hiện, sao chép địa chỉ trên thanh trình duyệt rồi dán lại.\n• Cách 2: đứng ở vườn bấm 🛰️ Vị trí hiện tại.',false);
+  }
+  // thử tìm theo tên địa điểm
+  meShow('Đang tìm "'+esc(t.slice(0,60))+'"...');
+  const f=await meSearch(t);
+  if(f){await meSet(f.lat,f.lon,'');return meShow($('#me-msg').innerHTML+'<br>ℹ️ Tìm theo tên, hãy kiểm tra trên bản đồ cho chắc',true)}
+  meShow('Không đọc được vị trí. Hãy dán tọa độ (vd: 12.95066, 108.23319), link Google Maps đầy đủ, hoặc bấm 🛰️ Vị trí hiện tại.',false);
+};
+$('#me-q').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#me-parse').click()}};
+$('#me-q').addEventListener('paste',()=>setTimeout(()=>{if(locParse($('#me-q').value))$('#me-parse').click()},0));
+$('#me-gps').onclick=()=>{
+  if(!navigator.geolocation)return meShow('Máy không hỗ trợ lấy vị trí',false);
+  meShow('Đang lấy vị trí GPS... (cho phép truy cập vị trí nếu được hỏi)');$('#me-gps').disabled=true;
+  navigator.geolocation.getCurrentPosition(p=>{$('#me-gps').disabled=false;meSet(p.coords.latitude,p.coords.longitude,'');
+      if(p.coords.accuracy>200)setTimeout(()=>meShow($('#me-msg').innerHTML+'<br>⚠️ GPS sai số khoảng '+Math.round(p.coords.accuracy)+' m, thử lại ngoài trời nếu cần',true),50)},
+    e=>{$('#me-gps').disabled=false;meShow(e.code===1?'Chưa cho phép truy cập vị trí. Bật quyền vị trí cho trình duyệt rồi thử lại.':'Không lấy được vị trí, thử lại ngoài trời hoặc dán link Google Maps.',false)},
+    {enableHighAccuracy:true,timeout:20000,maximumAge:0});
+};
+$('#me-save').onclick=()=>{
+  const n=$('#me-n').value.trim().replace(/\s+/g,' '),ln=$('#me-ln').value.trim();
+  if($('#me-q').value.trim()&&!meLoc)return meShow('Bấm 📍 Đọc vị trí trước khi lưu',false);
+  try{if(n)localStorage.setItem(K.who,n);else localStorage.removeItem(K.who)}catch(e){}
+  const old=jget(K.wxLoc);
+  if(meLoc){
+    const nl={name:ln||'Vườn',lat:meLoc.lat,lon:meLoc.lon};
+    jset(K.wxLoc,nl);if(!old||old.lat!==nl.lat||old.lon!==nl.lon)jset(K.wx,null);
+  }
+  renderWho();setSum();wxRender();wxLoad(true);$('#me-q').value='';meShowLoc();
+  toast('Đã lưu'+(n?' · '+n:'')+(meLoc?' · '+(ln||'Vườn'):''));
+};
+$('#sd-me').addEventListener('toggle',e=>{if(e.target.open)meFill()});
 
 /* ---------- Người đang sử dụng ---------- */
 const who=()=>{try{return localStorage.getItem(K.who)||''}catch(e){return ''}};
 function renderWho(){const n=who();$('#who').textContent='👤 '+(n||'Chưa thiết lập người dùng')}
-$('#who').onclick=()=>showTab('set');
+$('#who').onclick=()=>openMe();
+function openMe(){showTab('set');const d=$('#sd-me');if(d){d.open=true;setTimeout(()=>d.scrollIntoView({block:'start',behavior:'smooth'}),50)}}
 
 /* ---------- Thiết lập nhanh bằng đoạn text mã hóa ----------
    Dữ liệu gốc: {"app":"dr27","t":token,"g":gistId,"zt":zaloToken,"zc":zaloChat,"n":tên,"l":[vị trí,lat,lon]}
