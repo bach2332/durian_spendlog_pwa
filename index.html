@@ -393,7 +393,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114i</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114j</footer>
 </main>
 
 <nav class="tabs">
@@ -1175,7 +1175,7 @@ const ZAPI='https://bot-api.zaloplatforms.com/bot';
 async function zlHello(src){
   const z=zlCfg();if(!z)return{ok:false,msg:'Chưa có Bot token và Chat ID'};
   const d=new Date(),p=n=>String(n).padStart(2,'0');
-  const text=zlWho(who())+'\n✅ Sầu riêng 2027 · Kết nối Zalo thành công\n'+src+' · 📅 '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
+  const text=zlWho(who())+'\n✅ Zalo OK · '+src+'\n🕒 '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
   let r;
   try{r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text})})}
   catch(e){return navigator.onLine===false?{ok:false,msg:'Không có mạng, chưa gửi được tin Zalo'}:{ok:null,msg:'Đã gửi nhưng không đọc được phản hồi. Mở Zalo xem đã nhận tin chưa'}}
@@ -1197,7 +1197,7 @@ function zlFill(){
 }
 /* Gửi dạng form-urlencoded + no-cors: không cần preflight, tin vẫn đi dù Zalo không bật CORS. Gửi 1 lần, không tự gửi lại (tránh trùng tin). */
 /* Mọi tin Zalo: dòng đầu tiên luôn là người gửi */
-const zlWho=n=>'👤 Người gửi: '+(n||'(chưa đặt tên)');
+const zlWho=n=>'👤 '+(n||'(chưa đặt tên)');
 function zlSend(text){
   const z=zlCfg();if(!z)return;
   try{fetch(ZAPI+z.t+'/sendMessage',{method:'POST',mode:'no-cors',body:new URLSearchParams({chat_id:z.c,text:String(text).slice(0,2000)})}).catch(()=>toast('Không gửi được tin Zalo (kiểm tra mạng)'))}catch(e){}
@@ -1205,15 +1205,15 @@ function zlSend(text){
 function zlNew(it){
   const day=sum(data.items.filter(x=>x.date===it.date));
   const dd=dmy(it.date).slice(0,5);
-  zlSend([zlWho(it.by),'🌳 Khoản chi mới','💸 Số tiền: '+money(it.amount),it.note?'📝 Nội dung: '+it.note:'','🏷️ Danh mục: '+it.category,'📅 Ngày chi: '+dmy(it.date),
-    '📊 Tổng chi '+(it.date===today()?'hôm nay':'ngày '+dd)+': '+money(day)].filter(Boolean).join('\n'));
+  zlSend([zlWho(it.by),'🌳 Chi mới','💸 '+money(it.amount),it.note?'📝 '+it.note:'','🏷️ '+it.category,'📅 '+dmy(it.date),
+    '📊 '+(it.date===today()?'Hôm nay':dd)+': '+money(day)].filter(Boolean).join('\n'));
 }
 function zlEdit(i,oldN,oldC){
   const ch=[];
-  if((oldN||'')!==(i.note||''))ch.push('📝 Nội dung: '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
-  if(oldC!==i.category)ch.push('🏷️ Danh mục: '+oldC+' → '+i.category);
+  if((oldN||'')!==(i.note||''))ch.push('📝 '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
+  if(oldC!==i.category)ch.push('🏷️ '+oldC+' → '+i.category);
   if(!ch.length)return;
-  zlSend([zlWho(who()),'✏️ Sửa khoản chi','💸 Số tiền: '+money(i.amount),'📅 Ngày chi: '+dmy(i.date),...ch].join('\n'));
+  zlSend([zlWho(who()),'✏️ Sửa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),...ch].join('\n'));
 }
 $('#z-token').addEventListener('input',zlLink);
 $('#z-save').onclick=()=>{

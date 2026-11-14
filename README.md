@@ -145,17 +145,17 @@ Setup (per the Zalo Bot Platform documentation):
 3. Paste it as **Chat ID**, tap **Lưu**, then **Gửi thử** (send test).
 
 Technical notes and caveats:
-- Every message starts with the sender, then one labelled line per field:
+- Every message starts with the sender (`👤 name`), then one short emoji line per field:
   ```
-  👤 Người gửi: Chị Lan
-  🌳 Khoản chi mới
-  💸 Số tiền: 450.000 ₫
-  📝 Nội dung: Cơm trưa thợ
-  🏷️ Danh mục: Mua cơm
-  📅 Ngày chi: 14/11/2026
-  📊 Tổng chi hôm nay: 8.950.000 ₫
+  👤 Chị Lan
+  🌳 Chi mới
+  💸 450.000 ₫
+  📝 Cơm trưa thợ
+  🏷️ Mua cơm
+  📅 14/11/2026
+  📊 Hôm nay: 8.950.000 ₫
   ```
-  Edits: `👤 Người gửi` / `✏️ Sửa khoản chi` / `💸 Số tiền` / `📅 Ngày chi` / `📝 Nội dung: old → new` / `🏷️ Danh mục: old → new`. Test button and quick setup: `👤 Người gửi` / `✅ Sầu riêng 2027 · Kết nối Zalo thành công` / `🧪 Gửi thử` or `⚡ Thiết lập nhanh` · date time. The result is shown under the buttons (green = sent, orange = error with a hint: wrong bot token, or wrong chat ID / recipient has not messaged the bot) and as a toast.
+  Edit: `👤 name` / `✏️ Sửa chi` / `💸 amount · 📅 date` / `📝 old → new` / `🏷️ old → new` (only changed lines). Test button / quick setup: `👤 name` / `✅ Zalo OK · 🧪 Gửi thử` (or `⚡ Thiết lập nhanh`) / `🕒 dd/mm hh:mm`. The result is shown under the buttons (green = sent, orange = error with a hint: wrong bot token, or wrong chat ID / recipient has not messaged the bot) and as a toast.
 - Calls go from the browser to `https://bot-api.zaloplatforms.com/bot<TOKEN>/sendMessage` as a form-encoded request with `mode: 'no-cors'`, so messages go out even if the API does not send CORS headers. The trade-off is that regular sends cannot read the response; only the test button tries to.
 - Each notification is sent once, with no automatic retry (to avoid duplicates or late messages).
 - The token and Chat ID are stored only in this browser (`localStorage`), per device.
@@ -181,7 +181,7 @@ Settings → **Thiết lập nhanh** has two buttons and no text box on the page
 - **One shared password** for the whole app. It is never stored in clear text: the code only holds its salted PBKDF2-SHA256 hash (`PW_HASH`) to check what is typed; nothing password-related is stored on the device. Opening Settings needs no password.
 - Wrong password → "Sai mật khẩu"; truncated/corrupted text → asked to paste again.
 - **Setup link:** `https://bach2332.github.io/durian_spendlog_pwa/#cfg=DR27E1.…` opens Settings with the quick-setup dialog pre-filled (read-only); the user taps **Tiếp**, enters the shared password and confirms the override warning as usual. The string sits after `#`, so it is never sent to the server; the app removes it from the address bar right away and keeps it only in `sessionStorage` until the dialog is answered (so an automatic reload after an app update does not lose it). Works whether the link opens a new tab or the app's existing tab (`hashchange`). Opened inside Zalo/Facebook's in-app browser, the app first explains that the setup would stay inside Zalo and suggests "Mở bằng trình duyệt". Note: on iPhone, a home-screen app has its own storage separate from Safari.
-- If the config contains Zalo (bot token + chat ID), after applying it the app sends one message to that chat: `👤 Người gửi: <user name> / ✅ Sầu riêng 2027 · Kết nối Zalo thành công / ⚡ Thiết lập nhanh · 📅 dd/mm hh:mm`; the result (sent / Zalo error) is added to the "Đã áp dụng cấu hình" toast.
+- If the config contains Zalo (bot token + chat ID), after applying it the app sends one message to that chat: `👤 <user name> / ✅ Zalo OK · ⚡ Thiết lập nhanh / 🕒 dd/mm hh:mm`; the result (sent / Zalo error) is added to the "Đã áp dụng cấu hình" toast.
 - Override warning: after tapping Tiếp and entering the password, a ☠️ dialog warns that everything will be overwritten (no config details shown) and the "☠️ Ghi đè" button unlocks after a 3-second countdown.
 - Secrets are never shown in full anywhere in the UI (`mask()`: first 2–4 and last 2 characters): the Settings fields (saved values appear only as a masked placeholder; leave a field empty to keep the saved value), and the Gist / getUpdates links (URLs are built only on click, not put in the page).
 
