@@ -163,6 +163,7 @@ Technical notes and caveats:
 
 ## Current user
 
+- **Creator / last editor**: each entry shows its creator after the category (`· Lan`). An edit stores the editor in `eb` (with `upd`); the row adds `✏️` (`· Lan ✏️Tư` when someone else edited). The detail sheet shows `👤 Tạo: … · ✏️ Sửa cuối: … · dd/mm hh:mm`.
 - **Người đang sử dụng**: a display name stored on the device (`dr_who`), shown in the header and saved as `by` on every new entry, delete record and CSV import row; it also appears in Zalo messages. Set it in **Cài đặt → 👤 Người dùng & vườn** or via the quick-setup text (`"n"`). Tapping the name in the header opens that section.
 
 ## Weather

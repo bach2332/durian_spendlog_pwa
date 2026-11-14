@@ -407,7 +407,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114k</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114l</footer>
 </main>
 
 <nav class="tabs">
@@ -421,6 +421,7 @@ details.set .sb>label:first-child{margin-top:0}
 <div id="modal"><div class="sheet">
   <h2>Chi tiết khoản chi</h2>
   <div class="mut">Chỉ sửa được nội dung và danh mục, hoặc xóa. Muốn đổi số tiền hay ngày: xóa rồi nhập lại.</div>
+  <div class="mut" id="e-who" style="font-size:12.5px;margin-top:6px"></div>
   <label>Ngày</label><input type="date" id="e-date" disabled>
   <label>Số tiền</label><input type="text" id="e-amt" disabled>
   <label>Nội dung</label><input type="text" id="e-note">
@@ -689,7 +690,9 @@ function rowHTML(i){
   const rev=i.type==='void',gone=!!i.voidedBy;
   const st=gone?'text-decoration:line-through;opacity:.55':'';
   const tag=rev?'<span class="chip" style="background:var(--bad);color:#fff">Xóa</span> ':'';
-  const ref=(i.by?` <span class="mut">· ${esc(i.by)}</span>`:'')+(gone?' <span class="mut">· đã bị xóa</span>':'');
+  // người tạo · ✏️ người sửa cuối (chỉ ghi tên khi khác người tạo)
+  const ed=!rev&&!gone&&(i.eb||i.upd)?(i.eb&&i.eb!==i.by?' ✏️'+esc(i.eb):' ✏️'):'';
+  const ref=(i.by||ed?` <span class="mut">·${i.by?' '+esc(i.by):''}${ed}</span>`:'')+(gone?' <span class="mut">· đã bị xóa</span>':'');
   return`<div class="item" data-id="${i.id}"><div><div class="n" style="${st}">${esc(i.note||'(không ghi chú)')}</div>${tag}<span class="chip" style="border-left:4px solid ${catColor(i.category)}">${esc(i.category)}</span>${ref}</div><div class="amt" style="${st}${rev?';color:var(--bad)':''}">${money(i.amount)}</div></div>`;
 }
 
@@ -931,6 +934,8 @@ function openEdit(id){
   if(![...$('#e-cat').options].some(o=>o.value===i.category)){$('#e-cat').add(new Option(i.category));}
   $('#e-cat').value=i.category;
   $('#e-amt').value=money(i.amount);
+  const ut=i.upd?new Date(i.upd):null,hm=d=>dmy(ds(d)).slice(0,5)+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  $('#e-who').textContent=['👤 Tạo: '+(i.by||'không rõ'),i.eb||i.upd?'✏️ Sửa cuối: '+(i.eb||'không rõ')+(ut&&!isNaN(ut)?' · '+hm(ut):''):''].filter(Boolean).join(' · ');
   $('#modal').classList.add('on');
 }
 document.addEventListener('click',async e=>{
@@ -950,7 +955,7 @@ $('#modal').onclick=e=>{if(e.target.id==='modal')closeM()};
 $('#e-save').onclick=()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
   const oldN=i.note,oldC=i.category;
-  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;if(i.note!==oldN||i.category!==oldC)i.upd=nowISO();zlEdit(i,oldN,oldC);
+  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;if(i.note!==oldN||i.category!==oldC){i.upd=nowISO();if(who())i.eb=who();else delete i.eb}zlEdit(i,oldN,oldC);
   closeM();renderAll();save();toast('Đã cập nhật');
 };
 $('#e-del').onclick=async()=>{
