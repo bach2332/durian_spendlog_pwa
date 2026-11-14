@@ -393,7 +393,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114f</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114g</footer>
 </main>
 
 <nav class="tabs">
@@ -1170,6 +1170,17 @@ const ZK={t:'dr_zl_token',c:'dr_zl_chat'};
 /* Che giá trị nhạy cảm: chỉ hiện vài ký tự đầu/cuối, không bao giờ hiện đủ */
 function mask(v){v=String(v||'');if(!v)return '';if(v.length<=6)return v[0]+'••••';const n=v.length>=20?4:2;return v.slice(0,n)+'••••'+v.slice(-2)}
 const ZAPI='https://bot-api.zaloplatforms.com/bot';
+/* Sau khi thiết lập nhanh có Zalo: gửi 1 tin báo kết nối thành công. Trả về chuỗi kết quả để hiện toast. */
+async function zlHello(){
+  const z=zlCfg();if(!z)return '';
+  const d=new Date(),p=n=>String(n).padStart(2,'0');
+  const text='✅ Sầu riêng 2027 · Kết nối Zalo thành công\n👤 Tài khoản: '+(who()||'(chưa đặt tên)')+'\n⚡ Thiết lập nhanh · 📅 '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
+  try{
+    const r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text})});
+    const j=await r.json();
+    return j.ok?'đã gửi tin báo vào Zalo':'Zalo báo lỗi: '+(j.description||j.error_code||'không rõ')+' — kiểm tra Bot token, Chat ID';
+  }catch(e){return navigator.onLine===false?'chưa gửi được tin Zalo (không có mạng)':'đã gửi tin báo Zalo, hãy kiểm tra Zalo'}
+}
 function zlCfg(){let t='',c='';try{t=localStorage.getItem(ZK.t)||'';c=localStorage.getItem(ZK.c)||''}catch(e){}return t&&c?{t,c}:null}
 const zlTok=()=>{const z=zlCfg();return $('#z-token').value.trim()||(z?z.t:'')};
 function zlLink(){}
@@ -1479,7 +1490,8 @@ async function cfgApply(o){
   let ok=true;
   if(o.t){if(o.g){ok=await load();if(!ok)toast('Đã điền, nhưng chưa tải được dữ liệu')}else{await save();renderSet()}}
   /* danh mục, ngân sách nằm trong Gist: không lấy từ đoạn text (bỏ qua "c", "b" trong đoạn text cũ) */
-  if(ok)toast('Đã áp dụng cấu hình');
+  const zr=o.zt&&o.zc?await zlHello():'';
+  if(ok)toast('Đã áp dụng cấu hình'+(zr?' · '+zr:''));else if(zr)setTimeout(()=>toast(zr[0].toUpperCase()+zr.slice(1)),2500);
   return true;
 }
 async function cfgFromText(txt){
