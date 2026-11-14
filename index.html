@@ -354,7 +354,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261113a</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114a</footer>
 </main>
 
 <nav class="tabs">
@@ -1283,7 +1283,7 @@ const HELP=[
 <p>Dùng khi cài app cho máy mới hoặc cho người khác trong nhóm: dán một đoạn text mã hóa là có đủ cấu hình.</p>
 <div class="flow"><div>📋 Dán đoạn text<br><small>Cài đặt → Thiết lập nhanh</small></div><span>→</span><div>🔒 Nhập mật khẩu<br><small>mật khẩu chung</small></div><span>→</span><div>✅ Xong<br><small>app tự tải dữ liệu</small></div></div>
 <ol>
-<li>Mở app → <b>Cài đặt</b> → bấm <b>Thiết lập nhanh</b>, dán đoạn text được gửi cho bạn vào hộp hiện ra, bấm <b>Tiếp</b>.</li>
+<li>Mở app → <b>Cài đặt</b> → bấm <b>Thiết lập nhanh</b>, dán đoạn text được gửi cho bạn vào hộp hiện ra, bấm <b>Tiếp</b>. Nếu được gửi <b>đường dẫn</b> (link có <code>#cfg=</code>), chỉ cần mở link bằng Chrome/Safari: app tự điền sẵn đoạn text.</li>
 <li>Nhập <b>mật khẩu chung</b> của nhóm. App hiện tóm tắt, bấm <b>Áp dụng</b>.</li>
 </ol>
 <p>Lấy đoạn text: trên máy đã cài, bấm <b>Sao chép thiết lập hiện tại</b>, nhập mật khẩu chung, rồi dán gửi riêng cho người cần.</p>
@@ -1453,6 +1453,29 @@ function textDlg({title,msg,value='',ro=false,yes,onYes}){
 }
 const tsClose=()=>{if($('#ts').classList.contains('on'))$('#ts-no').click()};
 async function copyText(t){try{await navigator.clipboard.writeText(t);return true}catch(e){return false}}
+/* ---------- Thiết lập qua đường dẫn: https://…/durian_spendlog_pwa/#cfg=DR27E1.… ----------
+   Đoạn sau dấu # không gửi lên máy chủ. Đọc xong thì xóa khỏi thanh địa chỉ; giữ tạm trong sessionStorage
+   phòng khi app tự tải lại (cập nhật service worker) trước khi người dùng bấm Tiếp. Vẫn phải nhập mật khẩu như cũ. */
+const LINK_KEY='dr_cfg_link';
+function linkCfg(){
+  let t='';const m=(location.hash||'').match(/(?:^#|&)cfg=([^&]+)/)||(location.search||'').match(/[?&]cfg=([^&]+)/);
+  if(m){try{t=decodeURIComponent(m[1])}catch(e){t=m[1]}}
+  if(!t){try{t=sessionStorage.getItem(LINK_KEY)||''}catch(e){}}
+  return t.replace(/\s+/g,'');
+}
+const inAppBrowser=/Zalo|FBAN|FBAV|FB_IAB|Instagram|Line\//i.test(navigator.userAgent);
+async function linkSetup(){
+  const t=linkCfg();if(!t)return;
+  if(inAppBrowser&&!await askConfirm('Bạn đang mở đường dẫn ngay trong Zalo/Facebook.\n\nCài ở đây thì cấu hình chỉ nằm trong Zalo, mở app bằng Chrome hay từ màn hình chính sẽ không có.\n\nNên bấm ⋯ (góc trên) → "Mở bằng trình duyệt", rồi cài ở đó.','Vẫn cài ở đây'))return;
+  try{sessionStorage.setItem(LINK_KEY,t)}catch(e){}
+  try{history.replaceState(null,'',location.pathname)}catch(e){}
+  showTab('set');$('#sd-quick').open=true;
+  const drop=()=>{try{sessionStorage.removeItem(LINK_KEY)}catch(e){}};
+  if(!t.startsWith(QR_PFX)){drop();toast('Đường dẫn thiết lập không hợp lệ');return}
+  const v=await textDlg({title:'Thiết lập từ đường dẫn',msg:'Đã nhận đoạn cấu hình từ đường dẫn. Bấm Tiếp, nhập mật khẩu để cài.',value:t,ro:true,yes:'Tiếp'});
+  drop();
+  if(v)await cfgFromText(v);
+}
 $('#cfg-apply').onclick=async()=>{
   const t=await textDlg({title:'Thiết lập nhanh',msg:'Dán đoạn text cấu hình (bắt đầu bằng DR27E1.) rồi bấm Tiếp.',yes:'Tiếp'});
   if(t)await cfgFromText(t);
@@ -1483,6 +1506,8 @@ try{['dr_bio','dr_bio_no','dr_lock'].forEach(k=>localStorage.removeItem(k))}catc
 if(!tok()){$('#sd-quick').open=true;showTab('set')}
 else{try{$('#a-amt').focus()}catch(e){}}
 if(/^#help/.test(location.hash))openHelp(location.hash.split('/')[1]||'');
+linkSetup();
+window.addEventListener('hashchange',()=>{if(/(^#|&)cfg=/.test(location.hash))linkSetup()});   /* app đang mở sẵn mà mở link vào cùng tab */
 })();
 if('serviceWorker' in navigator){
   const had=!!navigator.serviceWorker.controller;let rl=false;
