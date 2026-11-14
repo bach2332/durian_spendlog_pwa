@@ -187,6 +187,12 @@ details.set .sb>label:first-child{margin-top:0}
 #ts{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:29;padding:16px}
 #ts.on{display:flex}
 #ts .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
+#sd-tool textarea{width:100%;font-family:ui-monospace,monospace;font-size:12px;color:var(--text);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;resize:vertical;word-break:break-all}
+.eyein{position:relative}.eyein input{padding-right:46px}
+.eyein button{position:absolute;right:4px;top:50%;transform:translateY(-50%);min-height:0;width:38px;height:38px;padding:0;background:none;border:0;font-size:18px;color:var(--mut)}
+#tl-msg{white-space:pre-line;font-size:14px;margin-top:10px;border-radius:10px;padding:0}
+#tl-msg.ok,#tl-msg.bad{padding:10px 12px}#tl-msg.ok{background:#e8f6e0;color:#2c5e14}#tl-msg.bad{background:#fff3e0;color:#8a4b00}
+.tlh{font-weight:700;font-size:15px;margin:16px 0 2px;color:var(--text)}
 #ts textarea{width:100%;margin-top:8px;font-family:ui-monospace,monospace;font-size:12px;resize:vertical}
 #pw{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;z-index:30;padding:16px}
 #pw.on{display:flex}
@@ -296,6 +302,34 @@ details.set .sb>label:first-child{margin-top:0}
       <div class="mut" style="margin-top:8px"><a href="#help/qr-setup" data-hs="qr-setup">Hướng dẫn thiết lập nhanh</a></div>
       </div>
     </details>
+    <details class="card set" id="sd-tool">
+      <summary><span class="si">🛠️</span><span class="stt"><b>Tạo chuỗi cấu hình</b><small id="sm-tool"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
+      <div class="mut">Soạn chuỗi cấu hình (và link thiết lập) để gửi cho máy khác, hoặc giải mã một chuỗi có sẵn để xem và sửa. Không thay đổi cấu hình của máy này. Mật khẩu chỉ dùng lúc bấm, <b>không lưu</b>; đóng mục này là xóa hết.</div>
+      <label>Mật khẩu</label>
+      <div class="eyein"><input type="password" id="tl-pw" autocomplete="off" placeholder="Mật khẩu chung của app"><button type="button" data-eye="tl-pw" aria-label="Hiện/ẩn">👁</button></div>
+      <div class="tlh">1 · Giải mã chuỗi có sẵn (tùy chọn)</div>
+      <textarea id="tl-in" rows="3" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Dán chuỗi DR27E1... hoặc link thiết lập"></textarea>
+      <button class="sec" id="tl-dec" style="width:100%;margin-top:6px">🔓 Giải mã → điền vào các ô</button>
+      <div class="tlh">2 · Thông tin cấu hình</div>
+      <label>Tên người dùng</label><input type="text" id="tl-n" placeholder="vd: Chị Lan">
+      <label>GitHub token</label><div class="eyein"><input type="password" id="tl-t" autocomplete="off" placeholder="github_pat_... hoặc ghp_..."><button type="button" data-eye="tl-t">👁</button></div>
+      <label>Gist ID</label><div class="eyein"><input type="password" id="tl-g" autocomplete="off" placeholder="32 ký tự 0-9, a-f"><button type="button" data-eye="tl-g">👁</button></div>
+      <label>Zalo Bot token</label><div class="eyein"><input type="password" id="tl-zt" autocomplete="off" placeholder="Để trống nếu không dùng Zalo"><button type="button" data-eye="tl-zt">👁</button></div>
+      <label>Zalo Chat ID</label><div class="eyein"><input type="password" id="tl-zc" autocomplete="off"><button type="button" data-eye="tl-zc">👁</button></div>
+      <label>Vị trí vườn</label>
+      <div class="row"><input type="text" id="tl-ln" placeholder="Tên địa điểm"><button class="sec" id="tl-geo" style="flex:0 0 auto">🔎 Tìm</button></div>
+      <div class="row" style="margin-top:8px"><input type="text" id="tl-la" inputmode="decimal" placeholder="Vĩ độ"><input type="text" id="tl-lo" inputmode="decimal" placeholder="Kinh độ"></div>
+      <div class="tlh">3 · Tạo chuỗi và link</div>
+      <div class="row" style="margin-top:6px"><button id="tl-enc">🔒 Mã hóa</button><button class="sec" id="tl-clr" style="flex:0 0 auto">🧹 Xóa hết</button></div>
+      <div id="tl-msg"></div>
+      <div id="tl-out" style="display:none">
+        <label>Chuỗi cấu hình</label><textarea id="tl-cipher" rows="3" readonly></textarea>
+        <label>Link thiết lập</label><textarea id="tl-link" rows="3" readonly></textarea>
+        <div class="row" style="margin-top:8px"><button class="sec" id="tl-cc">📋 Sao chép chuỗi</button><button id="tl-cl">🔗 Sao chép link</button></div>
+      </div>
+      </div>
+    </details>
     <details class="card set" id="sd-gh">
       <summary><span class="si">🔗</span><span class="stt"><b>Kết nối GitHub</b><small id="sm-gh"></small></span><span class="chev">›</span></summary>
       <div class="sb">
@@ -362,7 +396,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114d</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114e</footer>
 </main>
 
 <nav class="tabs">
@@ -767,6 +801,7 @@ function radarSVG(by){
 function setSum(){
   const z=zlCfg(),T=(id,t)=>{const e=$('#sm-'+id);if(e)e.textContent=t};
   T('quick','Dán đoạn text để cài, hoặc sao chép thiết lập');
+  T('tool','Mã hóa / giải mã chuỗi và link thiết lập cho máy khác');
   T('gh',tok()?'✅ Đã kết nối'+(gid()?' · Gist '+mask(gid()):''):'Chưa kết nối');
   T('bud',data.budget?money(data.budget)+' / tháng':'Chưa đặt');
   T('zl',z?'✅ Đang bật':'Đang tắt');
@@ -1480,6 +1515,96 @@ async function copyText(t){try{await navigator.clipboard.writeText(t);return tru
    Đoạn sau dấu # không gửi lên máy chủ. Đọc xong thì xóa khỏi thanh địa chỉ; giữ tạm trong sessionStorage
    phòng khi app tự tải lại (cập nhật service worker) trước khi người dùng bấm Tiếp. Vẫn phải nhập mật khẩu như cũ. */
 const LINK_KEY='dr_cfg_link';
+/* ===== Công cụ tạo chuỗi cấu hình (Cài đặt → Tạo chuỗi cấu hình) =====
+   Chỉ soạn/giải mã, không đụng tới cấu hình của máy này. Mật khẩu không lưu ở đâu cả:
+   chỉ đọc từ ô lúc bấm, kiểm tra với PW_HASH sẵn có, và bị xóa khi đóng mục hoặc rời app. */
+const TL_DEF_LOC=['Vườn Trùng Dương, Pơng Drang, Đắk Lắk',12.9507,108.2332];
+const TLF={t:'#tl-t',g:'#tl-g',zt:'#tl-zt',zc:'#tl-zc',n:'#tl-n'};
+function tlSay(t,ok){const m=$('#tl-msg');m.textContent=t||'';m.className=t?(ok?'ok':'bad'):''}
+function tlOut(c){const u=c?location.origin+location.pathname+'#cfg='+c:'';$('#tl-cipher').value=c||'';$('#tl-link').value=u;$('#tl-out').style.display=c?'':'none'}
+function tlToForm(o){
+  Object.entries(TLF).forEach(([k,sel])=>$(sel).value=o&&typeof o[k]==='string'?o[k]:'');
+  const l=o&&Array.isArray(o.l)?o.l:['','',''];$('#tl-ln').value=l[0]||'';$('#tl-la').value=l[1]??'';$('#tl-lo').value=l[2]??'';
+}
+function tlClear(all){
+  $('#tl-pw').value='';$('#tl-in').value='';tlOut('');tlSay('');
+  $$('#sd-tool .eyein input').forEach(i=>i.type='password');
+  if(all)tlToForm({l:TL_DEF_LOC});
+}
+function tlCollect(){
+  const o={app:QR_APP},err=[];
+  Object.entries(TLF).forEach(([k,sel])=>{const v=$(sel).value.trim();if(v)o[k]=v});
+  const ln=$('#tl-ln').value.trim(),la=$('#tl-la').value.trim().replace(',','.'),lo=$('#tl-lo').value.trim().replace(',','.');
+  if(ln||la||lo){
+    if(la===''||lo===''||!isFinite(la)||!isFinite(lo)||Math.abs(la)>90||Math.abs(lo)>180)err.push('Vị trí vườn cần vĩ độ (−90…90) và kinh độ (−180…180). Bấm 🔎 Tìm để điền tự động.');
+    else o.l=[ln||'Vườn',+(+la).toFixed(4),+(+lo).toFixed(4)];
+  }
+  if(o.g&&!o.t)err.push('Có Gist ID thì phải có GitHub token.');
+  if(o.g&&!/^[0-9a-f]{20,40}$/i.test(o.g))err.push('Gist ID có vẻ sai: thường là 32 ký tự 0-9, a-f.');
+  if(o.t&&!/^(github_pat_|ghp_|gho_|ghu_|ghs_)/.test(o.t))err.push('GitHub token thường bắt đầu bằng github_pat_ hoặc ghp_.');
+  if(!!o.zt!==!!o.zc)err.push('Zalo cần đủ cả Bot token và Chat ID, hoặc để trống cả hai.');
+  if(Object.keys(o).length<2)err.push('Chưa điền mục nào.');
+  return{o,err};
+}
+async function tlPw(){
+  if(!window.crypto||!crypto.subtle){tlSay('Cần mở app bằng link https để mã hóa');return null}
+  const pw=$('#tl-pw').value;
+  if(!pw){tlSay('Nhập mật khẩu trước');$('#tl-pw').focus();return null}
+  if(!await pwOk(pw)){tlSay('Sai mật khẩu');$('#tl-pw').select();return null}
+  return pw;
+}
+function tlBusy(on){$$('#sd-tool button').forEach(b=>b.disabled=on)}
+$('#tl-enc').onclick=async()=>{
+  tlSay('');tlOut('');const c=tlCollect();if(c.err.length)return tlSay('Chưa mã hóa được:\n• '+c.err.join('\n• '));
+  tlBusy(true);tlSay('Đang mã hóa...',true);
+  try{const pw=await tlPw();if(!pw)return;tlOut(await qrEnc(c.o,pw));tlSay('Đã tạo chuỗi và link. Gửi link cho người dùng máy mới: họ mở bằng Chrome/Safari, bấm Tiếp và nhập mật khẩu.',true)}
+  catch(e){tlSay('Không mã hóa được: '+e.message)}finally{tlBusy(false)}
+};
+$('#tl-dec').onclick=async()=>{
+  tlSay('');let t=$('#tl-in').value.trim();
+  const m=t.match(/[#?&]cfg=([^&\s]+)/);if(m){try{t=decodeURIComponent(m[1])}catch(e){t=m[1]}}
+  t=t.replace(/\s+/g,'');
+  if(!t)return tlSay('Dán chuỗi hoặc link vào ô ở bước 1 trước');
+  if(!t.startsWith(QR_PFX))return tlSay('Đây không phải chuỗi cấu hình Sầu riêng 2027 (phải bắt đầu bằng '+QR_PFX+')');
+  tlBusy(true);tlSay('Đang giải mã...',true);
+  try{
+    const pw=await tlPw();if(!pw)return;
+    let o;try{o=await qrDec(t,pw)}catch(e){return tlSay('Chuỗi bị thiếu hoặc hỏng, hãy dán lại')}
+    if(!o||o.app!==QR_APP)return tlSay('Chuỗi không hợp lệ');
+    tlToForm(o);tlOut(t);
+    tlSay('Đã giải mã và điền vào các ô (thông tin nhạy cảm đang ẩn, bấm 👁 để xem). Sửa xong bấm 🔒 Mã hóa để tạo chuỗi mới.',true);
+  }finally{tlBusy(false)}
+};
+$('#tl-clr').onclick=()=>{tlClear(true);tlSay('Đã xóa hết',true)};
+async function tlCopy(sel,what){
+  const v=$(sel).value;if(!v)return;
+  try{await navigator.clipboard.writeText(v);toast('Đã sao chép '+what)}
+  catch(e){const a=$(sel);a.focus();a.select();try{document.execCommand('copy');toast('Đã sao chép '+what)}catch(_){toast('Hãy tự sao chép '+what)}}
+}
+$('#tl-cc').onclick=()=>tlCopy('#tl-cipher','chuỗi cấu hình');
+$('#tl-cl').onclick=()=>tlCopy('#tl-link','link thiết lập');
+$('#tl-geo').onclick=async()=>{
+  const q=$('#tl-ln').value.trim();if(!q)return tlSay('Nhập tên địa điểm trước');
+  tlSay('Đang tìm...',true);
+  try{
+    const parts=q.split(',').map(x=>x.trim()).filter(Boolean),tries=[q];if(parts.length>1)tries.push(parts[0]);
+    let x=null;
+    for(const t of tries){
+      const r=await fetch('https://geocoding-api.open-meteo.com/v1/search?count=10&language=vi&format=json&name='+encodeURIComponent(t));
+      const A=(await r.json()).results||[],V=A.filter(a=>a.country_code==='VN'),want=parts.slice(1).join(' ').toLowerCase();
+      x=(want&&V.find(a=>[a.admin1,a.admin2].join(' ').toLowerCase().includes(want)))||V[0]||A[0];if(x)break;
+    }
+    if(!x)return tlSay('Không tìm thấy "'+q+'". Thử tên huyện/tỉnh có dấu, hoặc nhập tay vĩ độ, kinh độ.');
+    $('#tl-la').value=+x.latitude.toFixed(4);$('#tl-lo').value=+x.longitude.toFixed(4);
+    tlSay('Tìm thấy: '+[x.name,x.admin2,x.admin1].filter(Boolean).join(', '),true);
+  }catch(e){tlSay('Không tìm được tọa độ (kiểm tra mạng). Có thể nhập tay.')}
+};
+$$('#sd-tool [data-eye]').forEach(b=>b.onclick=()=>{const i=document.getElementById(b.dataset.eye);i.type=i.type==='password'?'text':'password'});
+$('#tl-pw').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#tl-enc').click()}};
+/* đóng mục hoặc rời app: xóa mật khẩu và mọi thông tin đã nhập */
+$('#sd-tool').addEventListener('toggle',e=>{if(!e.target.open)tlClear(true)});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){const d=$('#sd-tool');if(d.open)d.open=false;tlClear(true)}});
+tlClear(true);
 function linkCfg(){
   let t='';const m=(location.hash||'').match(/(?:^#|&)cfg=([^&]+)/)||(location.search||'').match(/[?&]cfg=([^&]+)/);
   if(m){try{t=decodeURIComponent(m[1])}catch(e){t=m[1]}}

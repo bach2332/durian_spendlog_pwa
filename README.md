@@ -182,6 +182,17 @@ Settings → **Thiết lập nhanh** has two buttons and no text box on the page
 - Override warning: after tapping Tiếp and entering the password, a ☠️ dialog warns that everything will be overwritten (no config details shown) and the "☠️ Ghi đè" button unlocks after a 3-second countdown.
 - Secrets are never shown in full anywhere in the UI (`mask()`: first 2–4 and last 2 characters): the Settings fields (saved values appear only as a masked placeholder; leave a field empty to keep the saved value), and the Gist / getUpdates links (URLs are built only on click, not put in the page).
 
+### Config builder (Settings → 🛠️ Tạo chuỗi cấu hình)
+
+A separate tool for preparing config text and setup links for *other* devices; it never changes this device's config.
+
+1. Type the shared password (checked against `PW_HASH`; not stored anywhere).
+2. Optional: paste an existing `DR27E1.…` string or a full setup link and tap **🔓 Giải mã** to fill the fields.
+3. Fill or edit: user name, GitHub token, Gist ID, Zalo bot token + chat ID, orchard location (**🔎 Tìm** looks up coordinates; default is the Trùng Dương orchard, Pơng Drang, Đắk Lắk).
+4. **🔒 Mã hóa** shows the encrypted string and the setup link (`<app URL>#cfg=…`) with copy buttons.
+
+Token, Gist ID and Zalo fields are password-type inputs (tap 👁 to reveal). The password and every field are cleared when the section is closed, when **🧹 Xóa hết** is tapped, or when the app goes to the background.
+
 ## Updating and versioning
 
 - The footer shows `🌳 Sầu riêng 2027 · vYYYYMMDD`. Change that date in `index.html` when you release so you can tell whether a device has the new build.
