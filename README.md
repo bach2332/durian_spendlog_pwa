@@ -128,7 +128,7 @@ How syncing works (**pull → merge → push → verify**, the whole file is nev
    - budget: the newer `budgetT` wins.
 3. The merged file is written back, then re-downloaded after ~1 s; if another device wrote in between and something of ours is missing, merge and write again (up to 3 tries). Anything still missing is restored the next time this device syncs, because its local copy keeps every entry.
 4. Sync also runs on app start, when the app returns to the foreground, and every 60 s while it is open. These checks send `If-None-Match` with the last ETag, so an unchanged Gist answers `304` with no download and no write.
-5. Sync button (top right, replaces the old status line): tap to sync now. **Grey** = not connected (tap opens Settings), **spinning** = syncing, **green** = synced, **orange** = error or changes not sent yet (tap to retry). Tapping shows the result as a toast; the full message is also in the button tooltip.
+5. Status text and sync button (top right): the text shows the last result (green = synced, orange = error), the button syncs now. **Grey** = not connected (tap opens Settings), **spinning** = syncing, **green** = synced, **orange** = error or changes not sent yet (tap to retry). Tapping shows the result as a toast; the full message is also in the button tooltip.
 - Connecting to a different Gist (or applying a config text with another Gist ID) clears the local copy first, so two ledgers are never mixed.
 
 ## Zalo notifications (experimental)

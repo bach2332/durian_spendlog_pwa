@@ -67,8 +67,9 @@ button.sm{min-height:34px;padding:6px 10px;font-size:14px}
 #modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:10}
 #modal.on{display:flex}
 #modal .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-#status{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.brand>div{flex:1;min-width:0}
+#status{font-size:12px;line-height:1.3;color:var(--mut);text-align:right;flex:1;min-width:0;max-height:32px;overflow:hidden;cursor:pointer}
+#status.err,#status.pend{color:var(--warn)}#status.ok{color:var(--ok)}
+.brand>div:not(#status){flex:none}
 #btn-sync{flex:none;width:40px;height:40px;min-height:0;padding:0;border:0;border-radius:50%;background:none;display:grid;place-items:center;color:var(--mut);transition:color .2s}
 #btn-sync:active{background:#0001}
 #btn-sync.ok{color:var(--ok)}#btn-sync.err,#btn-sync.pend{color:var(--warn)}
@@ -194,7 +195,7 @@ details.set .sb>label:first-child{margin-top:0}
 </head>
 <body>
 <main>
-  <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button><div id="status" role="status" aria-live="polite"></div></div>
+  <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div id="status" role="status" aria-live="polite"></div><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button></div>
   <div class="wx" id="wx" title="Chạm để xem dự báo 3 ngày"></div>
 
   <!-- NHẬP -->
@@ -360,7 +361,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114b</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114c</footer>
 </main>
 
 <nav class="tabs">
@@ -458,7 +459,7 @@ function status(m){lastMsg=m;$('#status').textContent=m;syncUI()}
 function syncUI(){
   const b=$('#btn-sync');if(!b)return;
   const s=!tok()?'off':syncing?'busy':lastErr?'err':isDirty()?'pend':'ok';
-  b.className=s;
+  b.className=s;$('#status').className=s;
   {const t={off:'Chưa kết nối — bấm để mở Cài đặt',busy:'Đang đồng bộ...',err:lastMsg+' · bấm để thử lại',pend:'Còn thay đổi chưa gửi · bấm để đồng bộ',ok:(lastMsg||'Đã đồng bộ')+' · bấm để đồng bộ lại'}[s];b.title=t;b.setAttribute("aria-label",t)}
 }
 
@@ -590,6 +591,7 @@ async function sync(opt={}){
   return ok;
 }
 const save=()=>sync({local:true});
+$('#status').onclick=()=>$('#btn-sync').click();
 $('#btn-sync').onclick=async()=>{
   if(!tok()){showTab('set');const d=$('#sd-gh');if(d)d.open=true;toast('Chưa kết nối — hãy thiết lập trước');return}
   if(syncing){toast('Đang đồng bộ...');return}
