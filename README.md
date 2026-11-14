@@ -41,7 +41,7 @@ This is a **personal access token**, not your GitHub password. Never enter your 
 1. Open the app → **Cài đặt** (Settings) → **Kết nối GitHub (GitHub Connection)**.
 2. **Mật khẩu (GitHub Token)**: paste the token.
 3. **Gist ID**: leave empty the first time and the app creates a new secret Gist. On another device, enter the existing Gist ID.
-4. Tap **Kết nối & tải** (Connect & load). The status line at the top should read **Đã đồng bộ** (synced) or **Đã lưu hh:mm** (saved).
+4. Tap **Kết nối & tải** (Connect & load). The sync button at the top right should turn **green**.
 
 ### 4. Install on your phone
 - **Android (Chrome):** menu ⋮ → *Install app* / *Add to Home screen*.
@@ -128,7 +128,7 @@ How syncing works (**pull → merge → push → verify**, the whole file is nev
    - budget: the newer `budgetT` wins.
 3. The merged file is written back, then re-downloaded after ~1 s; if another device wrote in between and something of ours is missing, merge and write again (up to 3 tries). Anything still missing is restored the next time this device syncs, because its local copy keeps every entry.
 4. Sync also runs on app start, when the app returns to the foreground, and every 60 s while it is open. These checks send `If-None-Match` with the last ETag, so an unchanged Gist answers `304` with no download and no write.
-5. Status line: *Đang lưu… / Đã lưu hh:mm / Đã đồng bộ hh:mm · +N khoản từ máy khác / Lỗi đồng bộ … dữ liệu vẫn còn trên máy*.
+5. Sync button (top right, replaces the old status line): tap to sync now. **Grey** = not connected (tap opens Settings), **spinning** = syncing, **green** = synced, **orange** = error or changes not sent yet (tap to retry). Tapping shows the result as a toast; the full message is also in the button tooltip.
 - Connecting to a different Gist (or applying a config text with another Gist ID) clears the local copy first, so two ledgers are never mixed.
 
 ## Zalo notifications (experimental)
