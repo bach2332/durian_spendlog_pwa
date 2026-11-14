@@ -67,9 +67,10 @@ button.sm{min-height:34px;padding:6px 10px;font-size:14px}
 #modal{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:10}
 #modal.on{display:flex}
 #modal .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-#status{font-size:12px;line-height:1.3;color:var(--mut);text-align:right;flex:1;min-width:0;max-height:32px;overflow:hidden;cursor:pointer}
+.syncbox{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;gap:0}
+#status{font-size:11.5px;line-height:1.3;color:var(--mut);text-align:right;max-width:100%;max-height:30px;overflow:hidden;cursor:pointer;margin-top:-2px}
 #status.err,#status.pend{color:var(--warn)}#status.ok{color:var(--ok)}
-.brand>div:not(#status){flex:none}
+.brand>div:not(.syncbox){flex:none}
 #btn-sync{flex:none;width:40px;height:40px;min-height:0;padding:0;border:0;border-radius:50%;background:none;display:grid;place-items:center;color:var(--mut);transition:color .2s}
 #btn-sync:active{background:#0001}
 #btn-sync.ok{color:var(--ok)}#btn-sync.err,#btn-sync.pend{color:var(--warn)}
@@ -195,7 +196,7 @@ details.set .sb>label:first-child{margin-top:0}
 </head>
 <body>
 <main>
-  <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div id="status" role="status" aria-live="polite"></div><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button></div>
+  <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div class="syncbox"><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button><div id="status" role="status" aria-live="polite"></div></div></div>
   <div class="wx" id="wx" title="Chạm để xem dự báo 3 ngày"></div>
 
   <!-- NHẬP -->
@@ -361,7 +362,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114c</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261114d</footer>
 </main>
 
 <nav class="tabs">
