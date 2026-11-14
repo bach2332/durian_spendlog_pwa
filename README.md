@@ -153,7 +153,7 @@ Technical notes and caveats:
   👤 Chị Lan
   📊 Hôm nay: 13.250.000 ₫
   ```
-  Edits: `✏️ Sửa khoản chi` / `💸 amount · 📅 date` / `📝 old → new` / `🏷️ old → new` / `👤 user`. Test: `✅ Sầu riêng 2027 · Zalo OK` / `👤 user`.
+  Edits: `✏️ Sửa khoản chi` / `💸 amount · 📅 date` / `📝 old → new` / `🏷️ old → new` / `👤 user`. Test button and quick setup: `✅ Sầu riêng 2027 · Kết nối Zalo thành công` / `👤 Tài khoản: user` / `🧪 Gửi thử` or `⚡ Thiết lập nhanh` · date time. The result is shown under the buttons (green = sent, orange = error with a hint: wrong bot token, or wrong chat ID / recipient has not messaged the bot) and as a toast.
 - Calls go from the browser to `https://bot-api.zaloplatforms.com/bot<TOKEN>/sendMessage` as a form-encoded request with `mode: 'no-cors'`, so messages go out even if the API does not send CORS headers. The trade-off is that regular sends cannot read the response; only the test button tries to.
 - Each notification is sent once, with no automatic retry (to avoid duplicates or late messages).
 - The token and Chat ID are stored only in this browser (`localStorage`), per device.
