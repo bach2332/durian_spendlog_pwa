@@ -412,7 +412,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261115a</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261115b</footer>
 </main>
 
 <nav class="tabs">
@@ -957,8 +957,7 @@ document.addEventListener('click',async e=>{
     const c=data.categories[+dc.dataset.delcat];
     if(data.categories.length<=1){toast('Cần ít nhất 1 danh mục');return}
     if(!await askConfirm('Xóa danh mục "'+c+'"?\nCác khoản chi cũ vẫn giữ nguyên tên danh mục.','Xóa'))return;
-    data.categories.splice(+dc.dataset.delcat,1);renderAll();save();
-    zlSend([zlWho(who()),'➖ Xóa danh mục','🏷️ '+c].join('\n'));toast('Đã xóa danh mục');
+    data.categories.splice(+dc.dataset.delcat,1);renderAll();save();toast('Đã xóa danh mục');
   }
 });
 const closeM=()=>{$('#modal').classList.remove('on');editId=null};
@@ -991,13 +990,11 @@ $('#s-logout').onclick=async()=>{
   Object.values(K).forEach(k=>localStorage.removeItem(k));resetLocal();
   status('Đã đăng xuất');renderAll();
 };
-$('#s-budget-save').onclick=()=>{const old=data.budget||0;data.budget=kval($('#s-budget-in'));renderAll();save();toast('Đã lưu ngân sách');
-  if(old!==(data.budget||0))zlSend([zlWho(who()),'💰 Ngân sách tháng',(old?money(old):'(chưa đặt)')+' → '+(data.budget?money(data.budget):'(bỏ)')].join('\n'))};
+$('#s-budget-save').onclick=()=>{data.budget=kval($('#s-budget-in'));renderAll();save();toast('Đã lưu ngân sách')};
 $('#s-addcat').onclick=()=>{
   const v=$('#s-newcat').value.trim();if(!v)return;
   if(data.categories.includes(v)){toast('Danh mục đã tồn tại');return}
-  data.categories.push(v);$('#s-newcat').value='';renderAll();save();
-  zlSend([zlWho(who()),'➕ Thêm danh mục','🏷️ '+v].join('\n'));toast('Đã thêm danh mục');
+  data.categories.push(v);$('#s-newcat').value='';renderAll();save();toast('Đã thêm danh mục');
 };
 
 document.addEventListener('visibilitychange',()=>{
@@ -1188,7 +1185,6 @@ $('#imp-go').onclick=()=>{
   const base=uid();
   use.forEach((r,k)=>{const o={id:base+k.toString(36).padStart(3,'0'),date:r.date,note:r.note,category:r.category,amount:r.amount};if(who())o.by=who();data.items.push(o)});
   const n=use.length;
-  zlSend([zlWho(who()),'📥 Nhập CSV','🧾 '+n+' khoản · 💸 '+money(sum(use)),nc.length?'➕ '+nc.join(', '):''].filter(Boolean).join('\n'));
   imp=null;$('#imp-file').value='';impMsg('');
   renderAll();save();toast('Đã nhập '+n+' khoản');
 };

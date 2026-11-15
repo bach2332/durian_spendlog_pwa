@@ -19,7 +19,7 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 | **CSV import** | Bulk-import entries from a CSV file with a simple format (see below). |
 | **Monthly budget** | Set a limit; the progress bar turns amber at 80% and red at 100%. |
 | **GitHub Gist storage** | Data syncs to a secret Gist; works across devices with the same token and Gist ID. |
-| **Zalo notifications** | Optional, **experimental**: a Zalo bot message for every add / edit / delete (entries, categories, budget, CSV import). |
+| **Zalo notifications** | Optional, **experimental**: a Zalo bot message for every new, edited or deleted entry. |
 | **Offline** | The app shell and the last synced data are cached on the device. |
 | **User Guide** | Built-in popup with setup instructions (GitHub, Zalo). |
 
@@ -99,7 +99,7 @@ date,note,category,amount
 - The preview shows how many rows will be imported, their total, new categories and any invalid rows (with line numbers, skipped).
 - By default rows identical to existing entries (same date, description, category, amount) are skipped, so re-importing a file does not duplicate data.
 - A sample file can be downloaded from the import card.
-- Importing sends one Zalo summary message (count, total, new categories).
+- Importing does not send Zalo notifications.
 
 ## Data storage and sync
 
@@ -136,12 +136,9 @@ How syncing works (**pull → merge → push → verify**, the whole file is nev
 Optional. When both a **Bot token** and a **Chat ID** are saved on a device, the app sends one Zalo message per:
 - **new entry** (`🌳 Chi mới`: amount, description, category, date and the day's total),
 - **edit** (`✏️ Sửa chi`, only when the description or category actually changed; old → new),
-- **delete entry** (`🗑️ Xóa chi`: amount, date, description, category),
-- **add / delete category** (`➕ Thêm danh mục` / `➖ Xóa danh mục`),
-- **monthly budget change** (`💰 Ngân sách tháng`: old → new),
-- **CSV import** (`📥 Nhập CSV`: count, total, new categories).
+- **delete entry** (`🗑️ Xóa chi`: amount, date, description, category).
 
-Nothing is sent when the Zalo fields are empty. Sync merges from other devices do not send messages (the device that made the change already did).
+Nothing is sent when the Zalo fields are empty, for category / budget changes, or for CSV import. Sync merges from other devices do not send messages (the device that made the change already did).
 
 Setup (per the Zalo Bot Platform documentation):
 1. In Zalo, open the official account **Zalo Bot Manager** and choose **Create bot**; the bot name must start with "Bot". Zalo sends you the **bot token**.
