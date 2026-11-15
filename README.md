@@ -138,7 +138,9 @@ Optional. When both a **Bot token** and a **Chat ID** are saved on a device, the
 - **edit** (`✏️ Sửa chi`, only when the description or category actually changed; old → new),
 - **delete entry** (`🗑️ Xóa chi`: amount, date, description, category).
 
-Nothing is sent when the Zalo fields are empty, for category / budget changes, or for CSV import. Sync merges from other devices do not send messages (the device that made the change already did).
+Nothing is sent when the Zalo fields are empty, for category / budget changes, or for CSV import.
+
+**Messages are sent only after the change is on the Gist.** Saving queues the message on the device (`dr_zq`); after a sync that re-reads the Gist and finds the change (new entry id, edit with the same or newer `upd`, the void record of a delete), the queued messages are sent in order. If the sync fails (no network, GitHub error, expired token) the message waits; it is sent after the next successful sync, also after the app is reopened, with an extra line `⏳ Ghi lúc hh:mm dd/mm` when it is more than 2 minutes late. If Zalo itself is unreachable the message stays queued. If the browser storage is full, the add / edit / delete is rolled back with a warning and nothing is queued. Switching Gist or logging out clears the queue. Sync merges from other devices do not send messages (the device that made the change already did).
 
 Setup (per the Zalo Bot Platform documentation):
 1. In Zalo, open the official account **Zalo Bot Manager** and choose **Create bot**; the bot name must start with "Bot". Zalo sends you the **bot token**.

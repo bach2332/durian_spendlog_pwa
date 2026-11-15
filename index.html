@@ -412,7 +412,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261115b</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261115c</footer>
 </main>
 
 <nav class="tabs">
@@ -510,7 +510,7 @@ function status(m){lastMsg=m;$('#status').textContent=m;syncUI()}
 /* Nút đồng bộ góc trên: xám = chưa kết nối, quay = đang đồng bộ, xanh = đã đồng bộ, cam = lỗi hoặc còn thay đổi chưa gửi */
 function syncUI(){
   const b=$('#btn-sync');if(!b)return;
-  const s=!tok()?'off':syncing?'busy':lastErr?'err':isDirty()?'pend':'ok';
+  const s=!tok()?'off':syncing?'busy':lastErr||storeFull?'err':isDirty()?'pend':'ok';
   b.className=s;$('#status').className=s;
   {const t={off:'Chưa kết nối — bấm để mở Cài đặt',busy:'Đang đồng bộ...',err:lastMsg+' · bấm để thử lại',pend:'Còn thay đổi chưa gửi · bấm để đồng bộ',ok:(lastMsg||'Đã đồng bộ')+' · bấm để đồng bộ lại'}[s];b.title=t;b.setAttribute("aria-label",t)}
 }
@@ -589,7 +589,9 @@ async function fetchRemote(cond){
 const putRemote=d=>gh('/gists/'+encodeURIComponent(gid()),{method:'PATCH',body:JSON.stringify({files:{[FILE]:{content:JSON.stringify(d,null,1)}}})});
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const isDirty=()=>!!localStorage.getItem(K.dirty);
-function keepLocal(){try{localStorage.setItem(K.cache,JSON.stringify(data))}catch(e){status('⚠️ Bộ nhớ trình duyệt đầy, không lưu được trên máy')}}
+let storeFull=false;
+const FULL_MSG='⚠️ Bộ nhớ trình duyệt đầy, không lưu được trên máy';
+function keepLocal(){try{localStorage.setItem(K.cache,JSON.stringify(data));storeFull=false;return true}catch(e){storeFull=true;status(FULL_MSG);return false}}
 let syncing=false,again=false,againLocal=false;
 /* local=true: máy này vừa có thay đổi. quiet=true: kiểm tra định kỳ, chỉ tải nếu Gist đã đổi */
 async function sync(opt={}){
@@ -603,25 +605,27 @@ async function sync(opt={}){
     if(!gid()){
       status('Đang tạo Gist...');
       const g=await gh('/gists',{method:'POST',body:JSON.stringify({description:'Sầu riêng 2027 - chi tiêu',public:false,files:{[FILE]:{content:JSON.stringify(data,null,1)}}})});
-      localStorage.setItem(K.gist,g.id);setBase(data);localStorage.removeItem(K.dirty);renderSet();toast('Đã tạo Gist mới');status('Đã lưu');ok=true;
+      localStorage.setItem(K.gist,g.id);setBase(data);localStorage.removeItem(K.dirty);renderSet();toast('Đã tạo Gist mới');status('Đã lưu');ok=true;zlFlush(data.items);
     }else{
       if(!opt.quiet||isDirty())status(isDirty()?'Đang lưu...':'Đang tải...');
       let r=await fetchRemote(opt.quiet&&!isDirty());
-      if(r.same){ok=true}
+      if(r.same){ok=true;if(!isDirty())zlFlush(data.items)}
       else{
         const before=new Set(data.items.map(x=>x.id));
-        let remote=r.d,merged,tries=0,wrote=false;
+        let remote=r.d,merged,tries=0,wrote=false,confirmed=null;
         for(;;){
           merged=mergeData(remote,data,fresh);
           if(!remote||JSON.stringify(merged)!==JSON.stringify(remote)){
             await putRemote(merged);wrote=true;
             await sleep(1200);
-            const chk=(await fetchRemote(false)).d;
+            const chk=(await fetchRemote(false)).d;confirmed=chk;
             if(chk&&JSON.stringify(mergeData(chk,merged))!==JSON.stringify(chk)&&++tries<3){remote=chk;continue}
             if(chk)merged=mergeData(chk,merged);
-          }
+          }else confirmed=remote;
           break;
         }
+        /* tin Zalo chỉ gửi cho những thay đổi đã thật sự nằm trên Gist (đọc lại sau khi ghi) */
+        if(confirmed)zlFlush(confirmed.items||[]);
         const got=merged.items.filter(x=>!before.has(x.id)).length;
         /* thay đổi trên máy trong lúc đang đồng bộ: giữ lại, đồng bộ tiếp ở lượt sau */
         const cur=data,cc=JSON.stringify(cur.categories)!==c0,bc=cur.budget!==b0;
@@ -636,7 +640,7 @@ async function sync(opt={}){
         ok=true;
       }
     }
-  }catch(e){const em=/Failed to fetch|NetworkError|Load failed|network/i.test(e.message)?'không có mạng':e.message;lastErr=em;status('Lỗi đồng bộ: '+em+(isDirty()?' · dữ liệu vẫn còn trên máy, sẽ thử lại':''));if(opt.local)toast('Chưa lưu lên Gist được, sẽ thử lại')}
+  }catch(e){const em=/Failed to fetch|NetworkError|Load failed|network/i.test(e.message)?'không có mạng':e.message;lastErr=em;status('Lỗi đồng bộ: '+em+(storeFull?' · '+FULL_MSG.slice(2):isDirty()?' · dữ liệu vẫn còn trên máy, sẽ thử lại':''));if(opt.local)toast('Chưa lưu lên Gist được, sẽ thử lại')}
   syncing=false;if(ok)lastErr='';syncUI();
   if(againLocal){againLocal=again=false;setTimeout(()=>sync({local:true}),300)}
   else if(again){again=false;setTimeout(()=>sync(),300)}
@@ -652,7 +656,7 @@ $('#btn-sync').onclick=async()=>{
 };
 const load=()=>sync();
 /* đổi sang Gist khác / đăng xuất: bỏ dữ liệu của sổ cũ để không trộn vào sổ mới */
-function resetLocal(){data={categories:[...DEF_CATS],budget:0,items:[]};etag='';[K.cache,K.base,K.dirty].forEach(k=>localStorage.removeItem(k))}
+function resetLocal(){data={categories:[...DEF_CATS],budget:0,items:[]};etag='';[K.cache,K.base,K.dirty].forEach(k=>localStorage.removeItem(k));zq=[];zqSave()}
 setInterval(()=>{if(document.visibilityState==='visible'&&tok()&&gid()&&!syncing)sync({quiet:true})},60000);
 
 /* ---------- date ranges ---------- */
@@ -917,7 +921,9 @@ $('#a-save').onclick=()=>{
   const date=$('#a-date').value||today(),note=$('#a-note').value.trim(),category=$('#a-cat').value,amount=kval($('#a-amt'));
   if(!amount){toast('Nhập số tiền');$('#a-amt').focus();return}
   if(!category||!data.categories.includes(category)){const c=$('#a-cat');c.classList.remove('need');void c.offsetWidth;c.classList.add('need');toast('Chọn danh mục');c.focus();try{c.showPicker&&c.showPicker()}catch(e){}return}
-  const it={id:uid(),date,note,category,amount};if(who())it.by=who();data.items.push(it);zlNew(it);
+  const it={id:uid(),date,note,category,amount};if(who())it.by=who();data.items.push(it);
+  if(!keepLocal()){data.items.pop();fullAlert();return}
+  zlNew(it);
   $('#a-note').value='';$('#a-amt').value='';kRefresh($('#a-amt'));$('#a-cat').value='';renderAddCats();
   toast('Đã lưu '+money(amount));
   renderAll();save();$('#a-amt').focus();
@@ -965,16 +971,19 @@ $('#e-cancel').onclick=closeM;
 $('#modal').onclick=e=>{if(e.target.id==='modal')closeM()};
 $('#e-save').onclick=()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
-  const oldN=i.note,oldC=i.category;
-  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;if(i.note!==oldN||i.category!==oldC){i.upd=nowISO();if(who())i.eb=who();else delete i.eb}zlEdit(i,oldN,oldC);
+  const oldN=i.note,oldC=i.category,bak={...i};
+  i.note=$('#e-note').value.trim();i.category=$('#e-cat').value;if(i.note!==oldN||i.category!==oldC){i.upd=nowISO();if(who())i.eb=who();else delete i.eb}
+  if(!keepLocal()){Object.keys(i).forEach(k=>delete i[k]);Object.assign(i,bak);fullAlert();return}
+  zlEdit(i,oldN,oldC);
   closeM();renderAll();save();toast('Đã cập nhật');
 };
 $('#e-del').onclick=async()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
   if(!await askConfirm('Xóa khoản chi này?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.','Xóa'))return;
   const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};if(who())r.by=who();
-  i.voidedBy=r.id;i.upd=r.at;data.items.push(r);
-  zlSend([zlWho(who()),'🗑️ Xóa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),i.note?'📝 '+i.note:'','🏷️ '+i.category].filter(Boolean).join('\n'));
+  const bak={...i};i.voidedBy=r.id;i.upd=r.at;data.items.push(r);
+  if(!keepLocal()){data.items.pop();Object.keys(i).forEach(k=>delete i[k]);Object.assign(i,bak);fullAlert();return}
+  zlQueue('del',r.id,'',[zlWho(who()),'🗑️ Xóa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),i.note?'📝 '+i.note:'','🏷️ '+i.category].filter(Boolean).join('\n'));
   closeM();renderAll();save();toast('Đã xóa (ghi dòng âm)');
 };
 
@@ -1227,17 +1236,36 @@ function zlFill(){
   if(document.activeElement!==$('#z-chat')){$('#z-chat').value='';$('#z-chat').placeholder=z?'Đã lưu: '+mask(z.c)+' (nhập để thay)':'VD: abc.xyz'}
   zlLink();zlState();
 }
-/* Gửi dạng form-urlencoded + no-cors: không cần preflight, tin vẫn đi dù Zalo không bật CORS. Gửi 1 lần, không tự gửi lại (tránh trùng tin). */
+/* ---- Hàng chờ tin Zalo ----
+   Thêm / sửa / xóa khoản chi không gửi Zalo ngay: tin được xếp hàng (lưu trên máy) và chỉ gửi
+   sau khi đồng bộ xác nhận thay đổi đó đã nằm trên Gist. Lưu lỗi thì tin chờ; mất mạng thì gửi bù. */
+const ZQK='dr_zq';
+let zq=(()=>{try{return JSON.parse(localStorage.getItem(ZQK)||'[]')}catch(e){return[]}})(),zqBusy=false;
+function zqSave(){try{zq.length?localStorage.setItem(ZQK,JSON.stringify(zq)):localStorage.removeItem(ZQK)}catch(e){}}
+function zlQueue(k,id,u,text){if(!zlCfg())return;zq.push({k,id,u,t:text,at:Date.now()});zqSave()}
+async function zlFlush(items){
+  if(zqBusy||!zq.length)return;const z=zlCfg();if(!z)return;
+  zqBusy=true;
+  try{
+    const ix=new Map(items.map(x=>[x.id,x]));
+    const ready=m=>{const x=ix.get(m.id);return !!x&&(m.k!=='edit'||(x.upd||'')>=(m.u||''))};
+    while(zq.length){
+      const m=zq.find(ready);if(!m)break;
+      const late=Date.now()-m.at>120000,d=new Date(m.at),p=n=>String(n).padStart(2,'0');
+      const text=m.t+(late?'\n⏳ Ghi lúc '+p(d.getHours())+':'+p(d.getMinutes())+' '+p(d.getDate())+'/'+p(d.getMonth()+1):'');
+      try{await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',mode:'no-cors',body:new URLSearchParams({chat_id:z.c,text:text.slice(0,2000)})})}
+      catch(e){break}           // mất mạng tới Zalo: giữ tin, lần đồng bộ sau gửi tiếp
+      zq=zq.filter(x=>x!==m);zqSave();
+    }
+  }finally{zqBusy=false}
+}
+function fullAlert(){status(FULL_MSG);toast('⚠️ Bộ nhớ trình duyệt đầy — CHƯA lưu khoản này, không gửi Zalo.')}
 /* Mọi tin Zalo: dòng đầu tiên luôn là người gửi */
 const zlWho=n=>'👤 '+(n||'(chưa đặt tên)');
-function zlSend(text){
-  const z=zlCfg();if(!z)return;
-  try{fetch(ZAPI+z.t+'/sendMessage',{method:'POST',mode:'no-cors',body:new URLSearchParams({chat_id:z.c,text:String(text).slice(0,2000)})}).catch(()=>toast('Không gửi được tin Zalo (kiểm tra mạng)'))}catch(e){}
-}
 function zlNew(it){
   const day=sum(data.items.filter(x=>x.date===it.date));
   const dd=dmy(it.date).slice(0,5);
-  zlSend([zlWho(it.by),'🌳 Chi mới','💸 '+money(it.amount),it.note?'📝 '+it.note:'','🏷️ '+it.category,'📅 '+dmy(it.date),
+  zlQueue('new',it.id,'',[zlWho(it.by),'🌳 Chi mới','💸 '+money(it.amount),it.note?'📝 '+it.note:'','🏷️ '+it.category,'📅 '+dmy(it.date),
     '📊 '+(it.date===today()?'Hôm nay':dd)+': '+money(day)].filter(Boolean).join('\n'));
 }
 function zlEdit(i,oldN,oldC){
@@ -1245,7 +1273,7 @@ function zlEdit(i,oldN,oldC){
   if((oldN||'')!==(i.note||''))ch.push('📝 '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
   if(oldC!==i.category)ch.push('🏷️ '+oldC+' → '+i.category);
   if(!ch.length)return;
-  zlSend([zlWho(who()),'✏️ Sửa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),...ch].join('\n'));
+  zlQueue('edit',i.id,i.upd||'',[zlWho(who()),'✏️ Sửa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),...ch].join('\n'));
 }
 $('#z-token').addEventListener('input',zlLink);
 $('#z-save').onclick=()=>{
