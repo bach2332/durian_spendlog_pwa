@@ -156,14 +156,12 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .cats .cc.on{background:var(--acc2);color:var(--text);border-color:var(--acc);font-weight:600}
 .arow{display:flex;gap:8px;align-items:stretch}
 .arow button{flex:1}
-.dchip{position:relative;display:flex;align-items:center;gap:8px;margin:0;flex:0 0 auto;padding:5px 6px 5px 6px;border:1.5px solid #b9cfa0;border-radius:14px;background:linear-gradient(180deg,#ffffff,#f1f7e6);color:var(--text);box-shadow:0 2px 6px rgba(63,125,32,.12);cursor:pointer;overflow:hidden;transition:transform .1s,box-shadow .1s}
-.dchip:active{transform:translateY(1px);box-shadow:0 1px 2px rgba(63,125,32,.12)}
-.dchip .dic{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#e3f3d6;color:#2f7d1e}
-.dchip .dtx{display:flex;flex-direction:column;line-height:1.1;min-width:52px}
-.dchip small{font-size:11px;font-weight:600;color:var(--mut)}.dchip b{font-size:16.5px;font-weight:800;letter-spacing:.2px}
-.dchip .dch{flex:none;display:inline-flex;align-items:center;gap:3px;font-size:12.5px;font-weight:700;color:#fff;background:#3f7d20;border-radius:99px;padding:5px 10px 5px 8px}
-.dchip.other{border-color:#e9a23b;background:linear-gradient(180deg,#fffaf0,#ffefd2);box-shadow:0 2px 6px rgba(199,119,0,.18)}
-.dchip.other .dic{background:#ffe2b0;color:#b86e00}.dchip.other small{color:#b86e00;font-weight:800}.dchip.other .dch{background:#c77700}
+.dchip{position:relative;display:flex;align-items:center;gap:8px;margin:0;flex:0 0 auto;padding:4px 14px 4px 6px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);cursor:pointer;overflow:hidden}
+.dchip:active{background:var(--bg)}
+.dchip .dic{flex:none;width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--bg);color:var(--mut)}
+.dchip .dtx{display:flex;flex-direction:column;line-height:1.15;min-width:48px}
+.dchip small{font-size:11px;font-weight:500;color:var(--mut)}.dchip b{font-size:16px;font-weight:700;color:var(--text)}
+.dchip.other{border-color:#e3b26b}.dchip.other .dic{color:#b86e00}
 /* màn Nhập gọn hơn */
 #p-add .card:first-child{padding:12px}
 #a-g{margin:8px 0 0}#a-g button{min-height:44px;font-size:15.5px;border-radius:12px}
@@ -265,7 +263,7 @@ details.set .sb>label:first-child{margin-top:0}
       <input type="text" id="a-note" list="a-sug" placeholder="Nội dung (không bắt buộc)" autocomplete="off" enterkeyhint="done" aria-label="Nội dung" style="margin:8px 0 10px">
       <datalist id="a-sug"></datalist>
       <div class="arow">
-        <label class="dchip" id="a-dchip" title="Bấm để đổi ngày chi"><span class="dic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8.5" cy="15" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="dtx"><small id="a-dday">Hôm nay</small><b id="a-dlabel"></b></span><span class="dch"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>Đổi</span><input type="date" id="a-date" aria-label="Ngày chi — bấm để đổi"></label>
+        <label class="dchip" id="a-dchip" title="Bấm để đổi ngày chi"><span class="dic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8.5" cy="15" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="dtx"><small id="a-dday">Hôm nay</small><b id="a-dlabel"></b></span><input type="date" id="a-date" aria-label="Ngày chi"></label>
         <button id="a-save">Lưu khoản chi</button>
       </div>
     </div>
@@ -460,7 +458,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261115g</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261115h</footer>
 </main>
 
 <nav class="tabs">
@@ -1020,7 +1018,7 @@ $('#a-date').addEventListener('change',dLabel);
 /* Bàn phím ảo: đang gõ ở màn Nhập VÀ màn hình bị thu nhỏ (bàn phím đang mở) → thu gọn đầu trang,
    ẩn thời tiết + thanh tab, cuộn khung nhập lên trên cùng. Chỉ focus mà bàn phím chưa mở thì giữ nguyên. */
 const kbEl=e=>!!(e&&e.matches&&e.matches('#p-add input[type=text],#p-add input:not([type])'));
-let kbMax=0;
+let kbMax=Math.max(innerHeight,window.visualViewport?visualViewport.height:0);
 function kbCheck(){
   const vv=window.visualViewport,vh=vv?vv.height:innerHeight;kbMax=Math.max(kbMax,innerHeight,vh);
   const on=kbEl(document.activeElement)&&vh<kbMax*0.78,was=document.body.classList.contains('kb');

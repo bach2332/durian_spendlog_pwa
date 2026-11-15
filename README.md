@@ -265,5 +265,5 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 
 ## Entry screen and the on-screen keyboard
 
-- The date button is a clear button: calendar icon, `Hôm nay / 15/11`, and a green `✎ Đổi` pill (tap anywhere on it to open the date picker); by default it is today; another day shows `Hôm qua` or the weekday (`T2`…`CN`) with the date and turns orange so a back-dated entry is obvious.
+- The date button is a calm white button with a calendar icon and the date in black (`Hôm nay / 15/11`); tap it to open the date picker. By default it is today; another day shows `Hôm qua` or the weekday (`T2`…`CN`) with the date, and the border and icon turn orange so a back-dated entry is noticeable.
 - While typing in the entry card **and** the visible viewport shrinks (keyboard open, detected with `visualViewport`), the app adds `body.kb`: weather strip, bottom tab bar and the sync status text are hidden, the header shrinks, and the entry card is scrolled to the top, so amount, category, orchard, note, date and **Lưu** stay above the keyboard. Focus alone (keyboard not open) changes nothing. On touch devices the amount field is no longer auto-focused at startup.
