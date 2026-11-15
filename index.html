@@ -116,7 +116,13 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .kp b{color:var(--text);font-size:15px}
 .ft{text-align:center;color:var(--mut);font-size:12px;margin:18px 0 6px}
 .qrow{display:flex;gap:8px;align-items:stretch}
-.qrow>input{flex:1;min-width:0}
+.qrow>input,.qrow>select{flex:1;min-width:0}
+#a-cat{font-weight:600;border:2px solid var(--line);border-radius:10px}
+#a-cat.empty{color:var(--mut);font-weight:500}
+#a-cat.need{border-color:var(--warn);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.item .sub{font-size:13px;color:var(--mut);margin-top:2px;word-break:break-word}
+.item .n .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
 .acell{flex:0 0 150px}
 .qrow .kw input{padding-left:8px;padding-right:58px}
 .qrow .kw .suf{font-size:14px;right:9px}
@@ -210,12 +216,11 @@ details.set .sb>label:first-child{margin-top:0}
     <div class="card">
       <div class="qrow">
         <div class="abig"><input type="text" id="a-amt" inputmode="numeric" pattern="[0-9]*" placeholder="35" autocomplete="off" enterkeyhint="next" aria-label="Số tiền (nghìn đồng)"></div>
-        <input type="text" id="a-note" list="a-sug" placeholder="Nội dung" autocomplete="off" enterkeyhint="done" aria-label="Nội dung">
+        <select id="a-cat" aria-label="Danh mục (bắt buộc)" required></select>
       </div>
-      <datalist id="a-sug"></datalist>
       <div id="a-kp"></div>
-      <select id="a-cat" hidden></select>
-      <div class="cats" id="a-cats"></div>
+      <input type="text" id="a-note" list="a-sug" placeholder="Nội dung (không bắt buộc)" autocomplete="off" enterkeyhint="done" aria-label="Nội dung" style="margin:8px 0 10px">
+      <datalist id="a-sug"></datalist>
       <div class="arow">
         <label class="dchip"><span id="a-dlabel">Hôm nay</span><input type="date" id="a-date" aria-label="Ngày chi"></label>
         <button id="a-save">Lưu khoản chi</button>
@@ -407,7 +412,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261114l</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261115a</footer>
 </main>
 
 <nav class="tabs">
@@ -693,7 +698,8 @@ function rowHTML(i){
   // người tạo · ✏️ người sửa cuối (chỉ ghi tên khi khác người tạo)
   const ed=!rev&&!gone&&(i.eb||i.upd)?(i.eb&&i.eb!==i.by?' ✏️'+esc(i.eb):' ✏️'):'';
   const ref=(i.by||ed?` <span class="mut">·${i.by?' '+esc(i.by):''}${ed}</span>`:'')+(gone?' <span class="mut">· đã bị xóa</span>':'');
-  return`<div class="item" data-id="${i.id}"><div><div class="n" style="${st}">${esc(i.note||'(không ghi chú)')}</div>${tag}<span class="chip" style="border-left:4px solid ${catColor(i.category)}">${esc(i.category)}</span>${ref}</div><div class="amt" style="${st}${rev?';color:var(--bad)':''}">${money(i.amount)}</div></div>`;
+  const sub=(i.note?`<span style="${st}">${esc(i.note)}</span>`:'')+(i.note?ref:ref.replace(/^ <span class="mut">·/,' <span class="mut">'));
+  return`<div class="item" data-id="${i.id}"><div><div class="n" style="${st}">${tag}<span class="dot" style="background:${catColor(i.category)}"></span>${esc(i.category)}</div>${sub.trim()?`<div class="sub">${sub}</div>`:''}</div><div class="amt" style="${st}${rev?';color:var(--bad)':''}">${money(i.amount)}</div></div>`;
 }
 
 function budgetHTML(){
@@ -837,7 +843,7 @@ function renderNav(){
   $$('[data-label]').forEach(b=>b.textContent=label());
 }
 function renderAll(){
-  fillCats('#a-cat',false);renderAddCats();renderSug();fillCats('#h-cat',true,view.cat);fillCats('#e-cat',false);
+  {const v=$('#a-cat').value;fillCats('#a-cat',false,v||'');renderAddCats(v)}renderSug();fillCats('#h-cat',true,view.cat);fillCats('#e-cat',false);
   renderNav();renderAdd();renderHist();renderStat();renderSet();renderFlt(false);
 }
 
@@ -882,9 +888,13 @@ $('#h-cat').onchange=e=>{view.cat=e.target.value;renderHist()};
 
 /* ---------- nhập nhanh ---------- */
 let sugCat={};
-function renderAddCats(){
-  const v=$('#a-cat').value;
-  $('#a-cats').innerHTML=data.categories.map(c=>`<button type="button" class="cc ${c===v?'on':''}" data-c="${esc(c)}">${esc(c)}</button>`).join('');
+/* Danh mục ở màn Nhập: bắt buộc chọn, mặc định để trống */
+function renderAddCats(v){
+  const sel=$('#a-cat');if(v===undefined)v=sel.value;
+  if(!sel.options.length||sel.options[0].value!=='')sel.insertBefore(new Option('Chọn danh mục',''),sel.firstChild);
+  sel.options[0].disabled=true;
+  sel.value=v&&data.categories.includes(v)?v:'';
+  sel.classList.toggle('empty',!sel.value);if(sel.value)sel.classList.remove('need');
 }
 function setAddCat(c){const sel=$('#a-cat');if([...sel.options].some(o=>o.value===c)){sel.value=c;renderAddCats()}}
 function renderSug(){
@@ -899,19 +909,20 @@ function dLabel(){
   const v=$('#a-date').value||today();
   $('#a-dlabel').textContent=v===today()?'Hôm nay':dmy(v).slice(0,v.slice(0,4)===today().slice(0,4)?5:10);
 }
-$('#a-cats').onclick=e=>{const b=e.target.closest('[data-c]');if(b)setAddCat(b.dataset.c)};
+$('#a-cat').addEventListener('change',()=>{renderAddCats();if($('#a-cat').value&&!$('#a-note').value)$('#a-note').focus()});
 $('#a-date').addEventListener('change',dLabel);
 $('#a-note').addEventListener('input',e=>{const c=sugCat[e.target.value.trim().toLowerCase()];if(c)setAddCat(c)});
 $('#a-note').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#a-save').click()}});
 $('#a-save').onclick=()=>{
   const date=$('#a-date').value||today(),note=$('#a-note').value.trim(),category=$('#a-cat').value,amount=kval($('#a-amt'));
   if(!amount){toast('Nhập số tiền');$('#a-amt').focus();return}
+  if(!category||!data.categories.includes(category)){const c=$('#a-cat');c.classList.remove('need');void c.offsetWidth;c.classList.add('need');toast('Chọn danh mục');c.focus();try{c.showPicker&&c.showPicker()}catch(e){}return}
   const it={id:uid(),date,note,category,amount};if(who())it.by=who();data.items.push(it);zlNew(it);
-  $('#a-note').value='';$('#a-amt').value='';kRefresh($('#a-amt'));
+  $('#a-note').value='';$('#a-amt').value='';kRefresh($('#a-amt'));$('#a-cat').value='';renderAddCats();
   toast('Đã lưu '+money(amount));
   renderAll();save();$('#a-amt').focus();
 };
-$('#a-amt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#a-note').focus()}});
+$('#a-amt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const c=$('#a-cat');if(c.value)$('#a-note').focus();else{c.focus();try{c.showPicker&&c.showPicker()}catch(_){}}}});
 
 /* Hộp xác nhận tự vẽ (hộp thoại gốc của trình duyệt có thể bị chặn) */
 function askConfirm(msg,yes,opt={}){
@@ -947,6 +958,7 @@ document.addEventListener('click',async e=>{
     if(data.categories.length<=1){toast('Cần ít nhất 1 danh mục');return}
     if(!await askConfirm('Xóa danh mục "'+c+'"?\nCác khoản chi cũ vẫn giữ nguyên tên danh mục.','Xóa'))return;
     data.categories.splice(+dc.dataset.delcat,1);renderAll();save();
+    zlSend([zlWho(who()),'➖ Xóa danh mục','🏷️ '+c].join('\n'));toast('Đã xóa danh mục');
   }
 });
 const closeM=()=>{$('#modal').classList.remove('on');editId=null};
@@ -963,6 +975,7 @@ $('#e-del').onclick=async()=>{
   if(!await askConfirm('Xóa khoản chi này?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.','Xóa'))return;
   const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};if(who())r.by=who();
   i.voidedBy=r.id;i.upd=r.at;data.items.push(r);
+  zlSend([zlWho(who()),'🗑️ Xóa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),i.note?'📝 '+i.note:'','🏷️ '+i.category].filter(Boolean).join('\n'));
   closeM();renderAll();save();toast('Đã xóa (ghi dòng âm)');
 };
 
@@ -978,11 +991,13 @@ $('#s-logout').onclick=async()=>{
   Object.values(K).forEach(k=>localStorage.removeItem(k));resetLocal();
   status('Đã đăng xuất');renderAll();
 };
-$('#s-budget-save').onclick=()=>{data.budget=kval($('#s-budget-in'));renderAll();save();toast('Đã lưu ngân sách')};
+$('#s-budget-save').onclick=()=>{const old=data.budget||0;data.budget=kval($('#s-budget-in'));renderAll();save();toast('Đã lưu ngân sách');
+  if(old!==(data.budget||0))zlSend([zlWho(who()),'💰 Ngân sách tháng',(old?money(old):'(chưa đặt)')+' → '+(data.budget?money(data.budget):'(bỏ)')].join('\n'))};
 $('#s-addcat').onclick=()=>{
   const v=$('#s-newcat').value.trim();if(!v)return;
   if(data.categories.includes(v)){toast('Danh mục đã tồn tại');return}
   data.categories.push(v);$('#s-newcat').value='';renderAll();save();
+  zlSend([zlWho(who()),'➕ Thêm danh mục','🏷️ '+v].join('\n'));toast('Đã thêm danh mục');
 };
 
 document.addEventListener('visibilitychange',()=>{
@@ -1173,6 +1188,7 @@ $('#imp-go').onclick=()=>{
   const base=uid();
   use.forEach((r,k)=>{const o={id:base+k.toString(36).padStart(3,'0'),date:r.date,note:r.note,category:r.category,amount:r.amount};if(who())o.by=who();data.items.push(o)});
   const n=use.length;
+  zlSend([zlWho(who()),'📥 Nhập CSV','🧾 '+n+' khoản · 💸 '+money(sum(use)),nc.length?'➕ '+nc.join(', '):''].filter(Boolean).join('\n'));
   imp=null;$('#imp-file').value='';impMsg('');
   renderAll();save();toast('Đã nhập '+n+' khoản');
 };
