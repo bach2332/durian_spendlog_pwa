@@ -151,6 +151,20 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .arow{display:flex;gap:8px;align-items:stretch}
 .arow button{flex:1}
 .dchip{position:relative;display:flex;align-items:center;justify-content:center;margin:0;flex:0 0 auto;min-width:104px;padding:0 14px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font-size:15px;font-weight:600;overflow:hidden}
+.dchip{flex-direction:column;line-height:1.1;gap:1px;padding:0 12px;min-width:92px}
+.dchip small{font-size:11.5px;font-weight:500;color:var(--mut)}.dchip b{font-size:16px}
+.dchip.other{border:2px solid var(--warn);background:#fff6ea}.dchip.other small{color:var(--warn);font-weight:700}
+/* màn Nhập gọn hơn */
+#p-add .card:first-child{padding:12px}
+#a-g{margin:8px 0 0}#a-g button{min-height:44px;font-size:15.5px;border-radius:12px}
+#a-kp{font-size:12px;margin-top:3px;min-height:16px}
+#a-note{margin:8px 0 8px!important}
+/* bàn phím ảo đang mở (đang gõ ở màn Nhập): ẩn thời tiết, thanh tab, thu gọn đầu trang để khu nhập liệu không bị che */
+body.kb .wx,body.kb .tabs,body.kb .brand .who,body.kb #status{display:none}
+body.kb .brand{padding:6px 14px;margin-bottom:8px;border-bottom:2px solid var(--pri)}
+body.kb .brand img{width:24px;height:24px}body.kb .brand b{font-size:15px}
+body.kb #btn-sync{width:32px;height:32px}
+body.kb{padding-bottom:0}
 .dchip input{position:absolute;inset:0;width:100%;height:100%;min-height:0;opacity:0;padding:0;border:0;cursor:pointer}
 /* nhập tiền nổi bật */
 .abig{flex:0 0 148px}
@@ -241,7 +255,7 @@ details.set .sb>label:first-child{margin-top:0}
       <input type="text" id="a-note" list="a-sug" placeholder="Nội dung (không bắt buộc)" autocomplete="off" enterkeyhint="done" aria-label="Nội dung" style="margin:8px 0 10px">
       <datalist id="a-sug"></datalist>
       <div class="arow">
-        <label class="dchip"><span id="a-dlabel">Hôm nay</span><input type="date" id="a-date" aria-label="Ngày chi"></label>
+        <label class="dchip" id="a-dchip"><small id="a-dday">Hôm nay</small><b id="a-dlabel"></b><input type="date" id="a-date" aria-label="Ngày chi"></label>
         <button id="a-save">Lưu khoản chi</button>
       </div>
     </div>
@@ -435,7 +449,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261115d</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261115e</footer>
 </main>
 
 <nav class="tabs">
@@ -985,10 +999,27 @@ function renderSug(){
 }
 function dLabel(){
   const v=$('#a-date').value||today();
-  $('#a-dlabel').textContent=v===today()?'Hôm nay':dmy(v).slice(0,v.slice(0,4)===today().slice(0,4)?5:10);
+  const t=v===today(),d=pd(v),y=v.slice(0,4)!==today().slice(0,4);
+  $('#a-dday').textContent=t?'Hôm nay':v===ds(new Date(Date.now()-864e5))?'Hôm qua':['CN','T2','T3','T4','T5','T6','T7'][d.getDay()];
+  $('#a-dlabel').textContent=dmy(v).slice(0,y?10:5);
+  $('#a-dchip').classList.toggle('other',!t);
 }
 $('#a-cat').addEventListener('change',()=>{renderAddCats();if($('#a-cat').value&&!$('#a-note').value)$('#a-note').focus()});
 $('#a-date').addEventListener('change',dLabel);
+/* Bàn phím ảo: đang gõ ở màn Nhập VÀ màn hình bị thu nhỏ (bàn phím đang mở) → thu gọn đầu trang,
+   ẩn thời tiết + thanh tab, cuộn khung nhập lên trên cùng. Chỉ focus mà bàn phím chưa mở thì giữ nguyên. */
+const kbEl=e=>!!(e&&e.matches&&e.matches('#p-add input[type=text],#p-add input:not([type])'));
+let kbMax=0;
+function kbCheck(){
+  const vv=window.visualViewport,vh=vv?vv.height:innerHeight;kbMax=Math.max(kbMax,innerHeight,vh);
+  const on=kbEl(document.activeElement)&&vh<kbMax*0.78,was=document.body.classList.contains('kb');
+  if(on===was)return;document.body.classList.toggle('kb',on);
+  if(on){const go=()=>{const c=$('#p-add .card');window.scrollTo({top:Math.max(0,c.getBoundingClientRect().top+scrollY-8),behavior:'instant'})};requestAnimationFrame(go);setTimeout(go,300)}
+}
+if(window.visualViewport)visualViewport.addEventListener('resize',kbCheck);
+addEventListener('resize',kbCheck);addEventListener('orientationchange',()=>{kbMax=0;setTimeout(kbCheck,400)});
+document.addEventListener('focusin',()=>setTimeout(kbCheck,50));
+document.addEventListener('focusout',()=>setTimeout(kbCheck,120));
 $('#a-note').addEventListener('input',e=>{const c=sugCat[e.target.value.trim().toLowerCase()];if(c)setAddCat(c)});
 $('#a-note').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#a-save').click()}});
 let addG='';
@@ -1883,7 +1914,7 @@ renderHelp();
 renderWho();wlRender();wxRender();wxLoad();
 try{['dr_bio','dr_bio_no','dr_lock'].forEach(k=>localStorage.removeItem(k))}catch(e){}   /* dọn dữ liệu của tính năng đã bỏ (Face ID, mật khẩu Cài đặt) */
 if(!tok()){$('#sd-quick').open=true;showTab('set')}
-else{try{$('#a-amt').focus()}catch(e){}}
+else if(!matchMedia('(pointer:coarse)').matches){try{$('#a-amt').focus()}catch(e){}}
 if(/^#help/.test(location.hash))openHelp(location.hash.split('/')[1]||'');
 linkSetup();
 window.addEventListener('hashchange',()=>{if(/(^#|&)cfg=/.test(location.hash))linkSetup()});   /* app đang mở sẵn mà mở link vào cùng tab */

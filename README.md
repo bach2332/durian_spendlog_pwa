@@ -260,3 +260,8 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 - Review / copy (Excel): columns `Ngày, Vườn, Danh mục, Nội dung, Số tiền`, plus subtotals per orchard.
 - CSV import: optional column `vuon` (`lon` / `nho`, also `L` / `N`, `big` / `small`); empty = Chưa phân vườn.
 - Zalo: `🌳 Vườn lớn` / `🌱 Vườn nhỏ` (Zalo only shows standard emoji; the app uses its own tree icons). The new-entry title emoji is now `🧾` so it does not look like the orchard.
+
+## Entry screen and the on-screen keyboard
+
+- The date button shows the date: `Hôm nay / 15/11` by default; another day shows `Hôm qua` or the weekday (`T2`…`CN`) with the date and turns orange so a back-dated entry is obvious.
+- While typing in the entry card **and** the visible viewport shrinks (keyboard open, detected with `visualViewport`), the app adds `body.kb`: weather strip, bottom tab bar and the sync status text are hidden, the header shrinks, and the entry card is scrolled to the top, so amount, category, orchard, note, date and **Lưu** stay above the keyboard. Focus alone (keyboard not open) changes nothing. On touch devices the amount field is no longer auto-focused at startup.
