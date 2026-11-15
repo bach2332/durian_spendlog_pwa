@@ -141,6 +141,8 @@ Optional. When both a **Bot token** and a **Chat ID** are saved on a device, the
 
 Nothing is sent when the Zalo fields are empty, for category / budget changes, or for CSV import.
 
+**On/off switch vs. disconnect.** The **Gửi thông báo Zalo** switch at the top of the section pauses sending on this device while keeping the bot token and chat ID (`dr_zl_mute=1`); nothing is queued while paused and pending messages are dropped when pausing. Turning it back on resumes normal sending. **Gửi thử** still works while paused. **Xóa kết nối** (with confirmation) deletes the token and chat ID from this device. Applying a quick-setup config with Zalo turns the switch on.
+
 **Messages are sent only after the change is on the Gist.** Saving queues the message on the device (`dr_zq`); after a sync that re-reads the Gist and finds the change (new entry id, edit with the same or newer `upd`, the void record of a delete), the queued messages are sent in order. If the sync fails (no network, GitHub error, expired token) the message waits; it is sent after the next successful sync, also after the app is reopened, with an extra line `⏳ Ghi lúc hh:mm dd/mm` when it is more than 2 minutes late. If Zalo itself is unreachable the message stays queued. If the browser storage is full, the add / edit / delete is rolled back with a warning and nothing is queued. Switching Gist or logging out clears the queue. Sync merges from other devices do not send messages (the device that made the change already did).
 
 Setup (per the Zalo Bot Platform documentation):
