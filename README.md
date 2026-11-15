@@ -12,7 +12,8 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 
 | Area | What it does |
 |---|---|
-| **Quick entry** | Amount and category (dropdown, **required**, empty by default and after each save) on one row, optional description below, one-tap date picker. Keyboard flow: Amount → Enter → category → Description → Enter saves. |
+| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, three-tree icon, green) or **Vườn nhỏ** (`g:"N"`, one-tree icon, orange). History, Statistics and Filter share one selector **Tất cả / Lớn / Nhỏ** (default Tất cả). |
+| **Quick entry** | Amount and category (dropdown, **required**, empty by default and after each save) on one row, then the orchard buttons (exactly one, **required**, no default, reset after each save), optional description below, one-tap date picker. Keyboard flow: Amount → Enter → category → Description → Enter saves. |
 | **History** | Browse by day, week (Mon–Sun) or month, filter by category, tap an entry to edit or delete. |
 | **Statistics** | Day / Week / Month / Year views (default Month; Year shows monthly bars). Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to see the entries behind its total. |
 | **Filter & Review** | Flexible filter (time range, categories, keyword, amount range), pick entries, then open a review table with a grand total. Copy as tab-separated text for Excel or Google Sheets. |
@@ -134,7 +135,7 @@ How syncing works (**pull → merge → push → verify**, the whole file is nev
 ## Zalo notifications (experimental)
 
 Optional. When both a **Bot token** and a **Chat ID** are saved on a device, the app sends one Zalo message per:
-- **new entry** (`🌳 Chi mới`: amount, description, category, date and the day's total),
+- **new entry** (`🧾 Chi mới`, with the orchard line `🌳 Vườn lớn` / `🌱 Vườn nhỏ`: amount, description, category, date and the day's total),
 - **edit** (`✏️ Sửa chi`, only when the description or category actually changed; old → new),
 - **delete entry** (`🗑️ Xóa chi`: amount, date, description, category).
 
@@ -151,8 +152,9 @@ Technical notes and caveats:
 - Every message starts with the sender (`👤 name`), then one short emoji line per field:
   ```
   👤 Chị Lan
-  🌳 Chi mới
+  🧾 Chi mới
   💸 450.000 ₫
+  🌱 Vườn nhỏ
   📝 Cơm trưa thợ
   🏷️ Mua cơm
   📅 14/11/2026
@@ -248,3 +250,13 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 - **Audit trail** for multi-user use: append-only events recording who created, edited or voided each entry, with before/after values.
 - **Moving off Gist** to a hosted database such as Supabase (Postgres, per-user login, row-level security, database-side audit triggers); Firebase and Cloudflare D1 were considered as alternatives.
 - **Local-first sync queue** and per-month data files to keep saves fast as data grows.
+
+## Orchards (Vườn lớn / Vườn nhỏ)
+
+- Data: each item gets `"g":"L"` (Vườn lớn) or `"g":"N"` (Vườn nhỏ). Void records copy `g` from the original. Items without `g` (entered before this feature) count as **Chưa phân vườn**; open one and pick an orchard to fix it. Nothing else in the Gist file changes; the two orchards are fixed in the app (name, icon, color).
+- Entry: two big buttons under amount/category; exactly one must be chosen (no default). The chosen one gets a solid colored background, white text and a ✓; the other fades. Saving without one is blocked ("Chọn vườn").
+- Edit sheet: the orchard can be changed like the category (updates `upd` / `eb`; Zalo edit message shows `🏡 Vườn lớn → Vườn nhỏ`).
+- Statistics with **Tất cả**: a "Theo vườn" card (amount and % per orchard, tap to switch), stacked bars (green = lớn, orange = nhỏ, grey = chưa phân vườn). With **Lớn** / **Nhỏ** every figure, chart and the radar use only that orchard.
+- Review / copy (Excel): columns `Ngày, Vườn, Danh mục, Nội dung, Số tiền`, plus subtotals per orchard.
+- CSV import: optional column `vuon` (`lon` / `nho`, also `L` / `N`, `big` / `small`); empty = Chưa phân vườn.
+- Zalo: `🌳 Vườn lớn` / `🌱 Vườn nhỏ` (Zalo only shows standard emoji; the app uses its own tree icons). The new-entry title emoji is now `🧾` so it does not look like the orchard.
