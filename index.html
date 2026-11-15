@@ -128,6 +128,7 @@ table.rt tfoot td{font-weight:700;font-size:16px;border-top:2px solid var(--text
 .tgl input:checked{background:#2f9a3a}.tgl input:checked:before{transform:translateX(22px)}
 .tgl input:disabled{opacity:.45}.tgl.off{opacity:.6;cursor:default}
 .gsel{display:flex;gap:8px;margin:8px 0 0}
+.gem{line-height:1;display:inline-block;font-family:'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif}
 .gsel button{flex:1;min-height:52px;padding:6px 8px;border-radius:14px;border:2px solid var(--line);background:var(--bg);font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s;position:relative}
 .gsel button.L{color:#2f7d1e}.gsel button.N{color:#b86e00}.gsel button.all{color:var(--text)}
 .gsel.has button:not(.on){opacity:.45;filter:grayscale(.4)}
@@ -458,7 +459,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261115h</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261115i</footer>
 </main>
 
 <nav class="tabs">
@@ -541,11 +542,8 @@ let view={mode:'month',anchor:today(),cat:'all',g:'all'};
 /* ---------- Vườn: L = Vườn lớn, N = Vườn nhỏ (cố định). Khoản cũ không có g = chưa phân vườn ---------- */
 const GD={L:{n:'Vườn lớn',s:'Lớn',e:'🌳',c:'#2f7d1e'},N:{n:'Vườn nhỏ',s:'Nhỏ',e:'🌱',c:'#d48a10'}};
 const G_OTHER='#b9c2ad';
-function gIcon(g,h=22){
-  return g==='L'
-    ?`<svg viewBox="0 0 34 24" width="${Math.round(h*34/24)}" height="${h}" fill="currentColor" aria-hidden="true"><g opacity=".78"><circle cx="6.5" cy="9.5" r="3.2"/><circle cx="4.3" cy="12.3" r="2.9"/><circle cx="8.7" cy="12.3" r="2.9"/><rect x="5.7" y="13.5" width="1.6" height="7.5" rx=".8"/><circle cx="27.5" cy="9.5" r="3.2"/><circle cx="25.3" cy="12.3" r="2.9"/><circle cx="29.7" cy="12.3" r="2.9"/><rect x="26.7" y="13.5" width="1.6" height="7.5" rx=".8"/></g><circle cx="17" cy="5.8" r="3.9"/><circle cx="13.6" cy="9.4" r="3.6"/><circle cx="20.4" cy="9.4" r="3.6"/><circle cx="17" cy="10.4" r="3.6"/><rect x="16" y="12" width="2" height="9.5" rx="1"/></svg>`
-    :`<svg viewBox="0 0 24 24" width="${h}" height="${h}" fill="currentColor" aria-hidden="true"><circle cx="12" cy="6.5" r="4.3"/><circle cx="8" cy="10.5" r="4"/><circle cx="16" cy="10.5" r="4"/><circle cx="12" cy="11.5" r="4"/><rect x="10.9" y="13" width="2.2" height="8.5" rx="1"/></svg>`;
-}
+/* icon vườn = emoji, dùng chung cho app và tin Zalo: 🌳 Vườn lớn, 🌱 Vườn nhỏ */
+function gIcon(g,h=22){return `<span class="gem" style="font-size:${Math.round(h*0.95)}px" aria-hidden="true">${GD[g]?GD[g].e:'❔'}</span>`}
 const gTag=g=>GD[g]?`<span class="gtag ${g}">${gIcon(g,13)}${GD[g].s}</span>`:'';
 const gZl=g=>GD[g]?GD[g].e+' '+GD[g].n:'❔ Chưa phân vườn';
 const gOk=i=>view.g==='all'||i.g===view.g;
@@ -1105,7 +1103,7 @@ $('#e-del').onclick=async()=>{
   const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};if(who())r.by=who();if(i.g)r.g=i.g;
   const bak={...i};i.voidedBy=r.id;i.upd=r.at;data.items.push(r);
   if(!keepLocal()){data.items.pop();Object.keys(i).forEach(k=>delete i[k]);Object.assign(i,bak);fullAlert();return}
-  zlQueue('del',r.id,'',[zlWho(who()),'🗑️ Xóa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),gZl(i.g),i.note?'📝 '+i.note:'','🏷️ '+i.category].filter(Boolean).join('\n'));
+  zlQueue('del',r.id,'',[zlG(i.g),'🗑️ '+zlName(who())+' · Xóa chi','💸 −'+money(i.amount)+' · '+i.category,zlDay(i.date)+(i.note?' · '+i.note:'')].join('\n'));
   closeM();renderAll();save();toast('Đã xóa (ghi dòng âm)');
 };
 
@@ -1345,7 +1343,7 @@ const ZAPI='https://bot-api.zaloplatforms.com/bot';
 async function zlHello(src){
   const z=zlCfg();if(!z)return{ok:false,msg:'Chưa có Bot token và Chat ID'};
   const d=new Date(),p=n=>String(n).padStart(2,'0');
-  const text=zlWho(who())+'\n✅ Zalo OK · '+src+'\n🕒 '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
+  const text='✅ '+(who()||'(chưa đặt tên)')+' · Kết nối Zalo OK\n'+src+' · '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
   let r;
   try{r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text})})}
   catch(e){return navigator.onLine===false?{ok:false,msg:'Không có mạng, chưa gửi được tin Zalo'}:{ok:null,msg:'Đã gửi nhưng không đọc được phản hồi. Mở Zalo xem đã nhận tin chưa'}}
@@ -1386,7 +1384,7 @@ async function zlFlush(items){
     while(zq.length){
       const m=zq.find(ready);if(!m)break;
       const late=Date.now()-m.at>120000,d=new Date(m.at),p=n=>String(n).padStart(2,'0');
-      const text=m.t+(late?'\n⏳ Ghi lúc '+p(d.getHours())+':'+p(d.getMinutes())+' '+p(d.getDate())+'/'+p(d.getMonth()+1):'');
+      const text=m.t+(late?' · ⏳ ghi lúc '+p(d.getHours())+':'+p(d.getMinutes())+(ds(d)!==today()?' '+p(d.getDate())+'/'+p(d.getMonth()+1):''):'');
       try{await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',mode:'no-cors',body:new URLSearchParams({chat_id:z.c,text:text.slice(0,2000)})})}
       catch(e){break}           // mất mạng tới Zalo: giữ tin, lần đồng bộ sau gửi tiếp
       zq=zq.filter(x=>x!==m);zqSave();
@@ -1396,19 +1394,25 @@ async function zlFlush(items){
 function fullAlert(){status(FULL_MSG);toast('⚠️ Bộ nhớ trình duyệt đầy — CHƯA lưu khoản này, không gửi Zalo.')}
 /* Mọi tin Zalo: dòng đầu tiên luôn là người gửi */
 const zlWho=n=>'👤 '+(n||'(chưa đặt tên)');
+/* ---- Format tin Zalo (tối đa 4 dòng) ----
+   1: vườn (viết hoa)  2: ai · làm gì  3: số tiền · danh mục  4: ngày · nội dung */
+const zlName=n=>n||'(chưa đặt tên)';
+const zlG=g=>GD[g]?GD[g].e+' '+GD[g].n.toUpperCase():'❔ CHƯA PHÂN VƯỜN';
+function zlDay(v){
+  const t=today(),d=pd(v),yd=ds(new Date(Date.now()-864e5));
+  let s=dmy(v).slice(0,v.slice(0,4)===t.slice(0,4)?5:10);
+  if(v===yd)s+=' (hôm qua)';else if(v!==t)s+=' ('+['CN','T2','T3','T4','T5','T6','T7'][d.getDay()]+')';
+  return '📅 '+s;
+}
 function zlNew(it){
-  const day=sum(data.items.filter(x=>x.date===it.date));
-  const dd=dmy(it.date).slice(0,5);
-  zlQueue('new',it.id,'',[zlWho(it.by),'🧾 Chi mới','💸 '+money(it.amount),gZl(it.g),it.note?'📝 '+it.note:'','🏷️ '+it.category,'📅 '+dmy(it.date),
-    '📊 '+(it.date===today()?'Hôm nay':dd)+': '+money(day)].filter(Boolean).join('\n'));
+  zlQueue('new',it.id,'',[zlG(it.g),'🧾 '+zlName(it.by)+' · Chi mới','💸 '+money(it.amount)+' · '+it.category,zlDay(it.date)+(it.note?' · '+it.note:'')].join('\n'));
 }
 function zlEdit(i,oldN,oldC,oldG){
-  const ch=[];
-  if((oldG||'')!==(i.g||''))ch.push('🏡 '+gZl(oldG).replace(/^\S+ /,'')+' → '+gZl(i.g).replace(/^\S+ /,''));
-  if((oldN||'')!==(i.note||''))ch.push('📝 '+(oldN||'(trống)')+' → '+(i.note||'(trống)'));
-  if(oldC!==i.category)ch.push('🏷️ '+oldC+' → '+i.category);
-  if(!ch.length)return;
-  zlQueue('edit',i.id,i.upd||'',[zlWho(who()),'✏️ Sửa chi','💸 '+money(i.amount)+' · 📅 '+dmy(i.date),...((oldG||'')===(i.g||'')?[gZl(i.g)]:[]),...ch].join('\n'));
+  const gC=(oldG||'')!==(i.g||''),nC=(oldN||'')!==(i.note||''),cC=oldC!==i.category;
+  if(!gC&&!nC&&!cC)return;
+  const l1=zlG(i.g)+(gC?'  (chuyển từ '+(GD[oldG]?GD[oldG].e+' '+GD[oldG].n:'chưa phân vườn')+')':'');
+  const l4=zlDay(i.date)+(nC?' · '+(oldN||'(trống)')+' → '+(i.note||'(trống)'):i.note?' · '+i.note:'');
+  zlQueue('edit',i.id,i.upd||'',[l1,'✏️ '+zlName(who())+' · Sửa chi','💸 '+money(i.amount)+' · '+(cC?oldC+' → '+i.category:i.category),l4].join('\n'));
 }
 $('#z-token').addEventListener('input',zlLink);
 $('#z-save').onclick=()=>{

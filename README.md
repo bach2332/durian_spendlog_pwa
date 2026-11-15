@@ -12,7 +12,7 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 
 | Area | What it does |
 |---|---|
-| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, three-tree icon, green) or **Vườn nhỏ** (`g:"N"`, one-tree icon, orange). History, Statistics and Filter share one selector **Tất cả / Lớn / Nhỏ** (default Tất cả). |
+| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, 🌳, green) or **Vườn nhỏ** (`g:"N"`, 🌱, orange). History, Statistics and Filter share one selector **Tất cả / Lớn / Nhỏ** (default Tất cả). |
 | **Quick entry** | Amount and category (dropdown, **required**, empty by default and after each save) on one row, then the orchard buttons (exactly one, **required**, no default, reset after each save), optional description below, one-tap date picker. Keyboard flow: Amount → Enter → category → Description → Enter saves. |
 | **History** | Browse by day, week (Mon–Sun) or month, filter by category, tap an entry to edit or delete. |
 | **Statistics** | Day / Week / Month / Year views (default Month; Year shows monthly bars). Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to see the entries behind its total. |
@@ -151,18 +151,14 @@ Setup (per the Zalo Bot Platform documentation):
 3. Paste it as **Chat ID**, tap **Lưu**, then **Gửi thử** (send test).
 
 Technical notes and caveats:
-- Every message starts with the sender (`👤 name`), then one short emoji line per field:
+- Every entry message has at most 4 lines: **orchard** (upper case) / **who · action** / **amount · category** / **date · description**:
   ```
-  👤 Chị Lan
-  🧾 Chi mới
-  💸 450.000 ₫
-  🌱 Vườn nhỏ
-  📝 Cơm trưa thợ
-  🏷️ Mua cơm
-  📅 14/11/2026
-  📊 Hôm nay: 8.950.000 ₫
+  🌳 VƯỜN LỚN
+  🧾 Chị Lan · Chi mới
+  💸 8.500.000 ₫ · Mua phân
+  📅 15/11 · Phân NPK 10 bao
   ```
-  Edit: `👤 name` / `✏️ Sửa chi` / `💸 amount · 📅 date` / `📝 old → new` / `🏷️ old → new` (only changed lines). Test button / quick setup: `👤 name` / `✅ Zalo OK · 🧪 Gửi thử` (or `⚡ Thiết lập nhanh`) / `🕒 dd/mm hh:mm`. The result is shown under the buttons (green = sent, orange = error with a hint: wrong bot token, or wrong chat ID / recipient has not messaged the bot) and as a toast.
+  Edit: changed parts as `old → new` (`🌱 VƯỜN NHỎ  (chuyển từ 🌳 Vườn lớn)`, `💸 1.500.000 ₫ · Làm cỏ → Làm công`, `📅 14/11 (hôm qua) · old → new`). Delete: `🗑️ name · Xóa chi` with `💸 −amount`. The date has no year (unless another year) and adds `(hôm qua)` or the weekday when not today. A late message (queued) ends with ` · ⏳ ghi lúc hh:mm`. Test / quick setup: `✅ name · Kết nối Zalo OK` / `🧪 Gửi thử · dd/mm hh:mm` (or `⚡ Thiết lập nhanh`). The result is shown under the buttons (green = sent, orange = error with a hint: wrong bot token, or wrong chat ID / recipient has not messaged the bot) and as a toast.
 - Calls go from the browser to `https://bot-api.zaloplatforms.com/bot<TOKEN>/sendMessage` as a form-encoded request with `mode: 'no-cors'`, so messages go out even if the API does not send CORS headers. The trade-off is that regular sends cannot read the response; only the test button tries to.
 - Each notification is sent once, with no automatic retry (to avoid duplicates or late messages).
 - The token and Chat ID are stored only in this browser (`localStorage`), per device.
@@ -261,7 +257,7 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 - Statistics with **Tất cả**: a "Theo vườn" card (amount and % per orchard, tap to switch), stacked bars (green = lớn, orange = nhỏ, grey = chưa phân vườn). With **Lớn** / **Nhỏ** every figure, chart and the radar use only that orchard.
 - Review / copy (Excel): columns `Ngày, Vườn, Danh mục, Nội dung, Số tiền`, plus subtotals per orchard.
 - CSV import: optional column `vuon` (`lon` / `nho`, also `L` / `N`, `big` / `small`); empty = Chưa phân vườn.
-- Zalo: `🌳 Vườn lớn` / `🌱 Vườn nhỏ` (Zalo only shows standard emoji; the app uses its own tree icons). The new-entry title emoji is now `🧾` so it does not look like the orchard.
+- Icons: 🌳 = Vườn lớn, 🌱 = Vườn nhỏ, the same emoji in the app and in Zalo messages (the orchard is the first line of every Zalo entry message).
 
 ## Entry screen and the on-screen keyboard
 
