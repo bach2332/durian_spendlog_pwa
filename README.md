@@ -12,7 +12,7 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 
 | Area | What it does |
 |---|---|
-| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, 🌳, green) or **Vườn nhỏ** (`g:"N"`, 🌱, orange). History, Statistics and Filter share one selector **Tất cả / Lớn / Nhỏ** (default Tất cả). |
+| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, green), **Vườn nhỏ** (`g:"N"`, orange) or **Rẫy cà phê** (`g:"C"`, brown). History, Statistics and Filter share one selector **Tất cả / Lớn / Nhỏ / Cà phê** (default Tất cả). |
 | **Quick entry** | Amount and category (dropdown, **required**, empty by default and after each save) on one row, then the orchard buttons (exactly one, **required**, no default, reset after each save), optional description below, one-tap date picker. Keyboard flow: Amount → Enter → category → Description → Enter saves. |
 | **History** | Browse by day, week (Mon–Sun) or month, filter by category, tap an entry to edit or delete. |
 | **Statistics** | Day / Week / Month / Year views (default Month; Year shows monthly bars). Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to see the entries behind its total. |
@@ -249,15 +249,15 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 - **Moving off Gist** to a hosted database such as Supabase (Postgres, per-user login, row-level security, database-side audit triggers); Firebase and Cloudflare D1 were considered as alternatives.
 - **Local-first sync queue** and per-month data files to keep saves fast as data grows.
 
-## Orchards (Vườn lớn / Vườn nhỏ)
+## Orchards (Vườn lớn / Vườn nhỏ / Rẫy cà phê)
 
-- Data: each item gets `"g":"L"` (Vườn lớn) or `"g":"N"` (Vườn nhỏ). Void records copy `g` from the original. Items without `g` (entered before this feature) count as **Chưa phân vườn**; open one and pick an orchard to fix it. Nothing else in the Gist file changes; the two orchards are fixed in the app (name, icon, color).
+- Data: each item gets `"g":"L"` (Vườn lớn), `"g":"N"` (Vườn nhỏ) or `"g":"C"` (Rẫy cà phê). The list is the `GD` constant (name, short name, Zalo emoji, color); every screen loops over it. Void records copy `g` from the original. Items without `g` (entered before this feature) count as **Chưa phân vườn**; open one and pick an orchard to fix it. Nothing else in the Gist file changes; the two orchards are fixed in the app (name, icon, color).
 - Entry: two big buttons under amount/category; exactly one must be chosen (no default). The chosen one gets a solid colored background, white text and a ✓; the other fades. Saving without one is blocked ("Chọn vườn").
 - Edit sheet: the orchard can be changed like the category (updates `upd` / `eb`; Zalo edit message shows `🏡 Vườn lớn → Vườn nhỏ`).
 - Statistics with **Tất cả**: a "Theo vườn" card (amount and % per orchard, tap to switch), stacked bars (green = lớn, orange = nhỏ, grey = chưa phân vườn). With **Lớn** / **Nhỏ** every figure, chart and the radar use only that orchard.
 - Review / copy (Excel): columns `Ngày, Vườn, Danh mục, Nội dung, Số tiền`, plus subtotals per orchard.
-- CSV import: optional column `vuon` (`lon` / `nho`, also `L` / `N`, `big` / `small`); empty = Chưa phân vườn.
-- Icons: 🌳 = Vườn lớn, 🌱 = Vườn nhỏ, the same emoji in the app and in Zalo messages (the orchard is the first line of every Zalo entry message).
+- CSV import: optional column `vuon` (`lon` / `nho` / `cafe`, also `L` / `N` / `C`, `Rẫy cà phê`); empty = Chưa phân vườn.
+- Icons: in the app, three drawn SVG icons (`#gi-L` big durian tree with fruit, `#gi-N` young durian tree, `#gi-C` coffee bush with red cherries). In Zalo messages, standard emoji: 🌳 Vườn lớn, 🌱 Vườn nhỏ, ☕ Rẫy cà phê (first line of every entry message).
 
 ## Entry screen and the on-screen keyboard
 
