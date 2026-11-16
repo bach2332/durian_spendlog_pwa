@@ -470,7 +470,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261116b</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261116c</footer>
 </main>
 
 <nav class="tabs">
@@ -1757,7 +1757,7 @@ $('#me-parse').onclick=async()=>{
   meShow('Đang tìm "'+esc(t.slice(0,60))+'"...');
   const f=await meSearch(t);
   if(f){await meSet(f.lat,f.lon,'');return meShow($('#me-msg').innerHTML+'<br>ℹ️ Tìm theo tên, hãy kiểm tra trên bản đồ cho chắc',true)}
-  meShow('Không đọc được vị trí. Hãy dán tọa độ (vd: 12.95066, 108.23319), link Google Maps đầy đủ, hoặc bấm 🛰️ Vị trí hiện tại.',false);
+  meShow('Không đọc được vị trí. Hãy dán tọa độ (vd: 11.94040, 108.45830), link Google Maps đầy đủ, hoặc bấm 🛰️ Vị trí hiện tại.',false);
 };
 $('#me-q').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('#me-parse').click()}};
 $('#me-q').addEventListener('paste',()=>setTimeout(()=>{if(locParse($('#me-q').value))$('#me-parse').click()},0));
@@ -1894,7 +1894,7 @@ const LINK_KEY='dr_cfg_link';
 /* ===== Công cụ tạo chuỗi cấu hình (Cài đặt → Tạo chuỗi cấu hình) =====
    Chỉ tạo mới (không có chức năng giải mã ngược), không đụng tới cấu hình của máy này. Mật khẩu không lưu ở đâu cả:
    chỉ đọc từ ô lúc bấm, kiểm tra với PW_HASH sẵn có, và bị xóa khi đóng mục hoặc rời app. */
-const TL_DEF_LOC=['Vườn Trùng Dương, Pơng Drang, Đắk Lắk',12.9507,108.2332];
+const TL_DEF_LOC=['Đà Lạt, Lâm Đồng',11.9404,108.4583];
 const TLF={t:'#tl-t',g:'#tl-g',zt:'#tl-zt',zc:'#tl-zc',n:'#tl-n'};
 function tlSay(t,ok){const m=$('#tl-msg');m.textContent=t||'';m.className=t?(ok?'ok':'bad'):''}
 function tlOut(c){const u=c?location.origin+location.pathname+'#cfg='+c:'';$('#tl-cipher').value=c||'';$('#tl-link').value=u;$('#tl-out').style.display=c?'':'none'}

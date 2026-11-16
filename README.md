@@ -175,7 +175,7 @@ A one-line strip under the title shows current weather (temperature, condition, 
 
 Setting the orchard location (no typing coordinates):
 - **🛰️ Vị trí hiện tại**: GPS of the phone (stand in the orchard). Warns if accuracy is worse than 200 m.
-- Paste into the box (read automatically on paste, or tap **📍 Đọc vị trí**): a full Google Maps link (`!3d…!4d…` pin, `@lat,lon`, `?q=`/`query=`), plain coordinates (`12.95066, 108.23319`), or degrees-minutes-seconds (`12°57'02.4"N 108°13'59.5"E`). In Google Maps, long-press the orchard to drop a pin and copy its coordinates.
+- Paste into the box (read automatically on paste, or tap **📍 Đọc vị trí**): a full Google Maps link (`!3d…!4d…` pin, `@lat,lon`, `?q=`/`query=`), plain coordinates (`11.94040, 108.45830`), or degrees-minutes-seconds (`11°56'25.4"N 108°27'29.9"E`). In Google Maps, long-press the orchard to drop a pin and copy its coordinates.
 - Short links (`maps.app.goo.gl/…`) contain no coordinates and the browser cannot follow them (no CORS), so the app explains how to open the link and copy the full URL instead. If the shared text includes a place name, it tries that name first.
 - Anything else is searched as a place name (OpenStreetMap Nominatim, Vietnam only).
 - **Tên vườn** fills itself from the Google Maps place name or by reverse geocoding (Nominatim), and can be edited. Coordinates are rounded to 5 decimals (~1 m). Cached 30 minutes in `dr_wx`; expanding refreshes if stale.
@@ -201,7 +201,7 @@ Settings → **Thiết lập nhanh** has two buttons and no text box on the page
 A separate tool for preparing config text and setup links for *other* devices; it never changes this device's config. Create-only by design: there is no decrypt function in this tool.
 
 1. Type the shared password (checked against `PW_HASH`; not stored anywhere).
-2. Fill in: user name, GitHub token, Gist ID, Zalo bot token + chat ID, orchard location (**🔎 Tìm** looks up coordinates; default is the Trùng Dương orchard, Pơng Drang, Đắk Lắk).
+2. Fill in: user name, GitHub token, Gist ID, Zalo bot token + chat ID, orchard location (**🔎 Tìm** looks up coordinates; default is Đà Lạt, Lâm Đồng).
 3. **🔒 Mã hóa** shows the encrypted string and the setup link (`<app URL>#cfg=…`) with copy buttons.
 
 Token, Gist ID and Zalo fields are password-type inputs (tap 👁 to reveal). The password and every field are cleared when the section is closed, when **🧹 Xóa hết** is tapped, or when the app goes to the background.
