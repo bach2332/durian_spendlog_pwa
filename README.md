@@ -267,3 +267,7 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 ## Sync log (ⓘ)
 
 Each sync compares data before and after: entries received from other devices (**⬇ Nhận**, new / newer `upd` / new void records) and entries this device pushed (**⬆ Gửi**, local entries missing or older on the Gist when the write happened). Syncs with changes are kept in `dr_synclog`, **last 10**. The status line says `… · 3 khoản từ máy khác` and a green **ⓘ 3** appears when received entries are unseen; tapping it opens **Nhật ký đồng bộ**: newest sync first, each with time, `⬇ Nhận n từ máy khác` / `⬆ Gửi n lên` and the entries with **Mới / Sửa / Xóa** tags (tap one to open it). After viewing, the ⓘ turns grey and stays. The first full load on a new device is not logged. Switching Gist clears the log.
+
+## Pull from Gist (overwrite this device)
+
+**Cài đặt → 🔗 Kết nối GitHub → ⬇️ Pull từ Gist (ghi đè máy này)** downloads the current Gist file and **replaces** this device's data with it (no merge, nothing is pushed). Before confirming, a ☠️ dialog shows how many entries the Gist has and how many local changes are not on the Gist yet (they will be lost); the confirm button waits 3 s. After pulling: the unsynced flag and this device's pending Zalo messages are cleared, the sync log records `⬇️ Pull ghi đè từ Gist · N khoản`. The Gist and other devices are not changed, no Zalo message is sent, and the device config (token, Gist ID, name, location, Zalo) is kept.
