@@ -428,8 +428,8 @@ details.set .sb>label:first-child{margin-top:0}
         <button id="s-connect">Kết nối &amp; tải</button>
         <button class="sec" id="s-logout">Đăng xuất</button>
       </div>
-      <button class="sec" id="s-pull" style="width:100%;margin-top:8px">⬇️ Pull từ Gist (ghi đè máy này)</button>
-      <div class="mut" style="margin-top:4px;font-size:12.5px">Tải bản mới nhất trên Gist về và thay toàn bộ dữ liệu trên máy này. Không thay đổi Gist, không ảnh hưởng máy khác, không gửi Zalo.</div>
+      <button class="sec" id="s-pull" style="width:100%;margin-top:8px">⬇️ Tải lại từ server (ghi đè máy này)</button>
+      <div class="mut" style="margin-top:4px;font-size:12.5px">Tải dữ liệu mới nhất trên server về và ghi đè toàn bộ dữ liệu trên máy này. Không thay đổi server, không ảnh hưởng máy khác, không gửi Zalo.</div>
       <div class="mut" style="margin-top:8px">Token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu vườn lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
       </div>
@@ -484,7 +484,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261117a</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261117b</footer>
 </main>
 
 <nav class="tabs">
@@ -641,7 +641,7 @@ function incOpen(){
     return h}).join('');
   const html=[...slog.ev].reverse().map(e=>{const d=new Date(e.t);
     const hd=`<div class="slh"><b>${p(d.getHours())}:${p(d.getMinutes())}</b> <span class="mut">${p(d.getDate())}/${p(d.getMonth()+1)}</span>`+
-      (e.pull!=null?` <span class="sld out">⬇️ Pull ghi đè từ Gist · ${e.pull} khoản</span>`:'')+
+      (e.pull!=null?` <span class="sld out">⬇️ Ghi đè từ server · ${e.pull} khoản</span>`:'')+
       (e.in.length?` <span class="sld in">⬇ Nhận ${e.in.length} từ máy khác</span>`:'')+(e.out.length?` <span class="sld out">⬆ Gửi ${e.out.length} lên</span>`:'')+'</div>';
     return `<div class="sle">${hd}${e.in.length?rows(e.in):''}${e.out.length?rows(e.out):''}</div>`;
   }).join('');
@@ -1197,23 +1197,23 @@ $('#s-connect').onclick=async()=>{
 };
 /* Pull: tải bản trên Gist về và GHI ĐÈ dữ liệu trên máy (không gộp, không đẩy lên, không gửi Zalo) */
 $('#s-pull').onclick=async()=>{
-  if(!tok()||!gid()){toast('Chưa kết nối Gist');return}
+  if(!tok()||!gid()){toast('Chưa kết nối server');return}
   if(syncing){toast('Đang đồng bộ, thử lại sau giây lát');return}
-  syncing=true;syncUI();status('Đang tải từ Gist...');
+  syncing=true;syncUI();status('Đang tải từ server...');
   let r;
   try{etag='';r=await fetchRemote(false)}
-  catch(e){syncing=false;status('Không tải được Gist: '+e.message);syncUI();toast('⚠️ Không tải được Gist');return}
+  catch(e){syncing=false;status('Không tải được từ server: '+e.message);syncUI();toast('⚠️ Không tải được từ server');return}
   syncing=false;syncUI();
-  if(!r||!r.d){status('Gist chưa có dữ liệu');toast('Gist chưa có dữ liệu');return}
+  if(!r||!r.d){status('Server chưa có dữ liệu');toast('Server chưa có dữ liệu');return}
   const R=r.d,ids=new Set(R.items.map(x=>x.id)),up=new Map(R.items.map(x=>[x.id,x.upd||'']));
   const pend=slogDiff(data.items,ids,up).length;
-  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ DỮ LIỆU TRÊN MÁY NÀY</b>Dữ liệu trên máy sẽ được thay bằng dữ liệu trên Gist ('+R.items.filter(x=>x.type!=='void').length+' khoản). Thay đổi chưa đồng bộ trên máy này sẽ mất.'+
-    (pend?'<br><b>Máy này còn '+pend+' thay đổi chưa có trên Gist.</b>':'<br>Máy này không có thay đổi nào chưa đồng bộ.')+'</div>';
-  if(!await askConfirm('Tải lại toàn bộ từ Gist và ghi đè máy này?','⬇️ Pull & ghi đè',{danger:head,wait:3})){status('Đã hủy Pull');return}
+  const head='<div class="danger"><span class="skull">☠️</span><b class="t">GHI ĐÈ DỮ LIỆU TRÊN MÁY NÀY</b>Dữ liệu trên máy sẽ được ghi đè bằng dữ liệu trên server ('+R.items.filter(x=>x.type!=='void').length+' khoản). Thay đổi chưa đồng bộ trên máy này sẽ mất.'+
+    (pend?'<br><b>Máy này còn '+pend+' thay đổi chưa có trên server.</b>':'<br>Máy này không có thay đổi nào chưa đồng bộ.')+'</div>';
+  if(!await askConfirm('Tải lại toàn bộ từ server và ghi đè máy này?','⬇️ Ghi đè từ server',{danger:head,wait:3})){status('Đã hủy');return}
   if(syncing){toast('Đang đồng bộ, thử lại sau giây lát');return}
   data=R;setBase(data);localStorage.removeItem(K.dirty);zq=[];zqSave();lastErr='';keepLocal();
   slog.ev.push({t:Date.now(),in:[],out:[],pull:data.items.filter(x=>x.type!=='void').length});slog.ev=slog.ev.slice(-10);incSave();incUI();
-  renderAll();status('Đã tải lại từ Gist · '+data.items.filter(x=>x.type!=='void').length+' khoản');toast('✅ Đã ghi đè máy này bằng dữ liệu trên Gist');
+  renderAll();status('Đã tải lại từ server · '+data.items.filter(x=>x.type!=='void').length+' khoản');toast('✅ Đã ghi đè máy này bằng dữ liệu trên server');
 };
 $('#s-logout').onclick=async()=>{
   if(!await askConfirm('Xóa token và dữ liệu cache khỏi thiết bị này?\n(Dữ liệu trên Gist vẫn còn)','Đăng xuất'))return;
