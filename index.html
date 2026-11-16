@@ -108,6 +108,9 @@ a{color:var(--acc)}
 #inc{position:fixed;inset:0;background:#0008;display:none;align-items:flex-end;justify-content:center;z-index:12}
 #inc.on{display:flex}
 #inc .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));max-height:80vh;overflow:auto}
+.sle{border:1px solid var(--line);border-radius:12px;padding:4px 12px;margin-top:10px}
+.slh{display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:8px 0 4px;font-size:14.5px}
+.sld{font-size:12px;font-weight:700;border-radius:99px;padding:2px 8px}.sld.in{background:#e3f3d6;color:#2a6d18}.sld.out{background:#e6effc;color:#1f4f99}
 .ik{display:inline-block;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
 .ik.new{background:#e3f3d6;color:#2a6d18}.ik.edit{background:#e6effc;color:#1f4f99}.ik.del{background:#fde4e1;color:#b42318}
 #rv .sheet{background:var(--card);width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom));max-height:88vh;overflow:auto}
@@ -257,7 +260,7 @@ details.set .sb>label:first-child{margin-top:0}
 </head>
 <body>
 <main>
-  <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div class="syncbox"><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button><div class="stl"><div id="status" role="status" aria-live="polite"></div><button id="inc-btn" type="button" aria-label="Xem các khoản vừa đồng bộ từ máy khác"><span aria-hidden="true">ⓘ</span><span id="inc-n"></span></button></div></div></div>
+  <div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div class="syncbox"><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button><div class="stl"><div id="status" role="status" aria-live="polite"></div><button id="inc-btn" type="button" aria-label="Nhật ký đồng bộ"><span aria-hidden="true">ⓘ</span><span id="inc-n"></span></button></div></div></div>
   <div class="wx" id="wx" title="Chạm để xem dự báo 3 ngày"></div>
 
   <!-- NHẬP -->
@@ -467,7 +470,7 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261116a</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261116b</footer>
 </main>
 
 <nav class="tabs">
@@ -494,7 +497,7 @@ details.set .sb>label:first-child{margin-top:0}
   </div>
 </div></div>
 <div id="inc"><div class="sheet">
-  <h2>Vừa đồng bộ từ máy khác</h2>
+  <h2>Nhật ký đồng bộ</h2>
   <div class="mut" id="inc-sub"></div>
   <div class="list" id="inc-list" style="margin-top:8px"></div>
   <button class="sec" id="inc-close" style="width:100%;margin-top:12px">Đóng</button>
@@ -584,42 +587,51 @@ function norm(d){
 /* ---------- toast / status ---------- */
 let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),2200)}
 let lastMsg='',lastErr='';
-/* ---- Khoản vừa đồng bộ từ máy khác: thêm / sửa / xóa do máy khác làm, xem bằng nút ⓘ cạnh dòng trạng thái ---- */
-const INCK='dr_inc';
-let inc=(()=>{try{return JSON.parse(localStorage.getItem(INCK))||{seen:true,t:0,list:[]}}catch(e){return{seen:true,t:0,list:[]}}})();
-function incSave(){try{localStorage.setItem(INCK,JSON.stringify(inc))}catch(e){}}
-function incAdd(items,before,bUpd){
-  const me=who(),ch=[];
+/* ---- Nhật ký đồng bộ: 10 lần đồng bộ gần nhất có thay đổi (⬇ nhận từ máy khác, ⬆ gửi lên từ máy này).
+   Xem bằng nút ⓘ cạnh dòng trạng thái; nút xanh kèm số khi có khoản nhận về chưa xem. ---- */
+const INCK='dr_synclog';
+let slog=(()=>{try{const o=JSON.parse(localStorage.getItem(INCK));return o&&Array.isArray(o.ev)?o:{seen:true,ev:[]}}catch(e){return{seen:true,ev:[]}}})();
+function incSave(){try{localStorage.setItem(INCK,JSON.stringify(slog))}catch(e){}}
+/* đổi so với "base": khoản mới, khoản sửa (upd mới hơn), khoản xóa (bản ghi void mới) */
+function slogDiff(items,baseIds,baseUpd){
+  const ch=[];
   for(const x of items){
-    if(!before.has(x.id)){
+    if(!baseIds.has(x.id)){
       if(x.type==='void')ch.push({k:'del',id:x.ref,by:x.by||''});
       else ch.push({k:'new',id:x.id,by:x.by||''});
-    }else if(x.type!=='void'&&!x.voidedBy&&(x.upd||'')>(bUpd.get(x.id)||''))ch.push({k:'edit',id:x.id,by:x.eb||x.by||''});
+    }else if(x.type!=='void'&&!x.voidedBy&&(x.upd||'')>(baseUpd.get(x.id)||''))ch.push({k:'edit',id:x.id,by:x.eb||x.by||''});
   }
-  if(!ch.length)return;
-  if(inc.seen)inc={seen:false,t:Date.now(),list:[]};
-  const keep=inc.list.filter(o=>!ch.some(c=>c.id===o.id));
-  inc.list=[...keep,...ch].slice(-60);inc.t=Date.now();inc.seen=false;incSave();incUI();
+  return ch;
 }
-const incNew=()=>inc.seen?0:inc.list.length;
+function slogAdd(inl,outl){
+  if(!inl.length&&!outl.length)return;
+  if(slog.seen&&inl.length)slog.seen=false;
+  slog.ev.push({t:Date.now(),in:inl,out:outl});slog.ev=slog.ev.slice(-10);
+  if(inl.length)slog.unseen=(slog.unseen||0)+inl.length;
+  incSave();incUI();
+}
+const incNew=()=>slog.seen?0:(slog.unseen||0);
 function incUI(){
-  const b=$('#inc-btn');if(!b)return;const n=inc.list.length;
-  b.classList.toggle('on',n>0);b.classList.toggle('new',n>0&&!inc.seen);
-  $('#inc-n').textContent=n&&!inc.seen?n:'';
-  b.title=n?(inc.seen?'Xem lại ':'')+n+' khoản vừa đồng bộ từ máy khác':'';
+  const b=$('#inc-btn');if(!b)return;const n=slog.ev.length,u=incNew();
+  b.classList.toggle('on',n>0);b.classList.toggle('new',u>0);
+  $('#inc-n').textContent=u||'';
+  b.title=n?'Nhật ký đồng bộ'+(u?' · '+u+' khoản mới từ máy khác':''):'';
 }
 function incOpen(){
-  const byId=new Map(data.items.map(x=>[x.id,x]));
-  const rows=[...inc.list].reverse().map(o=>{const i=byId.get(o.id);if(!i)return '';
-    const tag={new:'<span class="ik new">Mới</span>',edit:'<span class="ik edit">Sửa</span>',del:'<span class="ik del">Xóa</span>'}[o.k];
-    let h=rowHTML(i).replace(/(<div class="n"[^>]*>)/,'$1'+tag);
+  const byId=new Map(data.items.map(x=>[x.id,x])),p=n=>String(n).padStart(2,'0');
+  const TAG={new:'<span class="ik new">Mới</span>',edit:'<span class="ik edit">Sửa</span>',del:'<span class="ik del">Xóa</span>'};
+  const rows=l=>l.map(o=>{const i=byId.get(o.id);if(!i)return '';
+    let h=rowHTML(i).replace(/(<div class="n"[^>]*>)/,'$1'+TAG[o.k]);
     if(o.k==='del'&&o.by)h=h.replace('đã bị xóa','đã bị xóa bởi '+esc(o.by));
-    return h;
-  }).filter(Boolean);
-  const d=new Date(inc.t),p=n=>String(n).padStart(2,'0');
-  $('#inc-sub').textContent=rows.length+' khoản · lúc '+p(d.getHours())+':'+p(d.getMinutes())+' '+p(d.getDate())+'/'+p(d.getMonth()+1)+' · bấm một khoản để xem chi tiết';
-  $('#inc-list').innerHTML=rows.join('')||'<div class="mut">Không có khoản nào.</div>';
-  $('#inc').classList.add('on');inc.seen=true;incSave();incUI();
+    return h}).join('');
+  const html=[...slog.ev].reverse().map(e=>{const d=new Date(e.t);
+    const hd=`<div class="slh"><b>${p(d.getHours())}:${p(d.getMinutes())}</b> <span class="mut">${p(d.getDate())}/${p(d.getMonth()+1)}</span>`+
+      (e.in.length?` <span class="sld in">⬇ Nhận ${e.in.length} từ máy khác</span>`:'')+(e.out.length?` <span class="sld out">⬆ Gửi ${e.out.length} lên</span>`:'')+'</div>';
+    return `<div class="sle">${hd}${e.in.length?rows(e.in):''}${e.out.length?rows(e.out):''}</div>`;
+  }).join('');
+  $('#inc-sub').textContent=slog.ev.length+' lần đồng bộ gần nhất có thay đổi · bấm một khoản để xem chi tiết';
+  $('#inc-list').innerHTML=html||'<div class="mut">Chưa có lần đồng bộ nào.</div>';
+  $('#inc').classList.add('on');slog.seen=true;slog.unseen=0;incSave();incUI();
 }
 function status(m){lastMsg=m;$('#status').textContent=m;syncUI()}
 /* Nút đồng bộ góc trên: xám = chưa kết nối, quay = đang đồng bộ, xanh = đã đồng bộ, cam = lỗi hoặc còn thay đổi chưa gửi */
@@ -727,6 +739,7 @@ async function sync(opt={}){
       if(r.same){ok=true;if(!isDirty())zlFlush(data.items)}
       else{
         const before=new Set(data.items.map(x=>x.id)),bUpd=new Map(data.items.map(x=>[x.id,x.upd||'']));
+        const r0=(r.d&&r.d.items)||[],rIds=new Set(r0.map(x=>x.id)),rUpd=new Map(r0.map(x=>[x.id,x.upd||''])),local0=data.items;
         let remote=r.d,merged,tries=0,wrote=false,confirmed=null;
         for(;;){
           merged=mergeData(remote,data,fresh);
@@ -742,7 +755,7 @@ async function sync(opt={}){
         /* tin Zalo chỉ gửi cho những thay đổi đã thật sự nằm trên Gist (đọc lại sau khi ghi) */
         if(confirmed)zlFlush(confirmed.items||[]);
         const got=merged.items.filter(x=>!before.has(x.id)).length;
-        if(!fresh)incAdd(merged.items,before,bUpd);
+        if(!fresh)slogAdd(slogDiff(merged.items,before,bUpd),wrote&&r.d?slogDiff(local0,rIds,rUpd):[]);
         /* thay đổi trên máy trong lúc đang đồng bộ: giữ lại, đồng bộ tiếp ở lượt sau */
         const cur=data,cc=JSON.stringify(cur.categories)!==c0,bc=cur.budget!==b0;
         data={...merged,items:mergeItems(merged.items,cur.items)};
@@ -772,7 +785,7 @@ $('#btn-sync').onclick=async()=>{
 };
 const load=()=>sync();
 /* đổi sang Gist khác / đăng xuất: bỏ dữ liệu của sổ cũ để không trộn vào sổ mới */
-function resetLocal(){data={categories:[...DEF_CATS],budget:0,items:[]};etag='';inc={seen:true,t:0,list:[]};try{localStorage.removeItem(INCK)}catch(e){}incUI();[K.cache,K.base,K.dirty].forEach(k=>localStorage.removeItem(k));zq=[];zqSave()}
+function resetLocal(){data={categories:[...DEF_CATS],budget:0,items:[]};etag='';slog={seen:true,ev:[]};try{localStorage.removeItem(INCK)}catch(e){}incUI();[K.cache,K.base,K.dirty].forEach(k=>localStorage.removeItem(k));zq=[];zqSave()}
 setInterval(()=>{if(document.visibilityState==='visible'&&tok()&&gid()&&!syncing)sync({quiet:true})},60000);
 
 /* ---------- date ranges ---------- */
