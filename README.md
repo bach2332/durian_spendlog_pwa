@@ -12,11 +12,10 @@ A fast daily expense logger that runs entirely in the browser as an installable 
 
 | Area | What it does |
 |---|---|
-| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, green), **Vườn nhỏ** (`g:"N"`, orange) or **Rẫy cà phê** (`g:"C"`, brown). History, Statistics and Filter share one selector **Tất cả / Lớn / Nhỏ / Cà phê** (default Tất cả). |
+| **Two orchards** | Every entry belongs to **Vườn lớn** (`g:"L"`, green), **Vườn nhỏ** (`g:"N"`, orange) or **Rẫy cà phê** (`g:"C"`, brown). History and Statistics share one selector **Tất cả / Lớn / Nhỏ / Cà phê** (default Tất cả). |
 | **Quick entry** | Amount and category (dropdown, **required**, empty by default and after each save) on one row, then the orchard buttons (exactly one, **required**, no default, reset after each save), optional description below, one-tap date picker. Keyboard flow: Amount → Enter → category → Description → Enter saves. |
-| **History** | Browse by day, week (Mon–Sun) or month, filter by category, tap an entry to edit or delete. |
-| **Statistics** | Day / Week / Month / Year views (default Month; Year shows monthly bars). Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to see the entries behind its total. |
-| **Filter & Review** | Flexible filter (time range, categories, keyword, amount range), pick entries, then open a review table with a grand total. Copy as tab-separated text for Excel or Google Sheets. |
+| **History** (History + Filter merged) | Day / Week / Month / Year or custom date range, search box, **⚙ Lọc thêm** (categories, amount range, show voided), total + count, **📋 Review** / copy for Excel, optional entry picking. Tap an entry to edit or delete. |
+| **Statistics** | Day / Week / Month / Year views (default Month; Year shows monthly bars). Daily bar chart, per-category breakdown with percentages, category radar chart (one axis per current category with spending in the period; categories with no spending are listed below it), monthly budget progress. Tap a category to open History filtered by that category. |
 | **CSV import** | Bulk-import entries from a CSV file with a simple format (see below). |
 | **Monthly budget** | Set a limit; the progress bar turns amber at 80% and red at 100%. |
 | **GitHub Gist storage** | Data syncs to a secret Gist; works across devices with the same token and Gist ID. |
@@ -57,7 +56,7 @@ This is a **personal access token**, not your GitHub password. Never enter your 
 - The date chip defaults to **Hôm nay** (today); tap it to pick another date. Your category and date selection are kept after saving, which is handy for back-filling a day.
 
 ### Edit or delete
-Entry rows show the **category first** (colored dot), then the description (if any) and the creator / editor on a smaller second line. Tap an entry (in Recent, History or Filter) to open its details.
+Entry rows show the **category first** (colored dot), then the description (if any) and the creator / editor on a smaller second line. Tap an entry (in Recent or History) to open its details.
 - **Only the description and the category can be edited.** Date and amount are read-only.
 - To correct an amount or date, delete the entry and add it again.
 - **Delete never removes data.** It adds a *void* entry with a negative amount and marks the original as voided (shown struck through). Totals cancel out and the full history is preserved.
@@ -66,8 +65,15 @@ Entry rows show the **category first** (colored dot), then the description (if a
 ### Statistics
 Switch between day, week and month. Tap any category row to open a popup listing the underlying entries (description, amount, date) and the category total for the selected period. Voided entries and their negative counterparts are included so the list always adds up to the total.
 
-### Filter & Review
-Pick a time range (presets: today, this week, this month, last month, this year, or custom dates), categories (none selected = all), a keyword, and an amount range (entered in thousands). Voided entries are hidden unless you tick *show voided*. Tick the entries you want and tap **Review** for a table (date, description, amount) with a total at the bottom. **Copy** produces tab-separated text.
+### History (merged History + Filter)
+The tab bar has 4 tabs: **Nhập · Lịch sử · Thống kê · Cài đặt** (the separate Filter tab is gone; nothing was removed).
+- **Period:** Ngày / Tuần / Tháng / Năm with ‹ › and *Về hôm nay*, or **Tùy chọn** (from–to dates; starts from the current period). Statistics has no custom range; switching to it while on Tùy chọn returns to Tháng.
+- **Orchard selector** (shared with Statistics) and **🔍 search** (description or category) are always visible.
+- **⚙ Lọc thêm** opens categories (multi-select), amount range (in thousands) and *show voided entries*; the button shows the number of active conditions (`⚙ Lọc ②`). When collapsed, active conditions appear as chips with ✕. *↺ Bỏ tất cả điều kiện* clears them.
+- Voided entries and void records are hidden by default (the total is the same; they cancel out).
+- Count and total of the current list; **📋 Review** opens the review table (date, orchard, category · description, amount, per-orchard subtotals, total) for exactly the listed entries, with **Copy (Excel)**. *Chọn khoản để Review* adds checkboxes to review only some entries.
+- Tapping a category in Statistics opens History filtered by that category (same period and orchard).
+- Filter state is kept while switching tabs and reset when the app is reopened.
 
 ### Settings
 Each section is a collapsed row (icon, title, one-line status, ›) like the User Guide row; tap it to expand the details below, tap again to collapse. Status lines: GitHub connected + masked Gist, monthly budget, Zalo on/off, category count, etc. On a device with no GitHub token the app opens Settings with **Thiết lập nhanh** already expanded.

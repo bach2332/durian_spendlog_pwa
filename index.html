@@ -59,6 +59,7 @@ button.sm{min-height:34px;padding:6px 10px;font-size:14px}
 .seg{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px;margin-bottom:8px}
 .seg button{flex:1;background:none;color:var(--mut);min-height:36px;padding:6px}
 .seg button.on{background:var(--card);color:var(--text);box-shadow:0 1px 3px #0002}
+#p-hist .seg button{padding:6px 2px;white-space:nowrap;font-size:14px}#p-hist .seg button[data-m=custom]{flex:1.35}
 .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .nav b{text-align:center;flex:1}
 .nav button{width:44px;padding:0}
@@ -96,6 +97,14 @@ svg text{fill:var(--mut);font-size:10px}
 a{color:var(--acc)}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chips button.on{background:var(--acc2);color:var(--text);border-color:var(--acc);font-weight:600}
+.hsrch{display:flex;gap:8px;margin-top:10px}.hsrch input{flex:1;min-width:0}.hsrch button{flex:0 0 auto;white-space:nowrap}
+#h-more.on{background:var(--pri2);border-color:#b9d98f}
+.hbadge{display:inline-block;background:var(--warn);color:#fff;border-radius:99px;font-size:11.5px;font-weight:800;padding:0 6px;margin-left:3px;line-height:18px}
+.hadv{border:1px dashed var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;background:var(--bg)}
+.fchip{display:inline-flex;align-items:center;gap:4px;min-height:0;background:var(--pri2);color:var(--text);border:1px solid #b9d98f;border-radius:99px;font-size:13px;font-weight:700;padding:4px 10px;margin:8px 6px 0 0}
+.htot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}.htot b{font-size:20px}
+.hpk{display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.pk{display:flex;align-items:center;gap:10px}.pk>input{width:22px;height:22px;min-height:0;flex:0 0 auto;padding:0;accent-color:var(--acc)}.pk>.item{flex:1;min-width:0}
 .frow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer;margin:0;color:var(--text);font-size:16px}
 .frow:last-child{border-bottom:0}
 .frow input{width:22px;height:22px;min-height:0;flex:0 0 auto;padding:0;accent-color:var(--acc)}
@@ -306,15 +315,27 @@ details.set .sb>label:first-child{margin-top:0}
     <div class="card">
       <div class="gsel v" data-gview></div>
       <div class="seg" data-seg>
-        <button data-m="day">Ngày</button><button data-m="week">Tuần</button><button data-m="month">Tháng</button>
+        <button data-m="day">Ngày</button><button data-m="week">Tuần</button><button data-m="month">Tháng</button><button data-m="year">Năm</button><button data-m="custom">Tùy chọn</button>
       </div>
-      <div class="nav"><button class="sec" data-nav="-1">‹</button><b data-label></b><button class="sec" data-nav="1">›</button></div>
-      <div class="mut" style="text-align:center"><a href="#" data-today>Về hôm nay</a></div>
-      <div style="text-align:center;margin-top:6px"><div class="mut">Tổng chi</div><div class="big" id="h-total"></div></div>
+      <div class="nav" id="h-nav"><button class="sec" data-nav="-1">‹</button><b data-label></b><button class="sec" data-nav="1">›</button></div>
+      <div class="row" id="h-custom" style="display:none"><div><label style="margin-top:0">Từ ngày</label><input type="date" id="h-from"></div><div><label style="margin-top:0">Đến ngày</label><input type="date" id="h-to"></div></div>
+      <div class="mut" id="h-today" style="text-align:center"><a href="#" data-today>Về hôm nay</a></div>
+      <div class="hsrch"><input type="search" id="h-q" placeholder="🔍 Tìm nội dung…" autocomplete="off" enterkeyhint="search"><button type="button" class="sec" id="h-more">⚙ Lọc thêm</button></div>
+      <div class="hadv" id="h-adv" hidden>
+        <label style="margin-top:0">Danh mục (không chọn = tất cả)</label>
+        <div class="chips" id="h-cats"></div>
+        <div class="row">
+          <div><label>Số tiền từ (nghìn đ)</label><input type="text" id="h-min" inputmode="numeric" placeholder="0"></div>
+          <div><label>Đến (nghìn đ)</label><input type="text" id="h-max" inputmode="numeric" placeholder="tối đa"></div>
+        </div>
+        <label class="inl"><input type="checkbox" id="h-void"> Hiện cả khoản đã xóa &amp; dòng xóa</label>
+        <div style="margin-top:8px"><a href="#" id="h-reset">↺ Bỏ tất cả điều kiện</a></div>
+      </div>
+      <div id="h-fchips"></div>
+      <div class="htot"><span class="mut" id="h-count"></span><b id="h-total"></b><button type="button" class="sec sm" id="h-rv">📋 Review</button></div>
     </div>
     <div class="card">
-      <label style="margin-top:0">Lọc theo danh mục</label>
-      <select id="h-cat"></select>
+      <div class="hpk"><label class="inl" style="margin:0"><input type="checkbox" id="h-pick"> Chọn khoản để Review</label><a href="#" id="h-pickall" hidden>Chọn tất cả</a></div>
       <div id="h-list" style="margin-top:6px"></div>
     </div>
   </section>
@@ -337,39 +358,6 @@ details.set .sb>label:first-child{margin-top:0}
   </section>
 
   <!-- LỌC & REVIEW -->
-  <section class="page" id="p-flt">
-    <div class="card">
-      <h2>Bộ lọc</h2>
-      <div class="gsel v" data-gview></div>
-      <div class="chips" id="f-presets">
-        <button class="sec sm" data-p="today">Hôm nay</button><button class="sec sm" data-p="week">Tuần này</button><button class="sec sm" data-p="month">Tháng này</button><button class="sec sm" data-p="last">Tháng trước</button><button class="sec sm" data-p="year">Năm nay</button>
-      </div>
-      <div class="row">
-        <div><label>Từ ngày</label><input type="date" id="f-from"></div>
-        <div><label>Đến ngày</label><input type="date" id="f-to"></div>
-      </div>
-      <label>Danh mục (không chọn = tất cả)</label>
-      <div class="chips" id="f-cats"></div>
-      <label>Nội dung chứa từ khóa</label>
-      <input type="text" id="f-q" placeholder="VD: phân NPK" autocomplete="off">
-      <div class="row">
-        <div><label>Số tiền từ (nghìn đ)</label><input type="text" id="f-min" inputmode="numeric" placeholder="0"></div>
-        <div><label>Đến (nghìn đ)</label><input type="text" id="f-max" inputmode="numeric" placeholder="tối đa"></div>
-      </div>
-      <label class="inl"><input type="checkbox" id="f-void"> Hiện cả khoản đã xóa &amp; dòng xóa</label>
-      <div style="margin-top:12px"><button class="sec" id="f-reset" style="width:100%">Đặt lại bộ lọc</button></div>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <h2 id="f-count" style="margin:0">0 khoản</h2>
-        <label class="inl" style="margin:0"><input type="checkbox" id="f-all"> Chọn tất cả</label>
-      </div>
-      <div class="mut" id="f-sum" style="margin:4px 0 6px"></div>
-      <div id="f-list"></div>
-      <div class="stick"><button id="f-review" style="width:100%">Review</button></div>
-    </div>
-  </section>
-
   <!-- CÀI ĐẶT -->
   <section class="page" id="p-set">
     <details class="card set" id="sd-me">
@@ -487,14 +475,13 @@ details.set .sb>label:first-child{margin-top:0}
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261117d</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261117e</footer>
 </main>
 
 <nav class="tabs">
   <button data-tab="add" class="on"><span>＋</span>Nhập</button>
   <button data-tab="hist"><span>☰</span>Lịch sử</button>
   <button data-tab="stat"><span>▥</span>Thống kê</button>
-  <button data-tab="flt"><span>⌕</span>Lọc</button>
   <button data-tab="set"><span>⚙</span>Cài đặt</button>
 </nav>
 
@@ -572,7 +559,7 @@ const dow=['Chủ nhật','Thứ hai','Thứ ba','Thứ tư','Thứ năm','Thứ
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 
 let data={categories:[...DEF_CATS],budget:0,items:[]};
-let view={mode:'month',anchor:today(),cat:'all',g:'all'};
+let view={mode:'month',anchor:today(),g:'all'};
 /* ---------- Vườn: L = Vườn lớn, N = Vườn nhỏ (cố định). Khoản cũ không có g = chưa phân vườn ---------- */
 const GD={L:{n:'Vườn lớn',s:'Lớn',e:'🌳',c:'#2f7d1e'},N:{n:'Vườn nhỏ',s:'Nhỏ',e:'🌱',c:'#d48a10'},C:{n:'Rẫy cà phê',s:'Cà phê',e:'☕',c:'#7a4a2a'}};
 const GK=Object.keys(GD);
@@ -875,21 +862,69 @@ function renderAdd(){
   $('#a-recent').innerHTML=rec.length?rec.map(i=>`<div class="mut" style="margin-top:6px">${dmy(i.date).slice(0,5)}</div>`+rowHTML(i)).join(''):'<div class="mut">Chưa có khoản chi nào.</div>';
 }
 
+/* ---------- Lịch sử (gộp Lịch sử + Lọc) ---------- */
+let hf={cats:new Set(),q:'',min:null,max:null,showVoid:false,from:'',to:'',adv:false,pick:false,sel:new Set()};
+const hRange=()=>view.mode==='custom'?[hf.from||'0000-01-01',hf.to||'9999-12-31']:range();
+function hItems(){
+  const[s,e]=hRange(),q=hf.q.trim().toLowerCase();
+  return data.items.filter(i=>{
+    if(!hf.showVoid&&(i.type==='void'||i.voidedBy))return false;
+    if(!gOk(i)||i.date<s||i.date>e)return false;
+    if(hf.cats.size&&!hf.cats.has(i.category))return false;
+    if(q&&!((i.note||'')+' '+i.category).toLowerCase().includes(q))return false;
+    if(hf.min!=null&&i.amount<hf.min)return false;
+    if(hf.max!=null&&i.amount>hf.max)return false;
+    return true;
+  }).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
+}
+const hCond=()=>hf.cats.size+(hf.min!=null?1:0)+(hf.max!=null?1:0)+(hf.showVoid?1:0);
 function renderHist(){
-  const[s,e]=range();
-  let items=data.items.filter(i=>inRange(i,s,e)&&gOk(i));
-  $('#h-total').textContent=money(sum(items));
-  if(view.cat!=='all')items=items.filter(i=>i.category===view.cat);
-  items.sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-  if(!items.length){$('#h-list').innerHTML='<div class="mut" style="padding:12px 0">Không có khoản chi nào.</div>';return}
+  const cust=view.mode==='custom';
+  $('#h-nav').style.display=cust?'none':'';$('#h-today').style.display=cust?'none':'';$('#h-custom').style.display=cust?'':'none';
+  if(cust){$('#h-from').value=hf.from;$('#h-to').value=hf.to}
+  const cats=[...data.categories,...[...hf.cats].filter(c=>!data.categories.includes(c))];
+  $('#h-cats').innerHTML=cats.map(c=>`<button class="sec sm ${hf.cats.has(c)?'on':''}" data-hcat="${esc(c)}">${esc(c)}</button>`).join('');
+  const n=hCond(),mb=$('#h-more');
+  mb.innerHTML='⚙ '+(n?'Lọc<span class="hbadge">'+n+'</span>':'Lọc thêm')+(hf.adv?' ▴':'');mb.classList.toggle('on',n>0||hf.adv);
+  $('#h-adv').hidden=!hf.adv;
+  $('#h-fchips').innerHTML=hf.adv?'':[...hf.cats].map(c=>`<button type="button" class="fchip" data-uncat="${esc(c)}">Danh mục: ${esc(c)} ✕</button>`).join('')+
+    (hf.min!=null||hf.max!=null?`<button type="button" class="fchip" data-unamt>Số tiền: ${hf.min!=null?money(hf.min):'0'} – ${hf.max!=null?money(hf.max):'…'} ✕</button>`:'')+
+    (hf.showVoid?'<button type="button" class="fchip" data-unvoid>Hiện khoản đã xóa ✕</button>':'');
+  const items=hItems();
+  $('#h-count').textContent=items.length+' khoản';$('#h-total').textContent=money(sum(items));
+  if(hf.pick)hf.sel=new Set(items.filter(i=>hf.sel.has(i.id)).map(i=>i.id));
+  $('#h-pick').checked=hf.pick;$('#h-pickall').hidden=!hf.pick;
+  if(hf.pick)$('#h-pickall').textContent=hf.sel.size===items.length&&items.length?'Bỏ chọn tất cả':'Chọn tất cả';
+  const rvN=hf.pick?hf.sel.size:items.length;
+  $('#h-rv').textContent='📋 Review'+(hf.pick?' ('+rvN+')':'');$('#h-rv').disabled=!rvN;$('#h-rv').style.opacity=rvN?1:.5;
+  if(!items.length){$('#h-list').innerHTML='<div class="mut" style="padding:12px 0">Không có khoản chi nào'+(n||hf.q.trim()?' khớp điều kiện lọc':'')+'.</div>';return}
   let html='',last='';
   const byDay={};items.forEach(i=>byDay[i.date]=(byDay[i.date]||0)+i.amount);
   items.forEach(i=>{
     if(i.date!==last){last=i.date;const d=pd(i.date);html+=`<div class="dh"><span>${dow[d.getDay()]}, ${dmy(i.date).slice(0,5)}</span><span>${money(byDay[i.date])}</span></div>`}
-    html+=rowHTML(i);
+    html+=hf.pick?`<div class="pk"><input type="checkbox" data-hsel="${i.id}" ${hf.sel.has(i.id)?'checked':''} aria-label="Chọn khoản">${rowHTML(i)}</div>`:rowHTML(i);
   });
   $('#h-list').innerHTML=html;
 }
+bindMoney($('#h-min'));bindMoney($('#h-max'));kField($('#h-min'));kField($('#h-max'));
+$('#h-q').addEventListener('input',e=>{hf.q=e.target.value;renderHist()});
+$('#h-more').onclick=()=>{hf.adv=!hf.adv;renderHist()};
+$('#h-from').onchange=e=>{hf.from=e.target.value;renderHist()};
+$('#h-to').onchange=e=>{hf.to=e.target.value;renderHist()};
+$('#h-min').addEventListener('input',e=>{hf.min=e.target.value?kval(e.target):null;renderHist()});
+$('#h-max').addEventListener('input',e=>{hf.max=e.target.value?kval(e.target):null;renderHist()});
+$('#h-void').onchange=e=>{hf.showVoid=e.target.checked;renderHist()};
+$('#h-cats').onclick=e=>{const b=e.target.closest('[data-hcat]');if(!b)return;const c=b.dataset.hcat;hf.cats.has(c)?hf.cats.delete(c):hf.cats.add(c);renderHist()};
+function hClear(){hf.cats.clear();hf.min=hf.max=null;hf.showVoid=false;$('#h-min').value='';$('#h-max').value='';$('#h-void').checked=false}
+$('#h-reset').onclick=e=>{e.preventDefault();hClear();hf.q='';$('#h-q').value='';renderHist()};
+$('#h-fchips').onclick=e=>{
+  const c=e.target.closest('[data-uncat]');if(c){hf.cats.delete(c.dataset.uncat);renderHist();return}
+  if(e.target.closest('[data-unamt]')){hf.min=hf.max=null;$('#h-min').value='';$('#h-max').value='';renderHist();return}
+  if(e.target.closest('[data-unvoid]')){hf.showVoid=false;$('#h-void').checked=false;renderHist()}
+};
+$('#h-pick').onchange=e=>{hf.pick=e.target.checked;hf.sel=new Set(hf.pick?hItems().map(i=>i.id):[]);renderHist()};
+$('#h-pickall').onclick=e=>{e.preventDefault();const ids=hItems().map(i=>i.id);hf.sel=new Set(hf.sel.size===ids.length?[]:ids);renderHist()};
+$('#h-list').addEventListener('change',e=>{const id=e.target.dataset&&e.target.dataset.hsel;if(!id)return;e.target.checked?hf.sel.add(id):hf.sel.delete(id);renderHist()});
 
 function renderStat(){
   const[s,e]=range();
@@ -1022,8 +1057,8 @@ function renderNav(){
   $$('[data-label]').forEach(b=>b.textContent=label());
 }
 function renderAll(){
-  {const v=$('#a-cat').value;fillCats('#a-cat',false,v||'');renderAddCats(v)}renderSug();fillCats('#h-cat',true,view.cat);fillCats('#e-cat',false);
-  renderNav();renderAdd();renderHist();renderStat();renderSet();renderFlt(false);
+  {const v=$('#a-cat').value;fillCats('#a-cat',false,v||'');renderAddCats(v)}renderSug();fillCats('#e-cat',false);
+  renderNav();renderAdd();renderHist();renderStat();renderSet();
 }
 
 /* ---------- money input ---------- */
@@ -1054,20 +1089,19 @@ function showPage(name){
   $$('.page').forEach(p=>p.classList.toggle('on',p.id==='p-'+name));
 }
 async function showTab(name){
-  if(name==='hist'&&view.mode==='year'){view.mode='month';renderAll()}
+  if(name==='stat'&&view.mode==='custom'){view.mode='month';renderAll()}
   if(name!=='set')tsClose();
   showPage(name);window.scrollTo(0,0);
   if(name==='add'){const a=$('#a-amt');if(a)a.focus()}   /* mở màn nhập: con trỏ vào Số tiền, bàn phím số */
 }
 $$('.tabs button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
-$$('[data-seg] button').forEach(b=>b.onclick=()=>{view.mode=b.dataset.m;renderAll()});
+$$('[data-seg] button').forEach(b=>b.onclick=()=>{if(b.dataset.m==='custom'&&view.mode!=='custom'){const[s,e]=range();hf.from=s;hf.to=e}view.mode=b.dataset.m;renderAll()});
 document.addEventListener('click',e=>{
   const b=e.target.closest('[data-gview] [data-g]');if(b){view.g=b.dataset.g;renderAll();return}
   const r=e.target.closest('[data-gpick]');if(r){view.g=r.dataset.gpick;renderAll()}
 });
 $$('[data-nav]').forEach(b=>b.onclick=()=>shift(+b.dataset.nav));
 $$('[data-today]').forEach(b=>b.onclick=e=>{e.preventDefault();view.anchor=today();renderAll()});
-$('#h-cat').onchange=e=>{view.cat=e.target.value;renderHist()};
 
 /* ---------- nhập nhanh ---------- */
 let sugCat={};
@@ -1239,86 +1273,16 @@ document.addEventListener('visibilitychange',()=>{
 });
 
 /* ---------- lọc & review ---------- */
-let flt={from:'',to:'',cats:new Set(),q:'',min:null,max:null,showVoid:false,sel:new Set(),touched:false};
 let rvText='';
-function fltPreset(p){
-  const t=new Date(),y=t.getFullYear(),m=t.getMonth();let a,b;
-  if(p==='today'){a=b=t}
-  else if(p==='week'){const w=(t.getDay()+6)%7;a=new Date(t);a.setDate(t.getDate()-w);b=new Date(a);b.setDate(a.getDate()+6)}
-  else if(p==='month'){a=new Date(y,m,1);b=new Date(y,m+1,0)}
-  else if(p==='last'){a=new Date(y,m-1,1);b=new Date(y,m,0)}
-  else{a=new Date(y,0,1);b=new Date(y,11,31)}
-  flt.from=ds(a);flt.to=ds(b);
-  $('#f-from').value=flt.from;$('#f-to').value=flt.to;renderFlt(true);
-}
-function fltItems(){
-  const q=flt.q.trim().toLowerCase();
-  return data.items.filter(i=>{
-    if(!flt.showVoid&&(i.type==='void'||i.voidedBy))return false;
-    if(!gOk(i))return false;
-    if(flt.from&&i.date<flt.from)return false;
-    if(flt.to&&i.date>flt.to)return false;
-    if(flt.cats.size&&!flt.cats.has(i.category))return false;
-    if(q&&!(i.note||'').toLowerCase().includes(q))return false;
-    if(flt.min!=null&&i.amount<flt.min)return false;
-    if(flt.max!=null&&i.amount>flt.max)return false;
-    return true;
-  }).sort((a,b)=>b.date.localeCompare(a.date)||b.id.localeCompare(a.id));
-}
-function renderFlt(reset){
-  $('#f-cats').innerHTML=data.categories.map(c=>`<button class="sec sm ${flt.cats.has(c)?'on':''}" data-fcat="${esc(c)}">${esc(c)}</button>`).join('');
-  const items=fltItems();
-  if(reset)flt.touched=false;
-  if(!flt.touched)flt.sel=new Set(items.map(i=>i.id));
-  else flt.sel=new Set(items.filter(i=>flt.sel.has(i.id)).map(i=>i.id));
-  $('#f-list').innerHTML=items.length?items.map(i=>{
-    const dead=i.type==='void'||i.voidedBy;
-    return `<label class="frow"><input type="checkbox" data-sel="${i.id}" ${flt.sel.has(i.id)?'checked':''}><div class="fm"><div class="n"><span class="dot" style="display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;background:${catColor(i.category)}"></span>${esc(i.category)}</div><div class="sub" style="font-size:13px;color:var(--mut)">${gTag(i.g)}${dmy(i.date)}${i.note?' · '+esc(i.note):''}</div></div><div class="amt">${money(i.amount)}</div>${dead?'':`<button type="button" class="sec sm" data-edit="${i.id}" aria-label="Sửa khoản chi">Sửa</button>`}</label>`}).join(''):'<div class="mut" style="padding:12px 0">Không có khoản nào khớp bộ lọc.</div>';
-  fltSummary(items);
-}
-function fltSummary(items){
-  items=items||fltItems();
-  const sel=items.filter(i=>flt.sel.has(i.id));
-  $('#f-count').textContent=items.length+' khoản';
-  $('#f-sum').textContent='Đã chọn '+sel.length+'/'+items.length+' · '+money(sum(sel));
-  $('#f-all').checked=items.length>0&&sel.length===items.length;
-  $('#f-review').disabled=!sel.length;
-  $('#f-review').style.opacity=sel.length?1:.5;
-}
-bindMoney($('#f-min'));bindMoney($('#f-max'));kField($('#f-min'));kField($('#f-max'));
-$$('#f-presets button').forEach(b=>b.onclick=()=>fltPreset(b.dataset.p));
-$('#f-from').onchange=e=>{flt.from=e.target.value;renderFlt(true)};
-$('#f-to').onchange=e=>{flt.to=e.target.value;renderFlt(true)};
-$('#f-q').oninput=e=>{flt.q=e.target.value;renderFlt(true)};
-$('#f-min').addEventListener('input',e=>{flt.min=e.target.value?kval(e.target):null;renderFlt(true)});
-$('#f-max').addEventListener('input',e=>{flt.max=e.target.value?kval(e.target):null;renderFlt(true)});
-$('#f-void').onchange=e=>{flt.showVoid=e.target.checked;renderFlt(true)};
-$('#f-cats').onclick=e=>{
-  const b=e.target.closest('[data-fcat]');if(!b)return;
-  const c=b.dataset.fcat;flt.cats.has(c)?flt.cats.delete(c):flt.cats.add(c);renderFlt(true);
-};
-$('#f-list').onchange=e=>{
-  const id=e.target.dataset.sel;if(!id)return;
-  flt.touched=true;
-  e.target.checked?flt.sel.add(id):flt.sel.delete(id);fltSummary();
-};
-$('#f-all').onchange=e=>{
-  flt.touched=true;
-  flt.sel=e.target.checked?new Set(fltItems().map(i=>i.id)):new Set();renderFlt(false);
-};
-$('#f-reset').onclick=()=>{
-  flt.cats.clear();flt.q='';flt.min=flt.max=null;flt.showVoid=false;
-  $('#f-q').value='';$('#f-min').value='';$('#f-max').value='';$('#f-void').checked=false;
-  fltPreset('month');
-};
-$('#f-review').onclick=()=>{
-  const rows=fltItems().filter(i=>flt.sel.has(i.id)).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
+$('#h-rv').onclick=()=>{
+  const all=hItems(),rows=(hf.pick?all.filter(i=>hf.sel.has(i.id)):all).sort((a,b)=>a.date.localeCompare(b.date)||a.id.localeCompare(b.id));
   if(!rows.length)return;
   const total=sum(rows);
   $('#rv-body').innerHTML=rows.map(i=>`<tr><td>${dmy(i.date)}</td><td>${GD[i.g]?GD[i.g].s:'–'}</td><td>${esc(i.category)}${i.note?' · '+esc(i.note):''}</td><td class="r">${money(i.amount)}</td></tr>`).join('');
   const gsub=[...GK.map(g=>[g,GD[g].n]),['o','Chưa phân vườn']].map(([g,n])=>[n,sum(rows.filter(i=>g==='o'?!GD[i.g]:i.g===g)),rows.some(i=>g==='o'?!GD[i.g]:i.g===g)]).filter(x=>x[2]);
   $('#rv-foot').innerHTML=(gsub.length>1?gsub.map(([n,v])=>`<tr><td colspan="3" class="mut">${n}</td><td class="r mut">${money(v)}</td></tr>`).join(''):'')+`<tr><td colspan="3">Tổng cộng</td><td class="r">${money(total)}</td></tr>`;
-  $('#rv-sub').textContent=(view.g!=='all'?GD[view.g].n+' · ':'')+(flt.from?dmy(flt.from):'…')+' – '+(flt.to?dmy(flt.to):'…')+' · '+rows.length+' khoản';
+  const[a,b]=hRange();
+  $('#rv-sub').textContent=(view.g!=='all'?GD[view.g].n+' · ':'')+(view.mode==='custom'?(hf.from?dmy(hf.from):'…')+' – '+(hf.to?dmy(hf.to):'…'):label())+' · '+rows.length+' khoản';
   rvText=['Ngày\tVườn\tDanh mục\tNội dung\tSố tiền',...rows.map(i=>[dmy(i.date),GD[i.g]?GD[i.g].n:'',i.category,(i.note||'').replace(/\s+/g,' '),i.amount].join('\t')),
     ...(gsub.length>1?gsub.map(([n,v])=>'Cộng '+n+'\t\t\t\t'+v):[]),'Tổng\t\t\t\t'+total].join('\n');
   $('#rv').classList.add('on');
@@ -1576,7 +1540,8 @@ function showCatDetail(cat){
   $('#sc').classList.add('on');
 }
 const closeSc=()=>$('#sc').classList.remove('on');
-$('#s-cats').onclick=e=>{const r=e.target.closest('[data-sc]');if(r)showCatDetail(r.dataset.sc)};
+/* bấm một danh mục trong Thống kê → mở Lịch sử lọc sẵn danh mục đó (cùng kỳ, cùng khu) */
+$('#s-cats').onclick=e=>{const r=e.target.closest('[data-sc]');if(!r)return;hClear();hf.cats.add(r.dataset.sc);hf.adv=false;hf.q='';$('#h-q').value='';showTab('hist');renderHist()};
 $('#s-radar').onclick=e=>{const r=e.target.closest('[data-sc]');if(r)showCatDetail(r.dataset.sc)};
 $('#s-cats').onkeydown=e=>{if(e.key==='Enter'||e.key===' '){const r=e.target.closest('[data-sc]');if(r){e.preventDefault();showCatDetail(r.dataset.sc)}}};
 $('#sc-x').onclick=closeSc;
@@ -1593,9 +1558,8 @@ const HELP=[
 <p><b>Các chức năng chính:</b></p>
 <ul>
 <li><b>Nhập:</b> nhập nhanh số tiền (tính theo nghìn đồng), nội dung, danh mục, ngày.</li>
-<li><b>Lịch sử:</b> xem theo ngày, tuần, tháng. Bấm vào một khoản chi để sửa nội dung, danh mục hoặc xóa.</li>
-<li><b>Thống kê:</b> biểu đồ theo ngày và theo danh mục. Bấm vào một danh mục để xem các khoản chi tạo nên số tiền đó.</li>
-<li><b>Lọc:</b> lọc theo thời gian, danh mục, từ khóa, số tiền, rồi bấm Review để xem bảng tổng.</li>
+<li><b>Lịch sử:</b> xem theo ngày, tuần, tháng, năm hoặc khoảng ngày tùy chọn; tìm theo nội dung; <b>⚙ Lọc thêm</b> theo danh mục, số tiền, khoản đã xóa; <b>📋 Review</b> xem bảng tổng và sao chép Excel. Bấm vào một khoản chi để sửa hoặc xóa.</li>
+<li><b>Thống kê:</b> biểu đồ theo ngày và theo danh mục. Bấm vào một danh mục để mở Lịch sử lọc sẵn danh mục đó.</li>
 <li><b>Cài đặt:</b> ngân sách tháng, danh mục, import từ file CSV, kết nối GitHub, Zalo.</li>
 <li><b>Thông báo</b> qua Zalo mỗi khi có khoản chi mới hoặc được sửa (tùy chọn, đang thử nghiệm).</li>
 </ul>
@@ -2047,7 +2011,7 @@ $('#cfg-export').onclick=async()=>{
 
 /* ---------- init ---------- */
 $('#a-date').value=today();dLabel();
-renderAll();fltPreset('month');
+renderAll();
 sync();
 renderHelp();
 renderWho();wlRender();wxRender();wxLoad();
