@@ -303,7 +303,7 @@ button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{backg
       <input type="text" id="a-note" list="a-sug" placeholder="Nội dung (không bắt buộc)" autocomplete="off" enterkeyhint="done" aria-label="Nội dung" style="margin:8px 0 10px">
       <datalist id="a-sug"></datalist>
       <div class="arow">
-        <label class="dchip" id="a-dchip" title="Bấm để đổi ngày chi"><span class="dic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8.5" cy="15" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="dtx"><small id="a-dday">Hôm nay</small><b id="a-dlabel"></b></span><input type="date" id="a-date" aria-label="Ngày chi"></label>
+        <label class="dchip" id="a-dchip" title="Bấm để đổi ngày (không chọn được ngày đã qua)"><span class="dic"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="8.5" cy="15" r="1.2" fill="currentColor" stroke="none"/></svg></span><span class="dtx"><small id="a-dday">Hôm nay</small><b id="a-dlabel"></b></span><input type="date" id="a-date" aria-label="Ngày chi"></label>
         <button id="a-save">Lưu khoản chi</button>
       </div>
     </div>
@@ -494,7 +494,7 @@ button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{backg
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261121a</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261121b</footer>
 </main>
 
 <nav class="tabs">
@@ -1170,7 +1170,22 @@ function dLabel(){
   $('#a-dchip').classList.toggle('other',!t);
 }
 $('#a-cat').addEventListener('change',()=>{renderAddCats();if($('#a-cat').value&&!$('#a-note').value)$('#a-note').focus()});
-$('#a-date').addEventListener('change',dLabel);
+/* Không cho nhập khoản của ngày đã qua (tránh thêm vào kỳ đã chốt). Quên nhập thì ghi vào hôm nay,
+   app tự thêm "[Ngày dd/mm]" vào đầu nội dung để biết ngày thực tế. */
+const PAST_TAG=v=>'[Ngày '+dmy(v).slice(0,v.slice(0,4)===today().slice(0,4)?5:10)+']';
+async function pastDate(v){
+  const t=today();$('#a-date').min=t;
+  if(!v||v>=t)return false;
+  const tag=PAST_TAG(v);
+  const head='<div class="danger"><span class="skull">⛔</span><b class="t">KHÔNG NHẬP KHOẢN CỦA NGÀY ĐÃ QUA</b>Ngày '+dmy(v)+' đã qua. App không cho ghi khoản vào ngày quá khứ để tránh thay đổi số liệu đã chốt.</div>';
+  const yes=await askConfirm('Nếu quên nhập: ghi vào hôm nay ('+dmy(t).slice(0,5)+'), app tự ghi rõ ngày thực tế vào nội dung:\n'+tag+' …','Ghi vào hôm nay',{danger:head});
+  $('#a-date').value=t;dLabel();
+  if(yes){const n=$('#a-note'),cur=n.value.replace(/^\[Ngày [^\]]*\]\s*/,'');n.value=tag+' '+cur;toast('Sẽ ghi vào hôm nay · '+tag)}
+  else toast('Đã đổi về hôm nay');
+  return true;
+}
+$('#a-date').addEventListener('change',()=>{dLabel();pastDate($('#a-date').value)});
+$('#a-date').addEventListener('focus',()=>{$('#a-date').min=today()});
 /* Bàn phím ảo: đang gõ ở màn Nhập VÀ màn hình bị thu nhỏ (bàn phím đang mở) → thu gọn đầu trang,
    ẩn thời tiết + thanh tab, cuộn khung nhập lên trên cùng. Chỉ focus mà bàn phím chưa mở thì giữ nguyên. */
 const kbEl=e=>!!(e&&e.matches&&e.matches('#p-add input[type=text],#p-add input:not([type])'));
@@ -1190,7 +1205,8 @@ $('#a-note').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault
 let addG='';
 gSel($('#a-g'),'');
 $('#a-g').onclick=e=>{const b=e.target.closest('[data-g]');if(!b)return;addG=b.dataset.g;gSel($('#a-g'),addG)};
-$('#a-save').onclick=()=>{
+$('#a-save').onclick=async()=>{
+  if(await pastDate($('#a-date').value))return;   /* app mở qua đêm: ngày đang chọn đã thành quá khứ */
   const date=$('#a-date').value||today(),note=$('#a-note').value.trim(),category=$('#a-cat').value,amount=kval($('#a-amt'));
   if(!amount){toast('Nhập số tiền');$('#a-amt').focus();return}
   if(!category||!data.categories.includes(category)){const c=$('#a-cat');c.classList.remove('need');void c.offsetWidth;c.classList.add('need');toast('Chọn danh mục');c.focus();try{c.showPicker&&c.showPicker()}catch(e){}return}
@@ -1353,7 +1369,7 @@ $('#s-addcat').onclick=()=>{
 
 document.addEventListener('visibilitychange',()=>{
   if(document.visibilityState==='visible'){wxLoad();
-    $('#a-date').value=today();dLabel();
+    $('#a-date').value=today();$('#a-date').min=today();dLabel();
     sync({quiet:true});
   }
 });
@@ -2096,7 +2112,7 @@ $('#cfg-export').onclick=async()=>{
 };
 
 /* ---------- init ---------- */
-$('#a-date').value=today();dLabel();
+$('#a-date').value=today();$('#a-date').min=today();dLabel();
 renderAll();
 sync();
 renderHelp();

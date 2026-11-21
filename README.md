@@ -267,7 +267,8 @@ All files sit in one folder so the app works from any sub-path such as `/<repo-n
 
 ## Entry screen and the on-screen keyboard
 
-- The date button is a calm white button with a calendar icon and the date in black (`Hôm nay / 15/11`); tap it to open the date picker. By default it is today; another day shows `Hôm qua` or the weekday (`T2`…`CN`) with the date, and the border and icon turn orange so a back-dated entry is noticeable.
+- The date button is a calm white button with a calendar icon and the date in black (`Hôm nay / 15/11`); tap it to open the date picker. By default it is today; another day shows the weekday (`T2`…`CN`) with the date, and the border and icon turn orange.
+- **No back-dated entries.** The date picker starts at today (`min`). A past date (picked anyway, e.g. on iOS which ignores `min`, or left over when the app stayed open past midnight; checked again on Lưu) opens a ⛔ dialog "Không nhập khoản của ngày đã qua". **Ghi vào hôm nay** sets the date to today and prefixes the note with `[Ngày dd/mm]` (the real date); **Hủy** just resets the date to today. This keeps new entries out of periods that may already be closed. Editing an entry cannot change its date; CSV import is not restricted.
 - While typing in the entry card **and** the visible viewport shrinks (keyboard open, detected with `visualViewport`), the app adds `body.kb`: weather strip, bottom tab bar and the sync status text are hidden, the header shrinks, and the entry card is scrolled to the top, so amount, category, orchard, note, date and **Lưu** stay above the keyboard. Focus alone (keyboard not open) changes nothing. On touch devices the amount field is no longer auto-focused at startup.
 
 ## Sync log (ⓘ)
