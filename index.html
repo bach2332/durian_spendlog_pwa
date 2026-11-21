@@ -274,6 +274,10 @@ details.set .sb>label:first-child{margin-top:0}
 #pw.on{display:flex}
 #pw .sheet{background:var(--card);width:100%;max-width:420px;border-radius:16px;padding:18px;border:1px solid var(--line)}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.pgsum{margin-top:10px;background:var(--bg,#f6f7f1);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.6}
+.pgsum b.n{color:#b42318}
+button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{background:#d9dccf;color:#fff}
+.pglog{font-size:12.5px;color:var(--mut);padding:5px 0;border-top:1px solid #eef0e6}
 </style>
 </head>
 <body>
@@ -473,9 +477,24 @@ details.set .sb>label:first-child{margin-top:0}
       <div style="margin-top:10px"><button id="imp-go" style="width:100%;display:none"></button></div>
       </div>
     </details>
+    <details class="card set" id="sd-purge">
+      <summary><span class="si">🗑️</span><span class="stt"><b>Xóa hẳn dữ liệu theo ngày</b><small id="sm-purge">Cần mật khẩu chung</small></span><span class="chev">›</span></summary>
+      <div class="sb">
+      <div id="pg-lock">
+        <div class="mut">Xóa vĩnh viễn mọi khoản (thu, chi, dòng xóa) trong một khoảng ngày, trên server và mọi máy. Không ghi dòng âm, không khôi phục được.</div>
+        <button id="pg-open" style="width:100%;margin-top:10px">🔒 Nhập mật khẩu để mở</button>
+      </div>
+      <div id="pg-body" style="display:none">
+        <div class="row"><div style="flex:1"><label>Từ ngày</label><input type="date" id="pg-from"></div><div style="flex:1"><label>Đến ngày</label><input type="date" id="pg-to"></div></div>
+        <div id="pg-sum" class="pgsum"></div>
+        <button class="danger-btn" id="pg-go" style="width:100%;margin-top:10px" disabled>🗑️ Xóa vĩnh viễn</button>
+        <div id="pg-log" style="margin-top:12px"></div>
+      </div>
+      </div>
+    </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261117e</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261121a</footer>
 </main>
 
 <nav class="tabs">
@@ -579,13 +598,14 @@ function gSel(el,v,all){
 function gNeed(el){el.classList.remove('need');void el.offsetWidth;el.classList.add('need')}
 let editId=null;
 
-try{const c=JSON.parse(localStorage.getItem(K.cache)||'null');if(c&&c.items)data=norm(c)}catch(e){}
+try{const c=JSON.parse(localStorage.getItem(K.cache)||'null');if(c&&c.items){data=norm(c);if(data.purges)data.items=purgeApply(data.items,data.purges)}}catch(e){}
 /* nâng cấp từ bản cũ: máy đã có dữ liệu thì lấy làm mốc so sánh; máy mới (chưa có dữ liệu) thì để trống */
 try{if(localStorage.getItem(K.cache)&&!localStorage.getItem('dr_base'))localStorage.setItem('dr_base',JSON.stringify({cats:data.categories,budget:data.budget}))}catch(e){}
 function norm(d){
   const o={categories:Array.isArray(d.categories)&&d.categories.length?d.categories:[...DEF_CATS],budget:+d.budget||0,items:Array.isArray(d.items)?d.items:[]};
   if(d.catLog&&typeof d.catLog==='object')o.catLog=d.catLog;
   if(d.budgetT)o.budgetT=d.budgetT;
+  if(Array.isArray(d.purges)&&d.purges.length)o.purges=d.purges;
   return o;
 }
 
@@ -705,7 +725,27 @@ function mergeData(R,L,fresh){   /* fresh: L là máy chưa đồng bộ lần n
   const o={categories:cats.length?cats:[...DEF_CATS],budget:lb?L.budget:R.budget,items:mergeItems(R.items,L.items)};
   const hasLog=Object.values(log).some(v=>v.t);if(hasLog)o.catLog=log;
   const bt=lb?L.budgetT:R.budgetT;if(bt)o.budgetT=bt;
+  const pu=purgeUnion(R.purges,L.purges);if(pu.length){o.purges=pu;o.items=purgeApply(o.items,pu)}
   return o;
+}
+/* ---- Xóa hẳn theo ngày (hard delete) ----
+   Lệnh xóa lưu trong Gist: purges=[{id,from,to,at,by,n}]. Mọi máy khi đồng bộ đều bỏ hẳn các khoản có ngày
+   trong [from,to] và được tạo trước lúc xóa (thời điểm tạo lấy từ id). Nhờ vậy máy chưa đồng bộ
+   không đẩy lại khoản đã xóa. Khoản tạo SAU lệnh xóa (dù ngày cũ) vẫn giữ. */
+function purgeUnion(a,b){const m=new Map();[...(a||[]),...(b||[])].forEach(x=>{if(x&&x.id&&!m.has(x.id))m.set(x.id,x)});return [...m.values()].sort((x,y)=>TS(x.at).localeCompare(TS(y.at)))}
+const idTime=id=>{const t=parseInt(String(id).slice(0,8),36);return t>1.6e12&&t<4e12?t:0};
+function purgeHit(x,p){if(!x.date||x.date<p.from||x.date>p.to)return false;const t=idTime(x.id);return !t||t<=Date.parse(p.at)}
+function purgeApply(items,pu){
+  if(!pu||!pu.length)return items;
+  const gone=new Set();
+  let out=items.filter(x=>{if(pu.some(p=>purgeHit(x,p))){gone.add(x.id);return false}return true});
+  const has=new Set(out.map(x=>x.id));
+  /* dòng xóa (void) trỏ tới khoản đã bị xóa hẳn: bỏ luôn; khoản gốc mất dòng void thì gỡ dấu voidedBy */
+  out=out.filter(x=>!(x.type==='void'&&x.ref&&!has.has(x.ref)&&(gone.has(x.ref)||pu.some(p=>x.date>=p.from&&x.date<=p.to))));
+  const has2=new Set(out.map(x=>x.id));
+  out=out.map(x=>x.voidedBy&&!has2.has(x.voidedBy)?(({voidedBy,...r})=>r)(x):x);
+  if(gone.size&&typeof zq!=='undefined'&&zq.some(m=>gone.has(m.id))){zq=zq.filter(m=>!gone.has(m.id));zqSave()}
+  return out;
 }
 let etag='';
 async function fetchRemote(cond){
@@ -764,7 +804,7 @@ async function sync(opt={}){
         if(!fresh)slogAdd(slogDiff(merged.items,before,bUpd),wrote&&r.d?slogDiff(local0,rIds,rUpd):[]);
         /* thay đổi trên máy trong lúc đang đồng bộ: giữ lại, đồng bộ tiếp ở lượt sau */
         const cur=data,cc=JSON.stringify(cur.categories)!==c0,bc=cur.budget!==b0;
-        data={...merged,items:mergeItems(merged.items,cur.items)};
+        data={...merged,items:purgeApply(mergeItems(merged.items,cur.items),merged.purges)};
         if(cc)data.categories=cur.categories;if(bc)data.budget=cur.budget;
         if(cc||bc||data.items.length!==merged.items.length)againLocal=true;
         setBase(merged);keepLocal();
@@ -1249,10 +1289,56 @@ $('#s-pull').onclick=async()=>{
     (pend?'<br><b>Máy này còn '+pend+' thay đổi chưa có trên server.</b>':'<br>Máy này không có thay đổi nào chưa đồng bộ.')+'</div>';
   if(!await askConfirm('Tải lại toàn bộ từ server và ghi đè máy này?','⬇️ Ghi đè từ server',{danger:head,wait:3})){status('Đã hủy');return}
   if(syncing){toast('Đang đồng bộ, thử lại sau giây lát');return}
-  data=R;setBase(data);localStorage.removeItem(K.dirty);zq=[];zqSave();lastErr='';keepLocal();
+  R.items=purgeApply(R.items,R.purges);data=R;setBase(data);localStorage.removeItem(K.dirty);zq=[];zqSave();lastErr='';keepLocal();
   slog.ev.push({t:Date.now(),in:[],out:[],pull:data.items.filter(x=>x.type!=='void').length});slog.ev=slog.ev.slice(-10);incSave();incUI();
   renderAll();status('Đã tải lại từ server · '+data.items.filter(x=>x.type!=='void').length+' khoản');toast('✅ Đã ghi đè máy này bằng dữ liệu trên server');
 };
+/* ---- Xóa hẳn dữ liệu theo khoảng ngày: mở bằng mật khẩu chung, xóa vĩnh viễn trên mọi máy ---- */
+function pgLock(){$('#pg-body').style.display='none';$('#pg-lock').style.display='';$('#pg-from').value=$('#pg-to').value='';$('#pg-sum').innerHTML='';$('#pg-go').disabled=true}
+function pgList(){
+  const f=$('#pg-from').value,t=$('#pg-to').value;
+  if(!f||!t)return null;if(f>t)return 'bad';
+  return data.items.filter(x=>x.date>=f&&x.date<=t);
+}
+function pgRender(){
+  const L=pgList(),box=$('#pg-sum'),go=$('#pg-go');
+  if(L==='bad'){box.innerHTML='⚠️ "Từ ngày" phải trước hoặc bằng "Đến ngày"';go.disabled=true;return}
+  if(!L){box.innerHTML='Chọn khoảng ngày cần xóa.';go.disabled=true;return}
+  const live=L.filter(x=>x.type!=='void'&&!x.voidedBy),voids=L.length-live.length;
+  const byG=GK.map(g=>{const a=live.filter(x=>x.g===g);return a.length?gIcon(g,14)+' '+GD[g].s+': '+a.length+' khoản · '+money(sum(a)):''}).filter(Boolean);
+  const ng=live.filter(x=>!GD[x.g]);if(ng.length)byG.push('❔ Chưa phân vườn: '+ng.length+' khoản · '+money(sum(ng)));
+  box.innerHTML=L.length?`📅 ${dmy($('#pg-from').value)} → ${dmy($('#pg-to').value)}<br>Sẽ xóa <b class="n">${L.length} dòng</b>: ${live.length} khoản đang tính · tổng <b>${money(sum(live))}</b>${voids?'<br>+ '+voids+' dòng đã xóa/bị xóa trước đó':''}${byG.length?'<br>'+byG.join('<br>'):''}`:'Không có khoản nào trong khoảng ngày này.';
+  go.disabled=!L.length;
+}
+function pgLog(){
+  const P=(data.purges||[]).slice(-5).reverse();
+  $('#pg-log').innerHTML=P.length?'<div class="mut" style="font-weight:700;font-size:13px">Các lần đã xóa</div>'+P.map(p=>{const d=new Date(p.at),q=n=>String(n).padStart(2,'0');return `<div class="pglog">🗑️ ${dmy(p.from)} → ${dmy(p.to)} · ${p.n} dòng · ${esc(p.by||'?')} · ${q(d.getDate())}/${q(d.getMonth()+1)} ${q(d.getHours())}:${q(d.getMinutes())}</div>`}).join(''):'';
+}
+$('#pg-open').onclick=async()=>{
+  const ok=await askPass('🔒 Nhập mật khẩu chung để mở chức năng xóa hẳn dữ liệu','Mở',async p=>await pwOk(p)?null:'Sai mật khẩu');
+  if(!ok)return;
+  $('#pg-lock').style.display='none';$('#pg-body').style.display='';
+  const ds0=data.items.map(x=>x.date).filter(Boolean).sort();
+  if(ds0.length){$('#pg-from').min=ds0[0];$('#pg-to').max=ds0[ds0.length-1]}
+  pgRender();pgLog();
+};
+['#pg-from','#pg-to'].forEach(k=>{$(k).onchange=$(k).oninput=pgRender});
+$('#pg-go').onclick=async()=>{
+  const L=pgList();if(!L||L==='bad'||!L.length)return;
+  const f=$('#pg-from').value,t=$('#pg-to').value;
+  const head='<div class="danger"><span class="skull">☠️</span><b class="t">XÓA VĨNH VIỄN – KHÔNG KHÔI PHỤC ĐƯỢC</b>'+L.length+' dòng từ '+dmy(f)+' đến '+dmy(t)+' sẽ bị xóa hẳn trên server và trên mọi máy khi đồng bộ. Không ghi dòng âm, không gửi Zalo.</div>';
+  if(!await askConfirm('Xóa hẳn '+L.length+' dòng từ '+dmy(f)+' đến '+dmy(t)+'?','🗑️ Xóa vĩnh viễn',{danger:head,wait:5}))return;
+  const rec={id:uid(),from:f,to:t,at:nowISO(),by:who()||'',n:L.length};
+  const bak=data;
+  data={...data,purges:purgeUnion(data.purges,[rec])};data.items=purgeApply(data.items,data.purges);
+  if(!keepLocal()){data=bak;fullAlert();return}
+  renderAll();pgRender();pgLog();
+  toast('🗑️ Đã xóa '+L.length+' dòng, đang cập nhật lên server...');
+  const ok=await sync({local:true});
+  toast(ok?'✅ Đã xóa hẳn '+L.length+' dòng trên server':'⚠️ Đã xóa trên máy, chưa lên server được — sẽ tự thử lại');
+};
+$('#sd-purge').addEventListener('toggle',e=>{if(!e.target.open)pgLock()});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){const d=$('#sd-purge');if(d&&d.open)d.open=false;pgLock()}});
 $('#s-logout').onclick=async()=>{
   if(!await askConfirm('Xóa token và dữ liệu cache khỏi thiết bị này?\n(Dữ liệu trên Gist vẫn còn)','Đăng xuất'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));resetLocal();
