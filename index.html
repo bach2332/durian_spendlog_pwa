@@ -278,6 +278,15 @@ details.set .sb>label:first-child{margin-top:0}
 .pgsum b.n{color:#b42318}
 button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{background:#d9dccf;color:#fff}
 .pglog{font-size:12.5px;color:var(--mut);padding:5px 0;border-top:1px solid #eef0e6}
+/* chế độ test */
+body.test .brand{background:repeating-linear-gradient(135deg,#ffe2c4 0 14px,#ffd3a8 14px 28px);border-bottom:3px solid #c2410c}
+body.test .brand b{color:#9a3412}
+body.test .wx{background:#ffedd5!important;border-color:#c2410c!important}
+.tbadge{display:inline-block;background:#c2410c;color:#fff;font-size:11px;font-weight:800;border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:middle;letter-spacing:.5px}
+.tbadge[hidden]{display:none}
+body.test .ft{color:#c2410c;font-weight:700}
+.tcfg{border:2px dashed #e8590c;border-radius:12px;padding:10px 12px;margin-top:10px;background:#fff7ed}
+@media(prefers-color-scheme:dark){body.test .brand{background:repeating-linear-gradient(135deg,#3b1d0a 0 14px,#4a250d 14px 28px)}body.test .brand b{color:#fdba74}.tcfg{background:#2a1608}}
 /* thu chi */
 .dirsw[hidden],.tc3[hidden],.kpi3[hidden],details[hidden]{display:none!important}
 .dirsw{display:flex;background:#eef0e4;border-radius:12px;padding:3px;margin-bottom:8px}
@@ -320,7 +329,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
 <symbol id="gi-N" viewBox="0 0 64 64"><ellipse cx="32" cy="59" rx="14" ry="2.6" fill="#000" opacity=".12"/><path d="M32 58V30" stroke="#7a4a2a" stroke-width="3.4" stroke-linecap="round"/><path d="M32 42c-4-1-8-4-9-8M32 38c4-1 7-4 8-7" stroke="#7a4a2a" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="32" cy="22" r="12" fill="#5aa832"/><circle cx="23" cy="31" r="7.5" fill="#5aa832"/><circle cx="41" cy="30" r="7.5" fill="#5aa832"/><circle cx="28" cy="17" r="4" fill="#9ad06a" opacity=".6"/><use href="#gi-dr" x="40" y="40"/></symbol>
 <symbol id="gi-C" viewBox="0 0 64 64"><ellipse cx="32" cy="59" rx="18" ry="3" fill="#000" opacity=".12"/><path d="M32 58V14M32 46L18 34M32 46l14-12M32 32L20 22M32 32l12-10" stroke="#6b3f22" stroke-width="2.6" fill="none" stroke-linecap="round"/><g fill="#1f6b2a"><ellipse cx="14" cy="31" rx="7" ry="3.2" transform="rotate(-25 14 31)"/><ellipse cx="50" cy="31" rx="7" ry="3.2" transform="rotate(25 50 31)"/><ellipse cx="17" cy="19" rx="6.5" ry="3" transform="rotate(-30 17 19)"/><ellipse cx="47" cy="19" rx="6.5" ry="3" transform="rotate(30 47 19)"/><ellipse cx="25" cy="10" rx="6" ry="2.8" transform="rotate(-50 25 10)"/><ellipse cx="39" cy="10" rx="6" ry="2.8" transform="rotate(50 39 10)"/><ellipse cx="22" cy="44" rx="6.5" ry="3" transform="rotate(-15 22 44)"/><ellipse cx="42" cy="44" rx="6.5" ry="3" transform="rotate(15 42 44)"/></g><g fill="#c62828"><circle cx="24" cy="36" r="2.6"/><circle cx="27.5" cy="38" r="2.6"/><circle cx="24.5" cy="39.8" r="2.4"/><circle cx="40" cy="36" r="2.6"/><circle cx="36.5" cy="38" r="2.6"/><circle cx="39.5" cy="39.8" r="2.4"/><circle cx="26" cy="25" r="2.3"/><circle cx="29" cy="26.5" r="2.3"/><circle cx="38" cy="25" r="2.3"/><circle cx="35" cy="26.5" r="2.3"/></g></symbol>
 </defs></svg>
-<div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="who" id="who"></span></div><div class="syncbox"><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button><div class="stl"><div id="status" role="status" aria-live="polite"></div><button id="inc-btn" type="button" aria-label="Nhật ký đồng bộ"><span aria-hidden="true">ⓘ</span><span id="inc-n"></span></button></div></div></div>
+<div class="brand"><img src="icon-192.png" alt=""><div><b>Sầu riêng 2027</b><span class="tbadge" id="tbadge" hidden>🧪 TEST</span><span class="who" id="who"></span></div><div class="syncbox"><button id="btn-sync" class="off" type="button" aria-label="Đồng bộ" title="Đồng bộ"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 3v6h-6"/></svg></button><div class="stl"><div id="status" role="status" aria-live="polite"></div><button id="inc-btn" type="button" aria-label="Nhật ký đồng bộ"><span aria-hidden="true">ⓘ</span><span id="inc-n"></span></button></div></div></div>
   <div class="wx" id="wx" title="Chạm để xem dự báo 3 ngày"></div>
 
   <!-- NHẬP -->
@@ -467,6 +476,22 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
       </div>
     </details>
+    <details class="card set" id="sd-test">
+      <summary><span class="si">🧪</span><span class="stt"><b>Chế độ test</b><small id="sm-test"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
+        <label class="tgl" id="t-tgl"><span><b>Bật chế độ test trên máy này</b><small>Dùng GitHub/Gist và Zalo riêng cho test. Dữ liệu và cấu hình thật giữ nguyên, tắt là quay lại.</small></span><input type="checkbox" role="switch" id="t-on" aria-label="Bật chế độ test"></label>
+        <div class="tcfg">
+          <b>Cấu hình test</b>
+          <label>GitHub token (test)</label><input type="password" id="t-token" autocomplete="off" placeholder="ghp_... hoặc github_pat_...">
+          <label>Gist ID (test)</label><input type="password" id="t-gist" autocomplete="off" placeholder="Để trống: tự tạo Gist test mới">
+          <label>Zalo Bot token (test)</label><input type="password" id="t-zt" autocomplete="off" placeholder="Để trống nếu không gửi Zalo">
+          <label>Zalo Chat ID (test)</label><input type="password" id="t-zc" autocomplete="off">
+          <div class="row" style="margin-top:10px"><button id="t-save">Lưu cấu hình test</button><button class="sec" id="t-clear" style="color:var(--bad)">Xóa cấu hình test</button></div>
+          <div class="mut" id="t-state" style="margin-top:6px;font-size:12.5px"></div>
+        </div>
+        <div class="mut" style="margin-top:8px;font-size:12.5px">Khi bật: đầu trang chuyển sọc cam và có nhãn 🧪 TEST; mọi thao tác (nhập, sửa, xóa, chốt sổ, đồng bộ) chỉ đi vào Gist test, tin Zalo gửi vào nhóm test và có dòng 🧪 [TEST] ở đầu.</div>
+      </div>
+    </details>
     <details class="card set" id="sd-bud">
       <summary><span class="si">💰</span><span class="stt"><b>Ngân sách tháng</b><small id="sm-bud"></small></span><span class="chev">›</span></summary>
       <div class="sb">
@@ -553,7 +578,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261121e</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261121f</footer>
 </main>
 
 <nav class="tabs">
@@ -622,12 +647,25 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
 
 <script>
 (()=>{
+/* ---- Chế độ TEST (theo từng máy) ----
+   Bật thì app dùng bộ cấu hình + dữ liệu riêng: các khóa kết nối/dữ liệu trong localStorage được đổi sang tên "t_dr_…"
+   (GitHub token, Gist ID, cache, hàng chờ, Zalo…). Dữ liệu và cấu hình thật không bị đụng tới. Đổi chế độ thì app tải lại. */
+const TEST_KEYS=new Set(['dr_token','dr_gist','dr_cache','dr_dirty','dr_base','dr_zl_token','dr_zl_chat','dr_zl_mute','dr_zq','dr_synclog']);
+const SP=Storage.prototype,_lg=SP.getItem,_ls=SP.setItem,_lr=SP.removeItem;
+const rawLS={get:k=>{try{return _lg.call(localStorage,k)}catch(e){return null}},set:(k,v)=>_ls.call(localStorage,k,v),del:k=>{try{_lr.call(localStorage,k)}catch(e){}}};
+const TESTM=rawLS.get('dr_test')==='1';
+if(TESTM){
+  const m=(st,k)=>st===localStorage&&TEST_KEYS.has(k)?'t_'+k:k;
+  SP.getItem=function(k){return _lg.call(this,m(this,k))};
+  SP.setItem=function(k,v){return _ls.call(this,m(this,k),v)};
+  SP.removeItem=function(k){return _lr.call(this,m(this,k))};
+}
 const FILE='durian2027.json';
 const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:'dr_base',uid:'dr_uid',who:'dr_who',wxLoc:'dr_wx_loc',wx:'dr_wx'};
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261121e';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261121f';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
 /* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
 const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
@@ -1650,6 +1688,59 @@ $('#f-inc').onchange=async e=>{
   data.feat={...(data.feat||{}),inc:{on,t:nowISO()}};renderAll();save();toast(on?'Đã bật nhập khoản thu':'Đã tắt nhập khoản thu');
 };
 $('#f-hide').onclick=()=>{try{localStorage.removeItem('dr_hid')}catch(e){}$('#sd-hid').open=false;featUI();if(!$('#sd-hid').hidden)toast('Khoản thu đang bật nên mục này vẫn hiện')};
+/* ---------- Chế độ test ---------- */
+const TK=k=>'t_'+k;
+function testUI(){
+  document.body.classList.toggle('test',TESTM);$('#tbadge').hidden=!TESTM;
+  try{document.querySelector('meta[name=theme-color]').content=TESTM?'#c2410c':'#3f7d20'}catch(e){}
+  $('#t-on').checked=TESTM;
+  const tt=rawLS.get(TK('dr_token')),tg=rawLS.get(TK('dr_gist')),zt=rawLS.get(TK('dr_zl_token')),zc=rawLS.get(TK('dr_zl_chat'));
+  $('#t-token').value=$('#t-gist').value=$('#t-zt').value=$('#t-zc').value='';
+  $('#t-token').placeholder=tt?'Đã lưu: '+mask(tt)+' (nhập để thay)':'ghp_... hoặc github_pat_...';
+  $('#t-gist').placeholder=tg?'Đã lưu: '+mask(tg)+' (nhập để thay)':'Để trống: tự tạo Gist test mới';
+  $('#t-zt').placeholder=zt?'Đã lưu: '+mask(zt)+' (nhập để thay)':'Để trống nếu không gửi Zalo';
+  $('#t-zc').placeholder=zc?'Đã lưu: '+mask(zc)+' (nhập để thay)':'';
+  $('#t-state').textContent=tt?'✅ Đã có cấu hình test · GitHub '+(tg?'Gist '+mask(tg):'(sẽ tạo Gist mới)')+' · Zalo '+(zt&&zc?'có':'không'):'Chưa có cấu hình test';
+  const e=$('#sm-test');if(e)e.textContent=TESTM?'🧪 ĐANG BẬT · '+(tg?'Gist '+mask(tg):'Gist test mới'):'Tắt'+(tt?' · đã có cấu hình':'');
+}
+function testSave(){
+  const t=$('#t-token').value.trim(),g=$('#t-gist').value.trim(),zt=$('#t-zt').value.trim(),zc=$('#t-zc').value.trim();
+  if(g&&!/^[0-9a-f]{20,40}$/i.test(g)){toast('Gist ID không hợp lệ');return null}
+  const realG=rawLS.get('dr_gist');if(g&&realG&&g===realG){toast('⚠️ Gist test phải KHÁC Gist thật');return null}
+  if(zt&&!/^[\w:.\-]+$/.test(zt)){toast('Zalo Bot token có ký tự không hợp lệ');return null}
+  const oldG=rawLS.get(TK('dr_gist'));
+  if(t)rawLS.set(TK('dr_token'),t);if(zt)rawLS.set(TK('dr_zl_token'),zt);if(zc)rawLS.set(TK('dr_zl_chat'),zc);
+  let gch=false;if(g&&g!==oldG){rawLS.set(TK('dr_gist'),g);gch=true}
+  if(gch)['dr_cache','dr_base','dr_dirty','dr_zq','dr_synclog'].forEach(k=>rawLS.del(TK(k)));   /* đổi Gist test: bỏ dữ liệu test cũ trên máy */
+  return{changed:!!(t||g||zt||zc),gch};
+}
+$('#t-save').onclick=()=>{
+  const r=testSave();if(!r)return;if(!r.changed){toast('Chưa nhập gì');return}
+  testUI();toast('Đã lưu cấu hình test');
+  if(TESTM&&r.gch){toast('Đổi Gist test — đang tải lại...');setTimeout(()=>location.reload(),600)}
+  else if(TESTM)setTimeout(()=>location.reload(),600);
+};
+$('#t-clear').onclick=async()=>{
+  if(!await askConfirm('Xóa toàn bộ cấu hình và dữ liệu test trên máy này?\n(Gist test trên GitHub vẫn còn)'+(TESTM?'\nApp sẽ tắt chế độ test.':''),'Xóa'))return;
+  [...TEST_KEYS].forEach(k=>rawLS.del(TK(k)));
+  if(TESTM){rawLS.del('dr_test');location.reload();return}
+  testUI();toast('Đã xóa cấu hình test');
+};
+$('#t-on').onchange=async e=>{
+  const on=e.target.checked;e.target.checked=TESTM;
+  if(on){
+    const r=testSave();if(r===null)return;
+    if(!rawLS.get(TK('dr_token'))){toast('Nhập GitHub token (test) trước');$('#t-token').focus();return}
+    if(!await askConfirm('Chuyển máy này sang CHẾ ĐỘ TEST?\nMọi thao tác sẽ đi vào Gist test và nhóm Zalo test. Dữ liệu thật giữ nguyên.','🧪 Bật test'))return;
+    rawLS.set('dr_test','1');location.reload();
+  }else{
+    if(isDirty()&&!await askConfirm('Còn thay đổi test chưa lưu lên Gist test. Vẫn tắt?\n(Thay đổi vẫn giữ trên máy, bật lại test sẽ đồng bộ tiếp)','Tắt'))return;
+    if(!await askConfirm('Tắt chế độ test, quay lại dữ liệu thật?','Tắt test'))return;
+    rawLS.del('dr_test');location.reload();
+  }
+};
+$('#sd-test').addEventListener('toggle',e=>{if(!e.target.open)testUI()});
+testUI();
 $('#s-logout').onclick=async()=>{
   if(!await askConfirm('Xóa token và dữ liệu cache khỏi thiết bị này?\n(Dữ liệu trên Gist vẫn còn)','Đăng xuất'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));resetLocal();
@@ -1821,7 +1912,7 @@ const ZAPI='https://bot-api.zaloplatforms.com/bot';
 async function zlHello(src){
   const z=zlCfg();if(!z)return{ok:false,msg:'Chưa có Bot token và Chat ID'};
   const d=new Date(),p=n=>String(n).padStart(2,'0');
-  const text='✅ '+(who()||'(chưa đặt tên)')+' · Kết nối Zalo OK\n'+src+' · '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
+  const text=(TESTM?'🧪 [TEST]\n':'')+'✅ '+(who()||'(chưa đặt tên)')+' · Kết nối Zalo OK\n'+src+' · '+p(d.getDate())+'/'+p(d.getMonth()+1)+' '+p(d.getHours())+':'+p(d.getMinutes());
   let r;
   try{r=await fetch(ZAPI+z.t+'/sendMessage',{method:'POST',body:new URLSearchParams({chat_id:z.c,text})})}
   catch(e){return navigator.onLine===false?{ok:false,msg:'Không có mạng, chưa gửi được tin Zalo'}:{ok:null,msg:'Đã gửi nhưng không đọc được phản hồi. Mở Zalo xem đã nhận tin chưa'}}
@@ -1852,7 +1943,7 @@ function zlFill(){
 const ZQK='dr_zq';
 let zq=(()=>{try{return JSON.parse(localStorage.getItem(ZQK)||'[]')}catch(e){return[]}})(),zqBusy=false;
 function zqSave(){try{zq.length?localStorage.setItem(ZQK,JSON.stringify(zq)):localStorage.removeItem(ZQK)}catch(e){}}
-function zlQueue(k,id,u,text){if(!zlOn())return;zq.push({k,id,u,t:text,at:Date.now()});zqSave()}
+function zlQueue(k,id,u,text){if(!zlOn())return;zq.push({k,id,u,t:(TESTM?'🧪 [TEST]\n':'')+text,at:Date.now()});zqSave()}
 async function zlFlush(items,periods){
   if(zqBusy||!zq.length)return;const z=zlOn()&&zlCfg();if(!z)return;
   zqBusy=true;
