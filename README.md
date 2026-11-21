@@ -284,3 +284,40 @@ Each sync compares data before and after: entries received from other devices (*
 **Cài đặt → 🗑️ Xóa hẳn dữ liệu theo ngày** is locked; tapping **🔒 Nhập mật khẩu để mở** asks for the shared app password (checked against the stored PBKDF2 hash, never stored). After unlocking, pick **Từ ngày / Đến ngày**; a preview shows how many rows will go (entries still counted, earlier deleted/void rows, per-orchard count and total). **🗑️ Xóa vĩnh viễn** opens a ☠️ confirm (button waits 5 s), then every row whose date is in the range is removed outright: no negative "Xóa" row, no Zalo message, no undo. Closing the section or leaving the app locks it again.
 
 How it stays deleted on every device: the delete is stored in the Gist as a small rule, `purges: [{id, from, to, at, by, n}]`. On every sync, all devices drop rows whose date is inside `[from, to]` and that were created before `at` (creation time comes from the row id). So a device that was offline, or an older app version that pushes the old rows back, gets cleaned again on the next sync of an updated device. Rows created after the delete (even with an old date) are kept. Void rows pointing to a purged entry are removed too, and pending Zalo messages for purged rows are dropped. The last 5 deletes are listed under the form.
+
+## Income entries (Khoản thu)
+
+The entry screen has a **− Chi | + Thu** switch (default Chi). In Thu mode the card turns green, the category list shows the **income categories** (default: Bán sầu riêng loại 1 / loại 2 / loại 3 / xô, Bán cà phê, Thu khác; edit them in Cài đặt → Danh mục → tab **+ Thu**), and the button becomes **+ Lưu khoản thu**. Category and orchard are still required.
+
+Data: an income entry is a normal item with `"dir":"in"`; items without `dir` are expenses, so existing data needs no migration. Deleting an income entry writes a void row that also carries `dir:"in"`. Income categories are stored in `incomeCats` with their own add/remove log `icatLog` (merged the same way as `categories`/`catLog`). Budget, "Hôm nay đã chi", the daily bar chart and the radar count expenses only.
+
+Where income shows: green `+amount` rows; History filter **Tất cả / + Thu / − Chi** and totals `+thu · −chi`; Statistics tiles **Tổng thu · Tổng chi · Lãi/Lỗ**, income/profit under each orchard, a "Theo danh mục thu" card; Review / Excel copy has a **Loại** column and Thu / Chi / Chênh lệch totals. Zalo: `💰 name · Thu mới`, `💵 +amount · category`; edits/deletes say `Sửa thu` / `Xóa thu`.
+
+## Closing the books per orchard (Chốt sổ)
+
+**Cài đặt → 🔒 Chốt sổ theo vườn**: pick the orchard (required) → **Từ ngày** is automatic (the day after that orchard's last closing, or the date of its first entry) → pick **Đến ngày** (≤ today) → the preview shows entry counts and expense/income per category with totals → **🔒 Chốt sổ** → ☠️ confirm (5 s). The app syncs first so the numbers are current. No password is required.
+
+After closing, every entry of that orchard dated on or before `to` is **locked forever**: the edit sheet becomes read-only, delete is hidden, new entries/CSV rows for that orchard and date are refused, and "Xóa hẳn dữ liệu" skips them. History shows 🔒 on locked rows. There is no reopen.
+
+Data: `periods: [{id, g, no, from, to, at, by, n, tot, cats:{category:[count, amount]}, nin, tin, icats}]` in the same Gist file (snapshot of the numbers at closing time). Enforcement on every sync (`lockApply`): for a locked entry the version as of the closing time is kept (edits made later, e.g. by an old app version, are dropped), and entries created after the closing time that fall into a closed period are removed. If two devices close overlapping periods at the same time, the earlier closing wins.
+
+Reports: **Thống kê → 🔒 Chốt sổ** lists, per orchard (respecting the orchard filter), each closed period (range, entries, who closed it, expense, income) and the still-open part; totals for closed vs. not closed on top. Tap a period for the detail: ĐÃ CHỐT stamp, Thu/Chi/Lãi, expense and income per category, who/when, running total for the orchard, **Review / Copy Excel** and **Xem trong Lịch sử** (opens History with that orchard and date range).
+
+Zalo (sent only after the period is confirmed on the Gist), detailed format:
+```
+🌳 VƯỜN LỚN
+🔒 Lan · Chốt sổ đợt 2
+📅 01/11 → 15/11/2026 · 23 khoản
+━━━━━━━━━━━━
+▫️ Mua phân · 6 khoản
+      18.400.000 ₫
+…
+━━━━━━━━━━━━
+💸 TỔNG CHI 31.200.000 ₫
+(income block, 💵 TỔNG THU and 📊 Lãi/Lỗ when the period has income)
+📊 Lũy kế vườn (2 đợt): chi 76.500.000 ₫
+```
+
+## Version guard (minV)
+
+Each app build has `APPV` (now `20261121c`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
