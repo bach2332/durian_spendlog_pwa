@@ -530,7 +530,9 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
       <div class="mut">File CSV (UTF-8) có dòng tiêu đề <code>date,note,category,amount</code>:<br>
       • <b>date</b>: <code>2026-11-01</code> hoặc <code>01/11/2026</code> (bắt buộc)<br>
       • <b>note</b>: nội dung (tùy chọn)<br>
-      • <b>category</b>: danh mục, chưa có sẽ tự tạo; để trống = "Khác"<br>
+      • <b>vuon</b>: <code>lon</code> / <code>nho</code> / <code>cafe</code> (tùy chọn)<br>
+      • <b>thuchi</b>: <code>chi</code> hoặc <code>thu</code> (tùy chọn, để trống = chi)<br>
+      • <b>category</b>: danh mục, chưa có sẽ tự tạo (khoản thu tạo vào danh mục thu); để trống = "Khác" / "Thu khác"<br>
       • <b>amount</b>: số tiền VNĐ &gt; 0, vd <code>35000</code> hoặc <code>35.000</code> (bắt buộc)<br>
       Dấu phân cách <code>,</code> <code>;</code> hoặc Tab đều được. Tiêu đề tiếng Việt (ngay, noi dung, danh muc, so tien) cũng nhận.</div>
       <div style="margin-top:10px"><button class="sec" id="imp-tpl" style="width:100%">Tải file mẫu</button></div>
@@ -578,7 +580,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261121f</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261121g</footer>
 </main>
 
 <nav class="tabs">
@@ -665,7 +667,7 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261121f';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261121g';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
 /* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
 const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
@@ -1796,7 +1798,7 @@ $('#rv-copy').onclick=async()=>{
 /* ---------- import CSV ---------- */
 let imp=null;
 const nz=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').replace(/[^a-z0-9]/g,'');
-const HDR={date:['date','ngay','ngaychi'],note:['note','noidung','ghichu','mota','description'],category:['category','danhmuc','loai','nhom'],g:['vuon','garden','g'],amount:['amount','sotien','tien','giatri']};
+const HDR={date:['date','ngay','ngaychi'],note:['note','noidung','ghichu','mota','description'],category:['category','danhmuc','loai','nhom'],g:['vuon','garden','g'],dir:['thuchi','kieu','type','dir','loaikhoan'],amount:['amount','sotien','tien','giatri']};
 function parseCSV(text){
   text=text.replace(/^﻿/,'');
   const first=text.split(/\r?\n/)[0]||'';
@@ -1843,29 +1845,32 @@ async function impPick(file){
   if(col.date<0||col.amount<0){impMsg('<span style="color:var(--bad)">Dòng tiêu đề cần có cột <b>date</b> và <b>amount</b>. Bấm "Tải file mẫu" để xem định dạng.</span>');return}
   const have={};
   data.items.forEach(i=>{if(i.type==='void'||i.voidedBy)return;const k=impKey(i.date,i.note||'',i.category,i.amount);have[k]=(have[k]||0)+1});
-  const newCats=[],rows=[],errs=[];
+  const newCats=[],newInc=[],rows=[],errs=[];
   for(const r of recs.slice(1)){
     const g=k=>col[k]>=0?(r.c[col[k]]||'').trim():'';
     const date=csvDate(g('date')),amount=csvAmount(g('amount'));
     if(!date){errs.push('Dòng '+r.n+': ngày không hợp lệ "'+g('date')+'"');continue}
     if(!amount){errs.push('Dòng '+r.n+': số tiền không hợp lệ "'+g('amount')+'" (cần số nguyên dương)');continue}
-    let cat=g('category')||'Khác';
-    const ex=[...data.categories,...newCats].find(c=>c.toLowerCase()===cat.toLowerCase());
-    if(ex)cat=ex;else newCats.push(cat);
+    const dv=nz(g('dir')),inc=['thu','in','income','khoanthu','t','+'].includes(dv)||g('dir').trim()==='+';
+    let cat=g('category')||(inc?'Thu khác':'Khác');
+    const pool=inc?[...incCats(),...newInc]:[...data.categories,...newCats],ex=pool.find(c=>c.toLowerCase()===cat.toLowerCase());
+    if(ex)cat=ex;else(inc?newInc:newCats).push(cat);
     const note=g('note').replace(/\s+/g,' ');
     const k=impKey(date,note,cat,amount);
     const dup=have[k]>0;if(dup)have[k]--;
     const gv=nz(g('g')),gg=['l','lon','vuonlon','big'].includes(gv)?'L':['n','nho','vuonnho','small'].includes(gv)?'N':['c','cafe','caphe','raycaphe','raycafe','coffee'].includes(gv)?'C':'';
-    rows.push({date,note,category:cat,amount,dup,g:gg});
+    rows.push({date,note,category:cat,amount,dup,g:gg,inc});
   }
-  imp={rows,errs,newCats};impRender();
+  imp={rows,errs,newCats,newInc};impRender();
 }
 function impUse(){const skip=$('#imp-skip').checked;return imp.rows.filter(r=>!(skip&&r.dup))}
 function impRender(){
   if(!imp)return;
   const use=impUse(),dups=imp.rows.filter(r=>r.dup).length;
-  const nc=[...new Set(use.map(r=>r.category))].filter(c=>!data.categories.includes(c));
-  let h=`<div><b>${use.length}</b> khoản sẽ được nhập · tổng <b>${money(sum(use))}</b></div>`;
+  const nc=[...new Set(use.filter(r=>!r.inc).map(r=>r.category))].filter(c=>!data.categories.includes(c)),ni=[...new Set(use.filter(r=>r.inc).map(r=>r.category))].filter(c=>!incCats().includes(c));
+  const ui=use.filter(r=>r.inc),uo=use.filter(r=>!r.inc);
+  let h=`<div><b>${use.length}</b> khoản sẽ được nhập`+(ui.length?`: <b>${uo.length}</b> chi · tổng <b>${money(sum(uo))}</b> · <b style="color:#2f7d1e">${ui.length}</b> thu · tổng <b style="color:#2f7d1e">+${money(sum(ui))}</b>`:` · tổng <b>${money(sum(use))}</b>`)+`</div>`;
+  if(ni.length)h+=`<div class="mut">Danh mục thu mới sẽ tạo: ${ni.map(esc).join(', ')}</div>`;
   if(dups)h+=`<div class="mut">${dups} dòng trùng dữ liệu đã có${$('#imp-skip').checked?' (sẽ bỏ qua)':''}</div>`;
   if(nc.length)h+=`<div class="mut">Danh mục mới sẽ tạo: ${nc.map(esc).join(', ')}</div>`;
   if(imp.errs.length){
@@ -1882,17 +1887,19 @@ $('#imp-go').onclick=()=>{
   if(!imp)return;
   let use=impUse();if(!use.length)return;
   const lk=use.filter(r=>lockOf({g:r.g,date:r.date}));if(lk.length){use=use.filter(r=>!lockOf({g:r.g,date:r.date}));toast('Bỏ qua '+lk.length+' dòng thuộc kỳ đã chốt sổ');if(!use.length)return}
-  const nc=[...new Set(use.map(r=>r.category))].filter(c=>!data.categories.includes(c));
+  const nc=[...new Set(use.filter(r=>!r.inc).map(r=>r.category))].filter(c=>!data.categories.includes(c));
   data.categories.push(...nc);
+  const ni=[...new Set(use.filter(r=>r.inc).map(r=>r.category))].filter(c=>!incCats().includes(c));
+  if(ni.length)data.incomeCats=[...incCats(),...ni];
   const base=uid();
-  use.forEach((r,k)=>{const o={id:base+k.toString(36).padStart(3,'0'),date:r.date,note:r.note,category:r.category,amount:r.amount};if(r.g)o.g=r.g;if(who())o.by=who();data.items.push(o)});
+  use.forEach((r,k)=>{const o={id:base+k.toString(36).padStart(3,'0'),date:r.date,note:r.note,category:r.category,amount:r.amount};if(r.g)o.g=r.g;if(r.inc)o.dir='in';if(who())o.by=who();data.items.push(o)});
   const n=use.length;
   imp=null;$('#imp-file').value='';impMsg('');
   renderAll();save();if(!lk.length)toast('Đã nhập '+n+' khoản');else setTimeout(()=>toast('Đã nhập '+n+' khoản · bỏ '+lk.length+' dòng đã chốt sổ'),2300);
 };
 $('#imp-tpl').onclick=()=>{
   const t=today();
-  const csv='﻿date,vuon,note,category,amount\n'+t+',lon,Phân NPK 20 bao,Mua phân,"12.500.000"\n'+dmy(t)+',nho,"Công làm cỏ, phun thuốc",Làm công,3000000\n'+t+',lon,Cơm trưa cho thợ,Mua cơm,250000\n';
+  const csv='﻿date,vuon,thuchi,note,category,amount\n'+t+',lon,chi,Phân NPK 20 bao,Mua phân,"12.500.000"\n'+dmy(t)+',nho,chi,"Công làm cỏ, phun thuốc",Làm công,3000000\n'+t+',lon,chi,Cơm trưa cho thợ,Mua cơm,250000\n'+t+',lon,thu,Bán lô 1 cho thương lái,Bán sầu riêng loại 1,85000000\n';
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
   a.download='mau-chi-tieu.csv';document.body.appendChild(a);a.click();a.remove();
