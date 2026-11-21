@@ -277,7 +277,7 @@ Each sync compares data before and after: entries received from other devices (*
 
 ## Pull from Gist (overwrite this device)
 
-**Cài đặt → 🔗 Kết nối GitHub → ⬇️ Tải lại từ server (ghi đè máy này)** (the UI says "server" for the Gist) downloads the current Gist file and **replaces** this device's data with it (no merge, nothing is pushed). Before confirming, a ☠️ dialog shows how many entries the Gist has and how many local changes are not on the Gist yet (they will be lost); the confirm button waits 3 s. After pulling: the unsynced flag and this device's pending Zalo messages are cleared, the sync log records `⬇️ Ghi đè từ server · N khoản`. The Gist and other devices are not changed, no Zalo message is sent, and the device config (token, Gist ID, name, location, Zalo) is kept.
+**Cài đặt → 🔗 Kết nối GitHub → ⬇️ Tải lại từ server (ghi đè máy này)** (the UI says "server" for the Gist) first asks for the shared app password (checked against the stored hash), then downloads the current Gist file and **replaces** this device's data with it (no merge, nothing is pushed). Before confirming, a ☠️ dialog shows how many entries the Gist has and how many local changes are not on the Gist yet (they will be lost); the confirm button waits 3 s. After pulling: the unsynced flag and this device's pending Zalo messages are cleared, the sync log records `⬇️ Ghi đè từ server · N khoản`. The Gist and other devices are not changed, no Zalo message is sent, and the device config (token, Gist ID, name, location, Zalo) is kept.
 
 ## Hard delete by date range (Xóa hẳn dữ liệu theo ngày)
 
@@ -320,4 +320,4 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261121c`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261121d`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.

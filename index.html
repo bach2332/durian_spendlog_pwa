@@ -461,7 +461,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
         <button class="sec" id="s-logout">Đăng xuất</button>
       </div>
       <button class="sec" id="s-pull" style="width:100%;margin-top:8px">⬇️ Tải lại từ server (ghi đè máy này)</button>
-      <div class="mut" style="margin-top:4px;font-size:12.5px">Tải dữ liệu mới nhất trên server về và ghi đè toàn bộ dữ liệu trên máy này. Không thay đổi server, không ảnh hưởng máy khác, không gửi Zalo.</div>
+      <div class="mut" style="margin-top:4px;font-size:12.5px">Cần mật khẩu chung. Tải dữ liệu mới nhất trên server về và ghi đè toàn bộ dữ liệu trên máy này. Không thay đổi server, không ảnh hưởng máy khác, không gửi Zalo.</div>
       <div class="mut" style="margin-top:8px">Token và Gist ID chỉ lưu trong trình duyệt của thiết bị này. Dữ liệu chi tiêu vườn lưu trong file <code>durian2027.json</code> của Gist (secret).</div>
       <div class="mut" style="margin-top:8px"><a href="#help/github-connection" data-hs="github-connection">Hướng dẫn kết nối GitHub (How to connect GitHub?)</a></div>
       </div>
@@ -545,7 +545,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261121c</footer>
+  <footer class="ft">🌳 Sầu riêng 2027 · v20261121d</footer>
 </main>
 
 <nav class="tabs">
@@ -619,7 +619,7 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261121c';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261121d';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
 const live=i=>i.type!=='void'&&!i.voidedBy;
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
@@ -1444,6 +1444,7 @@ $('#s-connect').onclick=async()=>{
 $('#s-pull').onclick=async()=>{
   if(!tok()||!gid()){toast('Chưa kết nối server');return}
   if(syncing){toast('Đang đồng bộ, thử lại sau giây lát');return}
+  if(!await askPass('🔒 Nhập mật khẩu chung để ghi đè dữ liệu máy này từ server','Tiếp tục',async p=>await pwOk(p)?null:'Sai mật khẩu'))return;
   const btn=$('#s-pull'),lbl=btn.textContent,busy=on=>{btn.classList.toggle('ld',on);btn.textContent=on?'Đang tải từ server...':lbl};
   busy(true);syncing=true;syncUI();status('Đang tải từ server...');
   let r;
