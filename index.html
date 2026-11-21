@@ -279,6 +279,7 @@ details.set .sb>label:first-child{margin-top:0}
 button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{background:#d9dccf;color:#fff}
 .pglog{font-size:12.5px;color:var(--mut);padding:5px 0;border-top:1px solid #eef0e6}
 /* thu chi */
+.dirsw[hidden],.tc3[hidden],.kpi3[hidden],details[hidden]{display:none!important}
 .dirsw{display:flex;background:#eef0e4;border-radius:12px;padding:3px;margin-bottom:8px}
 .dirsw button{flex:1;background:none;color:var(--mut);font-weight:800;font-size:15px;padding:8px 0;border-radius:10px;min-height:0;box-shadow:none}
 .dirsw button.on.out{background:#fff;color:#b42318;box-shadow:0 1px 3px #0002}.dirsw button.on.in{background:#2f7d1e;color:#fff}
@@ -543,9 +544,16 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
       </div>
       </div>
     </details>
+    <details class="card set" id="sd-hid" hidden>
+      <summary><span class="si">🧪</span><span class="stt"><b>Tính năng ẩn</b><small id="sm-hid"></small></span><span class="chev">›</span></summary>
+      <div class="sb">
+        <label class="tgl" id="f-inc-tgl"><span><b>Cho nhập khoản thu</b><small>Bật thì màn Nhập có công tắc − Chi | + Thu. Áp dụng cho mọi máy khi đồng bộ.</small></span><input type="checkbox" role="switch" id="f-inc" aria-label="Cho nhập khoản thu"></label>
+        <button class="sec" id="f-hide" style="width:100%;margin-top:10px">Ẩn mục này</button>
+      </div>
+    </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft">🌳 Sầu riêng 2027 · v20261121d</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261121e</footer>
 </main>
 
 <nav class="tabs">
@@ -619,8 +627,10 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261121d';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261121e';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
+/* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
+const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
 const live=i=>i.type!=='void'&&!i.voidedBy;
 const PAL=['#0f766e','#2563eb','#d97706','#9333ea','#dc2626','#0891b2','#65a30d','#db2777','#64748b'];
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -667,6 +677,7 @@ function norm(d){
   if(d.icatLog&&typeof d.icatLog==='object')o.icatLog=d.icatLog;
   if(Array.isArray(d.periods)&&d.periods.length)o.periods=d.periods;
   if(d.minV)o.minV=d.minV;
+  if(d.feat&&typeof d.feat==='object')o.feat=d.feat;
   return o;
 }
 
@@ -802,6 +813,7 @@ function mergeData(R,L,fresh){   /* fresh: L là máy chưa đồng bộ lần n
   const pe=periodUnion(R.periods,L.periods);if(pe.length){o.periods=pe;o.items=lockApply(o.items,R.items,pe,L.items)}
   const pu=purgeUnion(R.purges,L.purges);if(pu.length){o.purges=pu;o.items=purgeApply(o.items,pu,pe)}
   const mv=[R.minV,L.minV,APPV].filter(Boolean).sort().pop();o.minV=mv;
+  {const f={};[R.feat,L.feat].forEach(x=>x&&Object.entries(x).forEach(([k,v])=>{if(!f[k]||TS(v.t)>TS(f[k].t))f[k]=v}));if(Object.keys(f).length)o.feat=f}
   return o;
 }
 /* ---- Chốt sổ theo vườn ----
@@ -1230,7 +1242,18 @@ function renderNav(){
   $$('[data-gview]').forEach(el=>gSel(el,view.g,true));
   $$('[data-label]').forEach(b=>b.textContent=label());
 }
+function featUI(){
+  const on=incOn();
+  $('#a-dir').hidden=!on;if(!on&&addDir==='in')setDir('out');
+  $('#s-ctab').hidden=!on;if(!on)catTab='out';
+  $('#h-dir').hidden=!on&&!data.items.some(isIn);if($('#h-dir').hidden)hf.dir='all';
+  $('#f-inc').checked=on;
+  let sh=false;try{sh=localStorage.getItem('dr_hid')==='1'}catch(e){}
+  $('#sd-hid').hidden=!sh&&!on;
+  const e=$('#sm-hid');if(e)e.textContent='Khoản thu: '+(on?'đang bật':'tắt');
+}
 function renderAll(){
+  featUI();
   {const v=$('#a-cat').value;fillCats('#a-cat',false,v||'',addList());renderAddCats(v)}renderSug();
   renderNav();renderAdd();renderHist();renderStat();renderSet();
 }
@@ -1620,6 +1643,13 @@ $('#s-close').addEventListener('click',e=>{
   if(rv)rvOpen(rows,GD[p.g].n+' · Đợt '+p.no+' · '+dmy(p.from)+' – '+dmy(p.to));
   else{view.g=p.g;view.mode='custom';hf.from=p.from;hf.to=p.to;hClear();hf.dir='all';hf.q='';$('#h-q').value='';renderAll();showTab('hist')}
 });
+{let n=0,tm=null;$('#ft').onclick=()=>{n++;clearTimeout(tm);tm=setTimeout(()=>n=0,1500);if(n>=5){n=0;try{localStorage.setItem('dr_hid','1')}catch(e){}featUI();const d=$('#sd-hid');showTab('set');d.open=true;d.scrollIntoView({block:'center'});toast('🧪 Đã mở Tính năng ẩn')}}}
+$('#f-inc').onchange=async e=>{
+  const on=e.target.checked;
+  if(!await askConfirm(on?'Bật nhập khoản thu cho mọi máy?\nMàn Nhập sẽ có công tắc − Chi | + Thu.':'Tắt nhập khoản thu?\nKhoản thu đã nhập vẫn giữ nguyên, chỉ ẩn công tắc ở màn Nhập.',on?'Bật':'Tắt')){e.target.checked=!on;return}
+  data.feat={...(data.feat||{}),inc:{on,t:nowISO()}};renderAll();save();toast(on?'Đã bật nhập khoản thu':'Đã tắt nhập khoản thu');
+};
+$('#f-hide').onclick=()=>{try{localStorage.removeItem('dr_hid')}catch(e){}$('#sd-hid').open=false;featUI();if(!$('#sd-hid').hidden)toast('Khoản thu đang bật nên mục này vẫn hiện')};
 $('#s-logout').onclick=async()=>{
   if(!await askConfirm('Xóa token và dữ liệu cache khỏi thiết bị này?\n(Dữ liệu trên Gist vẫn còn)','Đăng xuất'))return;
   Object.values(K).forEach(k=>localStorage.removeItem(k));resetLocal();
@@ -2015,7 +2045,7 @@ const HELP=[
 <p><b>Đoạn text</b> là chuỗi đã <b>mã hóa</b> (bắt đầu bằng <code>DR27E1.</code>), gồm: kết nối GitHub, Zalo, tên người dùng, vị trí vườn. Danh mục và ngân sách đã lưu trên Gist nên app tự tải về.</p>
 <div class="warn">Đoạn text được mã hóa AES-256-GCM bằng <b>mật khẩu chung</b> của nhóm. App không lưu mật khẩu (chỉ giữ bản băm để kiểm tra nhập đúng). Không có mật khẩu thì không đọc được token trong đoạn text.</div>`},
 {id:'thu-chi',group:'E. Sổ thu chi',title:'1. Nhập khoản thu',html:`
-<p>Màn <b>Nhập</b> có công tắc <b>− Chi | + Thu</b> trên cùng (mặc định là Chi). Bấm <b>+ Thu</b>: khung chuyển xanh, danh sách danh mục đổi sang <b>danh mục thu</b> (bán sầu riêng loại 1/2/3, bán cà phê, thu khác…), nút đổi thành <b>+ Lưu khoản thu</b>. Vẫn bắt buộc chọn danh mục và vườn.</p>
+<p>Mặc định <b>tắt</b>. Bật ở <b>Cài đặt → 🧪 Tính năng ẩn → Cho nhập khoản thu</b> (mục này hiện khi chạm 5 lần vào dòng phiên bản cuối trang); bật một máy là áp dụng cho mọi máy khi đồng bộ.</p><p>Khi bật, màn <b>Nhập</b> có công tắc <b>− Chi | + Thu</b> trên cùng (mặc định là Chi). Bấm <b>+ Thu</b>: khung chuyển xanh, danh sách danh mục đổi sang <b>danh mục thu</b> (bán sầu riêng loại 1/2/3, bán cà phê, thu khác…), nút đổi thành <b>+ Lưu khoản thu</b>. Vẫn bắt buộc chọn danh mục và vườn.</p>
 <p>Khoản thu hiện số xanh có dấu <b>+</b>. Lịch sử lọc được <b>Tất cả / + Thu / − Chi</b>; Thống kê hiện <b>Tổng thu · Tổng chi · Lãi</b> và mục "Theo danh mục thu". Ngân sách tháng chỉ tính khoản chi. Danh mục thu sửa ở Cài đặt → Danh mục → tab <b>+ Thu</b>. Khoản nhập trước đây đều là khoản chi.</p>`},
 {id:'chot-so',group:'E. Sổ thu chi',title:'2. Chốt sổ theo vườn',html:`
 <p><b>Cài đặt → 🔒 Chốt sổ theo vườn</b>: chọn vườn (bắt buộc) → <b>Từ ngày</b> app tự điền (ngày sau lần chốt trước, hoặc ngày của khoản đầu tiên) → chọn <b>Đến ngày</b> (không quá hôm nay) → xem trước số khoản, chi và thu theo danh mục → <b>🔒 Chốt sổ</b> → xác nhận ☠️.</p>

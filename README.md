@@ -287,6 +287,8 @@ How it stays deleted on every device: the delete is stored in the Gist as a smal
 
 ## Income entries (Khoản thu)
 
+**Hidden by default.** Tap the version line at the bottom of the page 5 times to reveal **Cài đặt → 🧪 Tính năng ẩn**, then switch on **Cho nhập khoản thu**. The switch is shared through the Gist (`feat: {inc: {on, t}}`, newest change wins), so turning it on once enables it on every device after sync; turning it off hides the Chi/Thu switch and the income category tab again (existing income entries stay and are still shown). "Ẩn mục này" hides the section again on this device while the feature is off.
+
 The entry screen has a **− Chi | + Thu** switch (default Chi). In Thu mode the card turns green, the category list shows the **income categories** (default: Bán sầu riêng loại 1 / loại 2 / loại 3 / xô, Bán cà phê, Thu khác; edit them in Cài đặt → Danh mục → tab **+ Thu**), and the button becomes **+ Lưu khoản thu**. Category and orchard are still required.
 
 Data: an income entry is a normal item with `"dir":"in"`; items without `dir` are expenses, so existing data needs no migration. Deleting an income entry writes a void row that also carries `dir:"in"`. Income categories are stored in `incomeCats` with their own add/remove log `icatLog` (merged the same way as `categories`/`catLog`). Budget, "Hôm nay đã chi", the daily bar chart and the radar count expenses only.
@@ -320,4 +322,4 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261121d`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261121e`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
