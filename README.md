@@ -322,13 +322,13 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261122b`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261122c`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
 
 ## Test mode (Chế độ test)
 
 **Cài đặt → 🧪 Chế độ test**, per device. Fill the test config (GitHub token, Gist ID — empty creates a new test Gist on first sync, Zalo Bot token + Chat ID), **Lưu cấu hình test**, then switch on **Bật chế độ test trên máy này** (confirm; the app reloads). The test Gist must differ from the real one. Saved values are shown masked only.
 
-While on: the header turns orange-striped with a **🧪 TEST** badge (theme colour orange too), and every data action — add, edit, delete, closing, purge, pull, sync — uses only the test Gist; Zalo messages go to the test bot/chat and start with `🧪 [TEST]`. How: at startup the app maps the connection/data keys in localStorage (`dr_token, dr_gist, dr_cache, dr_dirty, dr_base, dr_zl_token, dr_zl_chat, dr_zl_mute, dr_zq, dr_synclog`) to `t_dr_…`, so the real config and real local data are never touched; name, location and weather are shared. Switching off reloads back to the real data. **Xóa cấu hình test** removes all `t_dr_…` keys on this device (the test Gist on GitHub stays).
+While on: the header turns orange-striped with a **🧪 TEST** badge (theme colour orange too); the header icon, browser-tab favicon and iPhone `apple-touch-icon` switch to `icon-test-192.png` / `apple-touch-icon-test.png` (orange stripes + TEST band). An already-installed home-screen icon cannot change at runtime (it is fixed when the app is added to the home screen), and every data action — add, edit, delete, closing, purge, pull, sync — uses only the test Gist; Zalo messages go to the test bot/chat and start with `🧪 [TEST]`. How: at startup the app maps the connection/data keys in localStorage (`dr_token, dr_gist, dr_cache, dr_dirty, dr_base, dr_zl_token, dr_zl_chat, dr_zl_mute, dr_zq, dr_synclog`) to `t_dr_…`, so the real config and real local data are never touched; name, location and weather are shared. Switching off reloads back to the real data. **Xóa cấu hình test** removes all `t_dr_…` keys on this device (the test Gist on GitHub stays).
 
 ### CSV import with income
 
