@@ -322,7 +322,7 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261121g`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261122a`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
 
 ## Test mode (Chế độ test)
 
@@ -333,3 +333,11 @@ While on: the header turns orange-striped with a **🧪 TEST** badge (theme colo
 ### CSV import with income
 
 The CSV may have a `thuchi` column (also `kieu`, `type`, `dir`): `thu` / `in` / `income` / `+` makes the row an income entry (`dir:"in"`), anything else or empty is an expense. Income categories are matched against / added to `incomeCats` ("Thu khác" when empty). The preview shows expense and income counts and totals separately. The template file now includes `vuon` and `thuchi` columns and one income row.
+
+## Category management (Cài đặt → Danh mục)
+
+Applies to both tabs (− Chi / + Thu). Each category shows how many entries currently use it, e.g. `Mua cơm (4)` (live entries of that type only; deleted/void rows are not counted).
+
+- **Sửa** renames the category. All entries using it (including their void rows) are switched to the new name and get `upd`/`eb`, so the change syncs to every device. The new name must not already exist in either list.
+- **Xóa** requires choosing a **replacement category** from the same list (the dialog will not close without one). All entries using the deleted category move to the replacement, then the category is removed.
+- Entries inside a closed period (chốt sổ) are never changed: they keep the old name and the toast says how many were kept. No Zalo message is sent for category changes.
