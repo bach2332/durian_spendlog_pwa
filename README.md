@@ -322,7 +322,7 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261122a`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261122b`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
 
 ## Test mode (Chế độ test)
 
@@ -341,3 +341,7 @@ Applies to both tabs (− Chi / + Thu). Each category shows how many entries cur
 - **Sửa** renames the category. All entries using it (including their void rows) are switched to the new name and get `upd`/`eb`, so the change syncs to every device. The new name must not already exist in either list.
 - **Xóa** requires choosing a **replacement category** from the same list (the dialog will not close without one). All entries using the deleted category move to the replacement, then the category is removed.
 - Entries inside a closed period (chốt sổ) are never changed: they keep the old name and the toast says how many were kept. No Zalo message is sent for category changes.
+
+### Sync log performance
+
+The ⓘ dialog opens immediately with a "Đang tải nhật ký…" placeholder and renders on the next frame. Each log event keeps at most 50 entries per direction (`in`/`out`) plus the real totals (`nIn`/`nOut`); the dialog shows 15 per direction with **Xem thêm** for the rest of the kept ones and "…và N khoản khác" beyond that. Old oversized logs are trimmed on load. After importing 5,000 rows (CPU throttled 4×) the dialog now opens in ~0.13 s instead of ~6.9 s, and the stored log shrank from ~230 KB to ~2 KB.

@@ -280,6 +280,8 @@ details.set .sb>label:first-child{margin-top:0}
 .pgsum b.n{color:#b42318}
 button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{background:#d9dccf;color:#fff}
 .pglog{font-size:12.5px;color:var(--mut);padding:5px 0;border-top:1px solid #eef0e6}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--pri);border-radius:50%;animation:spn .7s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes spn{to{transform:rotate(360deg)}}
+#inc-btn:active{transform:scale(.9);opacity:.7}
 /* chế độ test */
 body.test .brand{background:repeating-linear-gradient(135deg,#ffe2c4 0 14px,#ffd3a8 14px 28px);border-bottom:3px solid #c2410c}
 body.test .brand b{color:#9a3412}
@@ -582,7 +584,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261122a</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261122b</footer>
 </main>
 
 <nav class="tabs">
@@ -669,7 +671,7 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261122a';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261122b';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
 /* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
 const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
@@ -728,8 +730,8 @@ let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on
 let lastMsg='',lastErr='';
 /* ---- Nhật ký đồng bộ: 10 lần đồng bộ gần nhất có thay đổi (⬇ nhận từ máy khác, ⬆ gửi lên từ máy này).
    Xem bằng nút ⓘ cạnh dòng trạng thái; nút xanh kèm số khi có khoản nhận về chưa xem. ---- */
-const INCK='dr_synclog';
-let slog=(()=>{try{const o=JSON.parse(localStorage.getItem(INCK));return o&&Array.isArray(o.ev)?o:{seen:true,ev:[]}}catch(e){return{seen:true,ev:[]}}})();
+const INCK='dr_synclog',SLOG_MAX=50,SLOG_SHOW=15;
+let slog=(()=>{try{const o=JSON.parse(localStorage.getItem(INCK));if(o&&Array.isArray(o.ev)){o.ev.forEach(e=>{['in','out'].forEach(k=>{const a=e[k]||[];if(a.length>SLOG_MAX){e[k==='in'?'nIn':'nOut']=a.length;e[k]=a.slice(0,SLOG_MAX)}})});return o}return{seen:true,ev:[]}}catch(e){return{seen:true,ev:[]}}})();
 function incSave(){try{localStorage.setItem(INCK,JSON.stringify(slog))}catch(e){}}
 /* đổi so với "base": khoản mới, khoản sửa (upd mới hơn), khoản xóa (bản ghi void mới) */
 function slogDiff(items,baseIds,baseUpd){
@@ -745,7 +747,9 @@ function slogDiff(items,baseIds,baseUpd){
 function slogAdd(inl,outl){
   if(!inl.length&&!outl.length)return;
   if(slog.seen&&inl.length)slog.seen=false;
-  slog.ev.push({t:Date.now(),in:inl,out:outl});slog.ev=slog.ev.slice(-10);
+  /* chỉ giữ tối đa 50 khoản mỗi chiều cho nhật ký (import/đồng bộ hàng nghìn khoản không làm nặng máy), kèm tổng số */
+  const ev={t:Date.now(),in:inl.slice(0,SLOG_MAX),out:outl.slice(0,SLOG_MAX)};if(inl.length>SLOG_MAX)ev.nIn=inl.length;if(outl.length>SLOG_MAX)ev.nOut=outl.length;
+  slog.ev.push(ev);slog.ev=slog.ev.slice(-10);
   if(inl.length)slog.unseen=(slog.unseen||0)+inl.length;
   incSave();incUI();
 }
@@ -757,21 +761,34 @@ function incUI(){
   b.title=n?'Nhật ký đồng bộ'+(u?' · '+u+' khoản mới từ máy khác':''):'';
 }
 function incOpen(){
-  const byId=new Map(data.items.map(x=>[x.id,x])),p=n=>String(n).padStart(2,'0');
+  /* mở hộp ngay, dựng danh sách ở khung hình sau để nút phản hồi tức thì */
+  $('#inc-sub').textContent=slog.ev.length+' lần đồng bộ gần nhất có thay đổi';
+  $('#inc-list').innerHTML='<div class="mut" style="padding:12px 0;text-align:center"><span class="spin"></span> Đang tải nhật ký…</div>';
+  $('#inc').classList.add('on');
+  requestAnimationFrame(()=>setTimeout(incRender,0));
+}
+let incMore=new Set();
+function incRender(){
+  const need=new Set();slog.ev.forEach(e=>[...e.in,...e.out].forEach(o=>need.add(o.id)));
+  const byId=new Map();for(const x of data.items)if(need.has(x.id))byId.set(x.id,x);
+  const p=n=>String(n).padStart(2,'0');
   const TAG={new:'<span class="ik new">Mới</span>',edit:'<span class="ik edit">Sửa</span>',del:'<span class="ik del">Xóa</span>'};
   const rows=l=>l.map(o=>{const i=byId.get(o.id);if(!i)return '';
     let h=rowHTML(i).replace(/(<div class="n"[^>]*>)/,'$1'+TAG[o.k]);
     if(o.k==='del'&&o.by)h=h.replace('đã bị xóa','đã bị xóa bởi '+esc(o.by));
     return h}).join('');
-  const html=[...slog.ev].reverse().map(e=>{const d=new Date(e.t);
+  const part=(e,k)=>{const l=e[k],tot=e[k==='in'?'nIn':'nOut']||l.length,key=e.t+k,all=incMore.has(key),sh=all?l:l.slice(0,SLOG_SHOW);
+    const rest=tot-sh.length;return rows(sh)+(rest>0?(all||l.length<=SLOG_SHOW?`<div class="mut" style="font-size:12.5px;padding:6px 0">…và ${rest} khoản khác (xem trong Lịch sử)</div>`:`<button class="sec sm" data-incmore="${key}" style="margin:6px 0">Xem thêm ${Math.min(l.length,SLOG_MAX)-sh.length} khoản${tot>l.length?' (tổng '+tot+')':''}</button>`):'')};
+  const html=[...slog.ev].reverse().map(e=>{const d=new Date(e.t),ni=e.nIn||e.in.length,no=e.nOut||e.out.length;
     const hd=`<div class="slh"><b>${p(d.getHours())}:${p(d.getMinutes())}</b> <span class="mut">${p(d.getDate())}/${p(d.getMonth()+1)}</span>`+
       (e.pull!=null?` <span class="sld out">⬇️ Ghi đè từ server · ${e.pull} khoản</span>`:'')+
-      (e.in.length?` <span class="sld in">⬇ Nhận ${e.in.length} từ máy khác</span>`:'')+(e.out.length?` <span class="sld out">⬆ Gửi ${e.out.length} lên</span>`:'')+'</div>';
-    return `<div class="sle">${hd}${e.in.length?rows(e.in):''}${e.out.length?rows(e.out):''}</div>`;
+      (ni?` <span class="sld in">⬇ Nhận ${ni} từ máy khác</span>`:'')+(no?` <span class="sld out">⬆ Gửi ${no} lên</span>`:'')+'</div>';
+    return `<div class="sle">${hd}${e.in.length?part(e,'in'):''}${e.out.length?part(e,'out'):''}</div>`;
   }).join('');
   $('#inc-sub').textContent=slog.ev.length+' lần đồng bộ gần nhất có thay đổi · bấm một khoản để xem chi tiết';
+  if(!$('#inc').classList.contains('on'))return;
   $('#inc-list').innerHTML=html||'<div class="mut">Chưa có lần đồng bộ nào.</div>';
-  $('#inc').classList.add('on');slog.seen=true;slog.unseen=0;incSave();incUI();
+  slog.seen=true;slog.unseen=0;incSave();incUI();
 }
 function status(m){lastMsg=m;$('#status').textContent=m;syncUI()}
 /* Nút đồng bộ góc trên: xám = chưa kết nối, quay = đang đồng bộ, xanh = đã đồng bộ, cam = lỗi hoặc còn thay đổi chưa gửi */
@@ -1816,9 +1833,9 @@ function rvOpen(rows,subOverride){
 }
 $('#rv-close').onclick=()=>$('#rv').classList.remove('on');
 $('#inc-btn').onclick=e=>{e.stopPropagation();incOpen()};
-$('#inc-close').onclick=()=>$('#inc').classList.remove('on');
+$('#inc-close').onclick=()=>{$('#inc').classList.remove('on');incMore.clear()};
 $('#inc').onclick=e=>{if(e.target.id==='inc')$('#inc').classList.remove('on')};
-$('#inc-list').onclick=e=>{const r=e.target.closest('[data-id]');if(!r)return;$('#inc').classList.remove('on');openEdit(r.dataset.id)};
+$('#inc-list').onclick=e=>{const m=e.target.closest('[data-incmore]');if(m){incMore.add(m.dataset.incmore);incRender();return}const r=e.target.closest('[data-id]');if(!r)return;$('#inc').classList.remove('on');openEdit(r.dataset.id)};
 incUI();
 $('#rv').onclick=e=>{if(e.target.id==='rv')$('#rv').classList.remove('on')};
 $('#rv-copy').onclick=async()=>{
