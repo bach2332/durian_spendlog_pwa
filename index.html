@@ -584,7 +584,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261122c</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261124a</footer>
 </main>
 
 <nav class="tabs">
@@ -671,7 +671,7 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261122c';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261124a';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
 /* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
 const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
@@ -1059,7 +1059,7 @@ function rowHTML(i){
   // người tạo · ✏️ người sửa cuối (chỉ ghi tên khi khác người tạo)
   const ed=!rev&&!gone&&(i.eb||i.upd)?(i.eb&&i.eb!==i.by?' ✏️'+esc(i.eb):' ✏️'):'';
   const bits=[];if(i.note)bits.push(`<span style="${st}">${esc(i.note)}</span>`);
-  const wh=((i.by?esc(i.by):'')+ed).trim();if(wh)bits.push(wh);if(gone)bits.push('đã bị xóa');
+  const wh=((i.by?esc(i.by):'')+ed).trim();if(wh)bits.push(wh);if(gone)bits.push('đã bị xóa');if(rev&&i.why)bits.push('💬 '+esc(i.why));else if(gone){const v=data.items.find(x=>x.id===i.voidedBy);if(v&&v.why)bits.push('💬 '+esc(v.why))}
   const sub=gTag(i.g)+bits.join(' · ');
   const inc=isIn(i),lk=lockOf(i)?'<span class="lk" title="Đã chốt sổ">🔒</span>':'';
   const amt=inc&&!rev?'+'+money(i.amount):money(i.amount);
@@ -1465,7 +1465,7 @@ function askConfirm(msg,yes,opt={}){
       tm=setInterval(()=>{n--;if(n>0)btn.textContent=lbl+' ('+n+')';else{clearInterval(tm);btn.disabled=false;btn.style.opacity='';btn.textContent=lbl}},1000)}
     const done=v=>{clearInterval(tm);btn.disabled=false;btn.style.opacity='';$('#cf-head').innerHTML='';$('#cf-fld').innerHTML='';$('#cf-err').textContent='';$('#cf').classList.remove('on');$('#cf-yes').onclick=$('#cf-no').onclick=$('#cf').onclick=null;res(v)};
     $('#cf-yes').onclick=()=>{if(opt.check){const er=opt.check();if(er){$('#cf-err').textContent=er;return}}done(opt.val?opt.val():true)};$('#cf-no').onclick=()=>done(false);
-    if(opt.field)setTimeout(()=>{const f=$('#cf-fld input,#cf-fld select');if(f)f.focus()},50);
+    if(opt.field)setTimeout(()=>{const f=$('#cf-fld input,#cf-fld select,#cf-fld textarea');if(f)f.focus()},50);
     $('#cf').onclick=e=>{if(e.target.id==='cf')done(false)};
   });
 }
@@ -1536,11 +1536,16 @@ $('#e-del').onclick=async()=>{
   const i=data.items.find(x=>x.id===editId);if(!i)return closeM();
   if(lockOf(i)){toast('🔒 Khoản đã chốt sổ, không xóa được');return closeM()}
   const inc=isIn(i);
-  if(!await askConfirm('Xóa khoản '+(inc?'thu':'chi')+' này?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.','Xóa'))return;
-  const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString()};if(who())r.by=who();if(i.g)r.g=i.g;if(inc)r.dir='in';
+  /* bắt buộc nhập lý do xóa (ít nhất 3 ký tự); lưu ở dòng xóa (why) và gửi kèm tin Zalo */
+  const why=await askConfirm('Xóa khoản '+(inc?'thu':'chi')+' '+money(i.amount)+' · '+i.category+'?\nApp giữ lại khoản gốc và thêm một dòng "Xóa" với số tiền âm.\nBắt buộc nhập lý do xóa:','Xóa',
+    {field:'<textarea id="cf-why" rows="2" maxlength="200" placeholder="Ví dụ: nhập trùng, sai số tiền, nhầm vườn…" style="width:100%;box-sizing:border-box"></textarea>',
+     check:()=>{const v=$('#cf-why').value.trim();return v.length<3?'Nhập lý do xóa (ít nhất 3 ký tự)':null},
+     val:()=>$('#cf-why').value.trim().replace(/\s+/g,' ')});
+  if(!why)return;
+  const r={id:uid(),date:i.date,note:'Xóa: '+(i.note||''),category:i.category,amount:-i.amount,type:'void',ref:i.id,at:new Date().toISOString(),why};if(who())r.by=who();if(i.g)r.g=i.g;if(inc)r.dir='in';
   const bak={...i};i.voidedBy=r.id;i.upd=r.at;data.items.push(r);
   if(!keepLocal()){data.items.pop();Object.keys(i).forEach(k=>delete i[k]);Object.assign(i,bak);fullAlert();return}
-  zlQueue('del',r.id,'',[zlG(i.g),'🗑️ '+zlName(who())+' · Xóa '+(inc?'thu':'chi'),(inc?'💵 ':'💸 ')+'−'+money(i.amount)+' · '+i.category,zlDay(i.date)+(i.note?' · '+i.note:'')].join('\n'));
+  zlQueue('del',r.id,'',[zlG(i.g),'🗑️ '+zlName(who())+' · Xóa '+(inc?'thu':'chi'),(inc?'💵 ':'💸 ')+'−'+money(i.amount)+' · '+i.category,zlDay(i.date)+(i.note?' · '+i.note:''),'💬 Lý do: '+why].join('\n'));
   closeM();renderAll();save();toast('Đã xóa (ghi dòng âm)');
 };
 

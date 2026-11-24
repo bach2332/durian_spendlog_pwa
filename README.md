@@ -322,7 +322,7 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261122c`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261124a`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
 
 ## Test mode (Chế độ test)
 
@@ -345,3 +345,7 @@ Applies to both tabs (− Chi / + Thu). Each category shows how many entries cur
 ### Sync log performance
 
 The ⓘ dialog opens immediately with a "Đang tải nhật ký…" placeholder and renders on the next frame. Each log event keeps at most 50 entries per direction (`in`/`out`) plus the real totals (`nIn`/`nOut`); the dialog shows 15 per direction with **Xem thêm** for the rest of the kept ones and "…và N khoản khác" beyond that. Old oversized logs are trimmed on load. After importing 5,000 rows (CPU throttled 4×) the dialog now opens in ~0.13 s instead of ~6.9 s, and the stored log shrank from ~230 KB to ~2 KB.
+
+## Delete reason (Lý do xóa)
+
+Deleting an entry (expense or income) now requires a reason: the confirm dialog has a text box and will not proceed with fewer than 3 characters. The reason is stored on the void row as `why`, shown in lists (`💬 reason`, on both the void row and the struck-through original), and added as the last line of the Zalo delete message: `💬 Lý do: …`.
