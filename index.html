@@ -278,7 +278,6 @@ details.set .sb>label:first-child{margin-top:0}
 .catrow{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 .pgsum{margin-top:10px;background:var(--bg,#f6f7f1);border-radius:12px;padding:10px 12px;font-size:14px;line-height:1.6}
 .pgsum b.n{color:#b42318}
-button.danger-btn{background:#b42318;color:#fff}button.danger-btn:disabled{background:#d9dccf;color:#fff}
 .pglog{font-size:12.5px;color:var(--mut);padding:5px 0;border-top:1px solid #eef0e6}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--pri);border-radius:50%;animation:spn .7s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes spn{to{transform:rotate(360deg)}}
 #inc-btn:active{transform:scale(.9);opacity:.7}
@@ -559,22 +558,6 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
         <div id="c-list" style="margin-top:12px"></div>
       </div>
     </details>
-    <details class="card set" id="sd-purge">
-      <summary><span class="si">🗑️</span><span class="stt"><b>Xóa hẳn dữ liệu theo ngày</b><small id="sm-purge">Cần mật khẩu chung</small></span><span class="chev">›</span></summary>
-      <div class="sb">
-      <div id="pg-lock">
-        <div class="mut">Xóa vĩnh viễn mọi khoản (thu, chi, dòng xóa) trong một khoảng ngày, trên server và mọi máy. Không ghi dòng âm, không khôi phục được.</div>
-        <button id="pg-open" style="width:100%;margin-top:10px">🔒 Nhập mật khẩu để mở</button>
-      </div>
-      <div id="pg-body" style="display:none">
-        <div class="row"><div style="flex:1"><label>Từ ngày</label><input type="date" id="pg-from"></div><div style="flex:1"><label>Đến ngày</label><input type="date" id="pg-to"></div></div>
-        <div id="pg-sum" class="pgsum"></div>
-        <button class="danger-btn" id="pg-go" style="width:100%;margin-top:10px" disabled>🗑️ Xóa vĩnh viễn</button>
-        <div class="mut" style="font-size:12.5px;margin-top:6px">Khoản đã chốt sổ không bị xóa.</div>
-        <div id="pg-log" style="margin-top:12px"></div>
-      </div>
-      </div>
-    </details>
     <details class="card set" id="sd-hid" hidden>
       <summary><span class="si">🧪</span><span class="stt"><b>Tính năng ẩn</b><small id="sm-hid"></small></span><span class="chev">›</span></summary>
       <div class="sb">
@@ -584,7 +567,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261124a</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261124b</footer>
 </main>
 
 <nav class="tabs">
@@ -671,7 +654,7 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261124a';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261124b';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
 const isIn=i=>i.dir==='in';
 /* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
 const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
@@ -905,7 +888,9 @@ function lockApply(items,R,P,Lx){
   const has=new Set(out.map(x=>x.id));
   return out.map(x=>x.voidedBy&&!has.has(x.voidedBy)?(({voidedBy,...r})=>r)(x):x);
 }
-/* ---- Xóa hẳn theo ngày (hard delete) ----
+/* ---- Lệnh xóa hẳn cũ (purges) ----
+   Chức năng "Xóa hẳn dữ liệu theo ngày" đã gỡ khỏi Cài đặt (20261124). Các lệnh xóa đã ghi trong Gist vẫn được giữ nguyên và
+   vẫn áp dụng khi đồng bộ, để dữ liệu đã xóa không bị máy cũ đẩy lên lại. Không tạo lệnh xóa mới.
    Lệnh xóa lưu trong Gist: purges=[{id,from,to,at,by,n}]. Mọi máy khi đồng bộ đều bỏ hẳn các khoản có ngày
    trong [from,to] và được tạo trước lúc xóa (thời điểm tạo lấy từ id). Nhờ vậy máy chưa đồng bộ
    không đẩy lại khoản đã xóa. Khoản tạo SAU lệnh xóa (dù ngày cũ) vẫn giữ. */
@@ -1578,52 +1563,6 @@ $('#s-pull').onclick=async()=>{
   slog.ev.push({t:Date.now(),in:[],out:[],pull:data.items.filter(x=>x.type!=='void').length});slog.ev=slog.ev.slice(-10);incSave();incUI();
   renderAll();status('Đã tải lại từ server · '+data.items.filter(x=>x.type!=='void').length+' khoản');toast('✅ Đã ghi đè máy này bằng dữ liệu trên server');
 };
-/* ---- Xóa hẳn dữ liệu theo khoảng ngày: mở bằng mật khẩu chung, xóa vĩnh viễn trên mọi máy ---- */
-function pgLock(){$('#pg-body').style.display='none';$('#pg-lock').style.display='';$('#pg-from').value=$('#pg-to').value='';$('#pg-sum').innerHTML='';$('#pg-go').disabled=true}
-function pgList(){
-  const f=$('#pg-from').value,t=$('#pg-to').value;
-  if(!f||!t)return null;if(f>t)return 'bad';
-  return data.items.filter(x=>x.date>=f&&x.date<=t&&!lockOf(x));
-}
-function pgRender(){
-  const L=pgList(),box=$('#pg-sum'),go=$('#pg-go');
-  if(L==='bad'){box.innerHTML='⚠️ "Từ ngày" phải trước hoặc bằng "Đến ngày"';go.disabled=true;return}
-  if(!L){box.innerHTML='Chọn khoảng ngày cần xóa.';go.disabled=true;return}
-  const live=L.filter(x=>x.type!=='void'&&!x.voidedBy),voids=L.length-live.length;
-  const byG=GK.map(g=>{const a=live.filter(x=>x.g===g);return a.length?gIcon(g,14)+' '+GD[g].s+': '+a.length+' khoản · '+money(sum(a)):''}).filter(Boolean);
-  const ng=live.filter(x=>!GD[x.g]);if(ng.length)byG.push('❔ Chưa phân vườn: '+ng.length+' khoản · '+money(sum(ng)));
-  box.innerHTML=L.length?`📅 ${dmy($('#pg-from').value)} → ${dmy($('#pg-to').value)}<br>Sẽ xóa <b class="n">${L.length} dòng</b>: ${live.length} khoản đang tính · tổng <b>${money(sum(live))}</b>${voids?'<br>+ '+voids+' dòng đã xóa/bị xóa trước đó':''}${byG.length?'<br>'+byG.join('<br>'):''}`:'Không có khoản nào trong khoảng ngày này.';
-  go.disabled=!L.length;
-}
-function pgLog(){
-  const P=(data.purges||[]).slice(-5).reverse();
-  $('#pg-log').innerHTML=P.length?'<div class="mut" style="font-weight:700;font-size:13px">Các lần đã xóa</div>'+P.map(p=>{const d=new Date(p.at),q=n=>String(n).padStart(2,'0');return `<div class="pglog">🗑️ ${dmy(p.from)} → ${dmy(p.to)} · ${p.n} dòng · ${esc(p.by||'?')} · ${q(d.getDate())}/${q(d.getMonth()+1)} ${q(d.getHours())}:${q(d.getMinutes())}</div>`}).join(''):'';
-}
-$('#pg-open').onclick=async()=>{
-  const ok=await askPass('🔒 Nhập mật khẩu chung để mở chức năng xóa hẳn dữ liệu','Mở',async p=>await pwOk(p)?null:'Sai mật khẩu');
-  if(!ok)return;
-  $('#pg-lock').style.display='none';$('#pg-body').style.display='';
-  const ds0=data.items.map(x=>x.date).filter(Boolean).sort();
-  if(ds0.length){$('#pg-from').min=ds0[0];$('#pg-to').max=ds0[ds0.length-1]}
-  pgRender();pgLog();
-};
-['#pg-from','#pg-to'].forEach(k=>{$(k).onchange=$(k).oninput=pgRender});
-$('#pg-go').onclick=async()=>{
-  const L=pgList();if(!L||L==='bad'||!L.length)return;
-  const f=$('#pg-from').value,t=$('#pg-to').value;
-  const head='<div class="danger"><span class="skull">☠️</span><b class="t">XÓA VĨNH VIỄN – KHÔNG KHÔI PHỤC ĐƯỢC</b>'+L.length+' dòng từ '+dmy(f)+' đến '+dmy(t)+' sẽ bị xóa hẳn trên server và trên mọi máy khi đồng bộ. Không ghi dòng âm, không gửi Zalo.</div>';
-  if(!await askConfirm('Xóa hẳn '+L.length+' dòng từ '+dmy(f)+' đến '+dmy(t)+'?','🗑️ Xóa vĩnh viễn',{danger:head,wait:5}))return;
-  const rec={id:uid(),from:f,to:t,at:nowISO(),by:who()||'',n:L.length};
-  const bak=data;
-  data={...data,purges:purgeUnion(data.purges,[rec])};data.items=purgeApply(data.items,data.purges);
-  if(!keepLocal()){data=bak;fullAlert();return}
-  renderAll();pgRender();pgLog();
-  toast('🗑️ Đã xóa '+L.length+' dòng, đang cập nhật lên server...');
-  const ok=await sync({local:true});
-  toast(ok?'✅ Đã xóa hẳn '+L.length+' dòng trên server':'⚠️ Đã xóa trên máy, chưa lên server được — sẽ tự thử lại');
-};
-$('#sd-purge').addEventListener('toggle',e=>{if(!e.target.open)pgLock()});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){const d=$('#sd-purge');if(d&&d.open)d.open=false;pgLock()}});
 /* ---------- Chốt sổ theo vườn ---------- */
 const addDay=(v,n)=>{const d=pd(v);d.setDate(d.getDate()+n);return ds(d)};
 const dm=v=>dmy(v).slice(0,5);
@@ -2203,7 +2142,7 @@ const HELP=[
 <p>Khoản thu hiện số xanh có dấu <b>+</b>. Lịch sử lọc được <b>Tất cả / + Thu / − Chi</b>; Thống kê hiện <b>Tổng thu · Tổng chi · Lãi</b> và mục "Theo danh mục thu". Ngân sách tháng chỉ tính khoản chi. Danh mục thu sửa ở Cài đặt → Danh mục → tab <b>+ Thu</b>. Khoản nhập trước đây đều là khoản chi.</p>`},
 {id:'chot-so',group:'E. Sổ thu chi',title:'2. Chốt sổ theo vườn',html:`
 <p><b>Cài đặt → 🔒 Chốt sổ theo vườn</b>: chọn vườn (bắt buộc) → <b>Từ ngày</b> app tự điền (ngày sau lần chốt trước, hoặc ngày của khoản đầu tiên) → chọn <b>Đến ngày</b> (không quá hôm nay) → xem trước số khoản, chi và thu theo danh mục → <b>🔒 Chốt sổ</b> → xác nhận ☠️.</p>
-<p>Chốt xong: mọi khoản của vườn đó từ ngày chốt trở về trước <b>bị khóa vĩnh viễn</b> (không sửa, không xóa, không thêm; Xóa hẳn dữ liệu cũng bỏ qua). Nhóm Zalo nhận tin tóm tắt đợt chốt. Báo cáo xem ở <b>Thống kê → 🔒 Chốt sổ</b>: các đợt của từng vườn và phần đang mở; bấm một đợt để xem chi tiết, Review / Copy Excel hoặc mở trong Lịch sử.</p>`},
+<p>Chốt xong: mọi khoản của vườn đó từ ngày chốt trở về trước <b>bị khóa vĩnh viễn</b> (không sửa, không xóa, không thêm). Nhóm Zalo nhận tin tóm tắt đợt chốt. Báo cáo xem ở <b>Thống kê → 🔒 Chốt sổ</b>: các đợt của từng vườn và phần đang mở; bấm một đợt để xem chi tiết, Review / Copy Excel hoặc mở trong Lịch sử.</p>`},
 ];
 function renderHelp(){
   let toc='',body='',lastG=null;

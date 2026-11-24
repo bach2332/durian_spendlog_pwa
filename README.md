@@ -279,11 +279,9 @@ Each sync compares data before and after: entries received from other devices (*
 
 **Cài đặt → 🔗 Kết nối GitHub → ⬇️ Tải lại từ server (ghi đè máy này)** (the UI says "server" for the Gist) first asks for the shared app password (checked against the stored hash), then downloads the current Gist file and **replaces** this device's data with it (no merge, nothing is pushed). Before confirming, a ☠️ dialog shows how many entries the Gist has and how many local changes are not on the Gist yet (they will be lost); the confirm button waits 3 s. After pulling: the unsynced flag and this device's pending Zalo messages are cleared, the sync log records `⬇️ Ghi đè từ server · N khoản`. The Gist and other devices are not changed, no Zalo message is sent, and the device config (token, Gist ID, name, location, Zalo) is kept.
 
-## Hard delete by date range (Xóa hẳn dữ liệu theo ngày)
+## Hard delete by date range — removed (v20261124b)
 
-**Cài đặt → 🗑️ Xóa hẳn dữ liệu theo ngày** is locked; tapping **🔒 Nhập mật khẩu để mở** asks for the shared app password (checked against the stored PBKDF2 hash, never stored). After unlocking, pick **Từ ngày / Đến ngày**; a preview shows how many rows will go (entries still counted, earlier deleted/void rows, per-orchard count and total). **🗑️ Xóa vĩnh viễn** opens a ☠️ confirm (button waits 5 s), then every row whose date is in the range is removed outright: no negative "Xóa" row, no Zalo message, no undo. Closing the section or leaving the app locks it again.
-
-How it stays deleted on every device: the delete is stored in the Gist as a small rule, `purges: [{id, from, to, at, by, n}]`. On every sync, all devices drop rows whose date is inside `[from, to]` and that were created before `at` (creation time comes from the row id). So a device that was offline, or an older app version that pushes the old rows back, gets cleaned again on the next sync of an updated device. Rows created after the delete (even with an old date) are kept. Void rows pointing to a purged entry are removed too, and pending Zalo messages for purged rows are dropped. The last 5 deletes are listed under the form.
+The **Cài đặt → 🗑️ Xóa hẳn dữ liệu theo ngày** screen and its code were removed; no new hard deletes can be made. Data was not touched: the `purges` list already in the Gist is kept as is and still applied on every sync (`purgeUnion` / `purgeApply`), so rows deleted earlier are not pushed back by devices that sync late. Closed (chốt sổ) entries were never affected by it.
 
 ## Income entries (Khoản thu)
 
@@ -322,7 +320,7 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261124a`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261124b`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
 
 ## Test mode (Chế độ test)
 
