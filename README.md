@@ -320,7 +320,7 @@ Zalo (sent only after the period is confirmed on the Gist), detailed format:
 
 ## Version guard (minV)
 
-Each app build has `APPV` (now `20261128a`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
+Each app build has `APPV` (now `20261128b`). When this build writes the Gist it sets `minV` to the highest version seen. A device whose `APPV` is lower than the Gist's `minV` does not write; it shows "App trên máy này là bản cũ — tắt hẳn app rồi mở lại để cập nhật". Builds older than 20261121c don't know this rule, but their edits to closed periods and purged rows are cleaned by the next sync of an up-to-date device.
 
 ## Test mode (Chế độ test)
 
@@ -348,6 +348,6 @@ The ⓘ dialog opens immediately with a "Đang tải nhật ký…" placeholder 
 
 Deleting an entry (expense or income) now requires a reason: the confirm dialog has a text box and will not proceed with fewer than 3 characters. The reason is stored on the void row as `why`, shown in lists (`💬 reason`, on both the void row and the struck-through original), and added as the last line of the Zalo delete message: `💬 Lý do: …`.
 
-## Large amount check (> 1 tỷ)
+## Large amount check (> 100 triệu)
 
-The amount box adds `000` automatically, so typing the zeros yourself makes the amount 1,000× too big. On **Lưu**, if the amount is **more than 1,000,000,000 ₫** (`AMT_WARN`), a ⚠️ "SỐ TIỀN RẤT LỚN" dialog shows the amount (also in tỷ) and the likely intended value (amount ÷ 1000). **Sửa lại** keeps the form and selects the amount box; **Đúng, lưu** saves as entered. Exactly 1 tỷ or less saves without asking. Applies to both expense and income entry.
+The amount box adds `000` automatically, so typing the zeros yourself makes the amount 1,000× too big. On **Lưu**, if the amount is **more than 100,000,000 ₫** (`AMT_WARN`), a ⚠️ "SỐ TIỀN RẤT LỚN" dialog shows the amount (also in triệu/tỷ) and the likely intended value (amount ÷ 1000). **Sửa lại** keeps the form and selects the amount box; **Đúng, lưu** saves as entered. Exactly 100 triệu or less saves without asking. Applies to both expense and income entry.
