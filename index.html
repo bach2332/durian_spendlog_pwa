@@ -567,7 +567,7 @@ button.lockbtn{background:#8a3b12;color:#fff}button.lockbtn:disabled{background:
     </details>
     <a class="menu" id="s-guide" href="#help" data-hs=""><span>Hướng dẫn sử dụng (User Guide)</span><span class="mut">›</span></a>
   </section>
-  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261124b</footer>
+  <footer class="ft" id="ft">🌳 Sầu riêng 2027 · v20261128a</footer>
 </main>
 
 <nav class="tabs">
@@ -654,7 +654,8 @@ const K={token:'dr_token',gist:'dr_gist',cache:'dr_cache',dirty:'dr_dirty',base:
 const DEF_CATS=['Mua phân','Làm công','Làm cỏ','Phun thuốc','Thu hoạch','Mua cơm','Mua nước','Khác'];
 /* Khoản thu: item.dir==='in'. Khoản không có dir = khoản chi (dữ liệu cũ không phải đổi gì). */
 const DEF_INC=['Bán sầu riêng loại 1','Bán sầu riêng loại 2','Bán sầu riêng loại 3 / xô','Bán cà phê','Thu khác'];
-const APPV='20261124b';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const APPV='20261128a';   /* máy có bản thấp hơn minV trên Gist sẽ không ghi lên Gist */
+const AMT_WARN=1e9;   /* trên 1 tỷ thì hỏi lại trước khi lưu */
 const isIn=i=>i.dir==='in';
 /* Tính năng khoản thu: mặc định ẩn, bật ở Cài đặt → Tính năng ẩn (chạm 5 lần vào dòng phiên bản cuối trang). Lưu trong Gist: feat.inc={on,t} */
 const incOn=()=>!!(data.feat&&data.feat.inc&&data.feat.inc.on);
@@ -1430,6 +1431,13 @@ $('#a-save').onclick=async()=>{
   if(!amount){toast('Nhập số tiền');$('#a-amt').focus();return}
   if(!category||!addList().includes(category)){const c=$('#a-cat');c.classList.remove('need');void c.offsetWidth;c.classList.add('need');toast('Chọn danh mục');c.focus();try{c.showPicker&&c.showPicker()}catch(e){}return}
   if(!GD[addG]){gNeed($('#a-g'));toast('Chọn vườn: Vườn lớn, Vườn nhỏ hoặc Rẫy cà phê');return}
+  /* số tiền > 1 tỷ: thường là lỡ gõ thêm 3 số 0 (ô nhập đã tự thêm 000) → hỏi lại cho chắc */
+  if(amount>AMT_WARN){
+    const ty=(amount/1e9).toLocaleString('vi-VN',{maximumFractionDigits:3});
+    const ok=await askConfirm('Số tiền '+money(amount)+' (≈ '+ty+' tỷ) lớn hơn 1 tỷ.\nCó phải bạn muốn nhập đúng số tiền này?\n\nNếu lỡ gõ thừa 3 số 0, số đúng có thể là '+money(Math.round(amount/1000))+'.','Đúng, lưu',
+      {danger:'<div class="danger"><span class="skull">⚠️</span><b class="t">SỐ TIỀN RẤT LỚN</b>'+money(amount)+'</div>',no:'Sửa lại'});
+    if(!ok){const f=$('#a-amt');f.focus();try{f.select()}catch(e){}return}
+  }
   {const lp=lockOf({g:addG,date});if(lp){await askConfirm(GD[addG].n+' đã chốt sổ đến '+dmy(lp.to)+' (Đợt '+lp.no+').\nKhông thêm khoản vào ngày '+dmy(date)+' được. Chọn ngày sau '+dmy(lp.to).slice(0,5)+' hoặc vườn khác.','Đã hiểu',{danger:'<div class="danger"><span class="skull">🔒</span><b class="t">SỔ ĐÃ CHỐT</b>Khoản trong kỳ đã chốt không thay đổi được.</div>'});return}}
   const it={id:uid(),date,note,category,amount,g:addG};if(addDir==='in')it.dir='in';if(who())it.by=who();data.items.push(it);
   if(!keepLocal()){data.items.pop();fullAlert();return}
@@ -1444,7 +1452,7 @@ $('#a-amt').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault(
 function askConfirm(msg,yes,opt={}){
   return new Promise(res=>{
     $('#cf-head').innerHTML=opt.danger||'';
-    $('#cf-msg').textContent=msg;$('#cf-fld').innerHTML=opt.field||'';$('#cf-err').textContent='';const lbl=yes||'Xác nhận',btn=$('#cf-yes');btn.textContent=lbl;btn.disabled=false;btn.style.opacity='';$('#cf').classList.add('on');
+    $('#cf-msg').textContent=msg;$('#cf-fld').innerHTML=opt.field||'';$('#cf-err').textContent='';$('#cf-no').textContent=opt.no||'Hủy';const lbl=yes||'Xác nhận',btn=$('#cf-yes');btn.textContent=lbl;btn.disabled=false;btn.style.opacity='';$('#cf').classList.add('on');
     let tm=null;
     if(opt.wait){let n=opt.wait;btn.disabled=true;btn.style.opacity=.5;btn.textContent=lbl+' ('+n+')';
       tm=setInterval(()=>{n--;if(n>0)btn.textContent=lbl+' ('+n+')';else{clearInterval(tm);btn.disabled=false;btn.style.opacity='';btn.textContent=lbl}},1000)}
